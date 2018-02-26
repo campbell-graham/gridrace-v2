@@ -36,7 +36,8 @@ class DetailViewController: UIViewController {
     }
 
     init() {
-        self.objective = Objective(name: "office", desc: "take photo at office", hintImage: #imageLiteral(resourceName: "camera"), pointsCount: 10)
+        self.objective = Objective(name: "office", desc: "take photo at office and then there was a little boy that",
+                                   hintImage: #imageLiteral(resourceName: "camera"), pointsCount: 10)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,29 +50,51 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
         title = objective.name
         edgesForExtendedLayout = []
 
-        mapImageView.image = #imageLiteral(resourceName: "map")
+        initialiseViews()
+        setUpLayout()
+    }
+
+    func initialiseViews() {
+
+        //Colors
+        view.backgroundColor = AppColors.backgroundColor
+        descLabel.textColor = AppColors.textPrimaryColor
+        pointLabel.textColor = AppColors.textPrimaryColor
+        getClueButton.setTitleColor(AppColors.greenHighlightColor, for: .normal)
+        getClueButton.backgroundColor = AppColors.cellColor
+        timerLabel.textColor = AppColors.textSecondaryColor
+        totalPointsLabel.textColor = AppColors.textSecondaryColor
+        lowerNavBarView.backgroundColor = AppColors.greenHighlightColor
+
+        // misc stuff
+        descLabel.lineBreakMode = .byWordWrapping
+        descLabel.numberOfLines = 0
+        timerLabel.textAlignment = .center
+        totalPointsLabel.textAlignment = .center
+
+        userPhotoImageView.contentMode = .scaleAspectFit
         mapImageView.contentMode = .scaleAspectFit
+
+        getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
+        getClueButton.layer.cornerRadius = 10
+        getClueButton.layer.masksToBounds = false
+
+        updateViewsData()
+    }
+
+    func updateViewsData() {
+
+        mapImageView.image = #imageLiteral(resourceName: "map")
         descLabel.text = objective.desc
         pointLabel.text = "\(objective.pointsCount)"
         userPhotoImageView.image = #imageLiteral(resourceName: "camera")
-        userPhotoImageView.contentMode = .scaleAspectFit
         getClueButton.setTitle("Get Clue", for: .normal)
-        lowerNavBarView.backgroundColor = AppColors.greenHighlightColor
         timerLabel.text = "1:00"
-        timerLabel.textColor = AppColors.textSecondaryColor
-        timerLabel.textAlignment = .center
         totalPointsLabel.text = "0"
-        totalPointsLabel.textColor = AppColors.textSecondaryColor
-        totalPointsLabel.textAlignment = .center
-
-
-        setUpLayout()
-
     }
 
     func setUpLayout() {
@@ -98,7 +121,7 @@ class DetailViewController: UIViewController {
             userPhotoImageView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 10),
             userPhotoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             userPhotoImageView.heightAnchor.constraint(equalToConstant: 200),
-            userPhotoImageView.widthAnchor.constraint(equalToConstant: 150),
+            userPhotoImageView.widthAnchor.constraint(equalToConstant: 200),
 
             getClueButton.topAnchor.constraint(equalTo: userPhotoImageView.bottomAnchor, constant: 20),
             getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
