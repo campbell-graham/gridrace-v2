@@ -72,6 +72,10 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         if let headerTitle = view as? UITableViewHeaderFooterView {
             headerTitle.textLabel?.textColor = AppColors.textSecondaryColor
@@ -86,6 +90,9 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell?.textLabel?.text = String(indexPath.row)
         cell?.textLabel?.textColor = AppColors.textPrimaryColor
         cell?.backgroundColor = AppColors.cellColor
+        let bgView = UIView()
+        bgView.backgroundColor = AppColors.greenHighlightColor
+        cell?.selectedBackgroundView = bgView
         return cell!
     }
     
