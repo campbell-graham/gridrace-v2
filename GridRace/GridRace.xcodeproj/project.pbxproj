@@ -15,6 +15,7 @@
 		AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12A20438BC500DF3A1C /* Assets.xcassets */; };
 		AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */; };
 		AA29A13620438C9E00DF3A1C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */; };
+		AA29A1382043D0CF00DF3A1C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */; };
 		D6F94F1D7B3362B4876B49D2 /* Pods_GridRace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F14FC92863F3F26C6A68D7BE /* Pods_GridRace.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		AA29A12D20438BC500DF3A1C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AA29A12F20438BC500DF3A1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		F14FC92863F3F26C6A68D7BE /* Pods_GridRace.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GridRace.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -91,6 +93,7 @@
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
 				AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */,
+				AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */,
 			);
 			path = GridRace;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 			files = (
 				AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */,
 				37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */,
+				AA29A1382043D0CF00DF3A1C /* DetailViewController.swift in Sources */,
 				AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */,
 				376A5F852043A08D00D69090 /* (null) in Sources */,
 			);
