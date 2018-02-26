@@ -29,6 +29,8 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
         tableView.backgroundColor = AppColors.backgroundColor
+        tableView.separatorStyle = .singleLine
+        tableView.separatorColor = AppColors.textSecondaryColor
         
         //table view setup
         tableView.dataSource = self
@@ -71,6 +73,10 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         default:
             return ""
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
