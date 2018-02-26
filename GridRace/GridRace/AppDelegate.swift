@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: PlacesViewController()), UIViewController()]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: PlacesViewController()), UINavigationController(rootViewController: AnytimeViewController())]
         
         window?.rootViewController = mainTabController
         
