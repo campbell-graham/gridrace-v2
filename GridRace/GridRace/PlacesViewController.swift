@@ -8,7 +8,9 @@
 
 import UIKit
 
-class PlacesViewController: UIViewController {
+class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    var tableView = UITableView()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -22,13 +24,60 @@ class PlacesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        //table view setup
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        //add items to view
+        view.addSubview(tableView)
+        
+        //layout constraints
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ])
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Incomplete"
+        case 1:
+            return "Complete"
+        default:
+            return ""
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+        if cell == nil {
+            cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
+        }
+        cell?.textLabel?.text = String(indexPath.row)
+        return cell!
     }
     
 
