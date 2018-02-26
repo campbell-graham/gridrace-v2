@@ -13,6 +13,7 @@ class PlacesViewController: UIViewController {
     init() {
         super.init(nibName: nil, bundle: nil)
         title = "Places"
+        tabBarItem = UITabBarItem(title: title, image: #imageLiteral(resourceName: "directional_arrow"), selectedImage: #imageLiteral(resourceName: "directional_arrow"))
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -22,6 +23,7 @@ class PlacesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AppColors.backgroundColor
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     override func didReceiveMemoryWarning() {
