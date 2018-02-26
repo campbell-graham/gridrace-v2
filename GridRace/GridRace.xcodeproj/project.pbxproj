@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		376A5F852043A08D00D69090 /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A5F842043A08D00D69090 /* AppResources.swift */; };
+		376A5F852043A08D00D69090 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7ED2043CD0A00BA283B /* AppResources.swift */; };
 		AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12320438BC500DF3A1C /* AppDelegate.swift */; };
 		AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12520438BC500DF3A1C /* ViewController.swift */; };
 		AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12720438BC500DF3A1C /* Main.storyboard */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		13733228498CCA006EAA6DCA /* Pods-GridRace.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.debug.xcconfig"; sourceTree = "<group>"; };
 		2727F62BE70A41A8EF9B4686 /* Pods-GridRace.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.release.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.release.xcconfig"; sourceTree = "<group>"; };
+		37F2A7ED2043CD0A00BA283B /* AppResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		AA29A12020438BC500DF3A1C /* GridRace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GridRace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA29A12320438BC500DF3A1C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AA29A12520438BC500DF3A1C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 		AA29A12220438BC500DF3A1C /* GridRace */ = {
 			isa = PBXGroup;
 			children = (
+				37F2A7ED2043CD0A00BA283B /* AppResources.swift */,
 				AA29A12320438BC500DF3A1C /* AppDelegate.swift */,
 				AA29A12520438BC500DF3A1C /* ViewController.swift */,
 				AA29A12720438BC500DF3A1C /* Main.storyboard */,
@@ -88,7 +91,6 @@
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
 				AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */,
-				376A5F842043A08D00D69090 /* AppResources.swift */,
 			);
 			path = GridRace;
 			sourceTree = "<group>";
@@ -221,8 +223,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */,
+				37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */,
 				AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */,
-				376A5F852043A08D00D69090 /* AppResources.swift in Sources */,
+				376A5F852043A08D00D69090 /* (null) in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
