@@ -28,6 +28,7 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
+        tableView.backgroundColor = AppColors.backgroundColor
         
         //table view setup
         tableView.dataSource = self
@@ -71,12 +72,20 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
     
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerTitle = view as? UITableViewHeaderFooterView {
+            headerTitle.textLabel?.textColor = AppColors.textSecondaryColor
+        }
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
         if cell == nil {
             cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
         cell?.textLabel?.text = String(indexPath.row)
+        cell?.textLabel?.textColor = AppColors.textPrimaryColor
+        cell?.backgroundColor = AppColors.cellColor
         return cell!
     }
     
