@@ -15,7 +15,7 @@ class AnytimeViewController: UIViewController, UITableViewDelegate, UITableViewD
     init() {
         super.init(nibName: nil, bundle: nil)
         title = "Anytime"
-        tabBarItem = UITabBarItem(title: title, image: #imageLiteral(resourceName: "directional_arrow"), selectedImage: #imageLiteral(resourceName: "directional_arrow"))
+        tabBarItem = UITabBarItem(title: title, image: #imageLiteral(resourceName: "clock_outline"), selectedImage: #imageLiteral(resourceName: "clock_outline"))
     }
     
     required init?(coder aDecoder: NSCoder) {
