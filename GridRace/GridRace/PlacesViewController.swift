@@ -36,6 +36,7 @@ class PlacesViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ObjectiveTableViewCell.self, forCellReuseIdentifier: "ObjectiveCell")
+        tableView.rowHeight = 60
         
         //add items to view
         view.addSubview(tableView)
