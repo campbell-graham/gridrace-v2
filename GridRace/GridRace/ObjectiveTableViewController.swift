@@ -1,5 +1,5 @@
 //
-//  AnytimeViewController.swift
+//  ObjectiveTableViewController.swift
 //  GridRace
 //
 //  Created by Campbell Graham on 27/2/18.
@@ -8,23 +8,24 @@
 
 import UIKit
 
-class AnytimeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
     
-    init() {
+    //will eventually take in data
+    init(title: String, tabBarImage: UIImage) {
         super.init(nibName: nil, bundle: nil)
-        title = "Anytime"
-        tabBarItem = UITabBarItem(title: title, image: #imageLiteral(resourceName: "clock_outline"), selectedImage: #imageLiteral(resourceName: "clock_outline"))
+        self.title = title
+        tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -50,9 +51,8 @@ class AnytimeViewController: UIViewController, UITableViewDelegate, UITableViewD
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             ])
-        // Do any additional setup after loading the view.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -97,6 +97,7 @@ class AnytimeViewController: UIViewController, UITableViewDelegate, UITableViewD
         cell.pointsLabel.text = String(0)
         return cell
     }
+    
     
 
     /*

@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: PlacesViewController()), UINavigationController(rootViewController: AnytimeViewController())]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Anytime", tabBarImage: #imageLiteral(resourceName: "clock_outline")))]
         
         window?.rootViewController = mainTabController
         
