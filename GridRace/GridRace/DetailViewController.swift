@@ -195,7 +195,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // MARK:- Image Picker Delegates
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        userPhotoImageView.image = info[UIImagePickerControllerEditedImage] as? UIImage
+        let retrivedImage = info[UIImagePickerControllerEditedImage] as? UIImage
+        userPhotoImageView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
         dismiss(animated: true, completion: nil)
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
