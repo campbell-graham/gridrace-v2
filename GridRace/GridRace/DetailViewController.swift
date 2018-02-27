@@ -36,7 +36,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     init() {
-        self.objective = Objective(name: "office", desc: "take photo at office and then there was a little boy that",
+        self.objective = Objective(name: "office", desc: "Take photo at office and then there was a little boy that",
                                    hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false)
 
         super.init(nibName: nil, bundle: nil)
@@ -75,6 +75,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         tapGestureRecogniser.delegate = self
         userPhotoImageView.addGestureRecognizer(tapGestureRecogniser)
         userPhotoImageView.isUserInteractionEnabled = true
+        userPhotoImageView.tintColor = AppColors.greenHighlightColor
 
         userPhotoImageView.contentMode = .scaleAspectFit
         mapImageView.contentMode = .scaleAspectFit
@@ -111,11 +112,11 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
             mapImageView.heightAnchor.constraint(equalToConstant: 200),
 
             descLabel.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 5),
-            descLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            descLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             descLabel.trailingAnchor.constraint(equalTo: pointLabel.leadingAnchor),
 
             pointLabel.topAnchor.constraint(equalTo: descLabel.topAnchor),
-            pointLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pointLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
 
             userPhotoImageView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 10),
             userPhotoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
