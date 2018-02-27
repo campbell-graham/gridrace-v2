@@ -48,7 +48,7 @@ class ObjectiveTableViewCell: UITableViewCell {
             pointsLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             pointsLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
             pointsLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-            pointsStarImageView.trailingAnchor.constraint(equalTo: pointsLabel.leadingAnchor, constant: -16),
+            pointsStarImageView.trailingAnchor.constraint(equalTo: pointsLabel.leadingAnchor, constant: -8),
             pointsStarImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             pointsStarImageView.widthAnchor.constraint(equalToConstant: 30),
             pointsStarImageView.heightAnchor.constraint(equalToConstant: 30),

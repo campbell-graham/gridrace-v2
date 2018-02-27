@@ -30,8 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //global styling
         UINavigationBar.appearance().barTintColor = AppColors.backgroundColor
         UINavigationBar.appearance().tintColor = AppColors.textPrimaryColor
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.textPrimaryColor]
-        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.textPrimaryColor]
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
+        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
         UITabBar.appearance().tintColor = AppColors.greenHighlightColor
         
         window?.makeKeyAndVisible()

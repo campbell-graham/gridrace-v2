@@ -37,7 +37,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(ObjectiveTableViewCell.self, forCellReuseIdentifier: "ObjectiveCell")
+        tableView.register(CustomTableHeaderView.self, forHeaderFooterViewReuseIdentifier: "CustomHeaderView")
         tableView.rowHeight = 60
+        tableView.tableFooterView = UIView()
         
         //add items to view
         view.addSubview(tableView)
@@ -66,20 +68,23 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return 10
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "CustomHeaderView") as! CustomTableHeaderView
         switch section {
         case 0:
-            return "Incomplete"
+            headerView.titleLabel.text = "Incomplete"
         case 1:
-            return "Complete"
+            headerView.titleLabel.text = "Complete"
         default:
-            return ""
+            break
         }
+        return headerView
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        return 44
     }
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -94,7 +99,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
         cell.titleLabel.text = String(indexPath.row)
-        cell.pointsLabel.text = String(0)
+        cell.pointsLabel.text = String(20)
         return cell
     }
     
