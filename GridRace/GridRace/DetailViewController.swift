@@ -14,6 +14,7 @@ struct Objective {
     var hintImage: UIImage
     var hintText: String
     var pointsCount: Int
+    var hintViewed: Bool
 
 }
 
@@ -26,9 +27,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
     let pointLabel = UILabel()
     let userPhotoImageView = UIImageView()
     let getClueButton = UIButton()
-    let lowerNavBarView = UIView()
-    let timerLabel = UILabel()
-    let totalPointsLabel = UILabel()
+    let pointDeductionValue = 2
 
     init(objective: Objective) {
         self.objective = objective
@@ -38,7 +37,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
     init() {
         self.objective = Objective(name: "office", desc: "take photo at office and then there was a little boy that",
-                                   hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10)
+                                   hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -67,15 +66,10 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         pointLabel.textColor = AppColors.textPrimaryColor
         getClueButton.setTitleColor(AppColors.greenHighlightColor, for: .normal)
         getClueButton.backgroundColor = AppColors.cellColor
-        timerLabel.textColor = AppColors.textSecondaryColor
-        totalPointsLabel.textColor = AppColors.textSecondaryColor
-        lowerNavBarView.backgroundColor = AppColors.greenHighlightColor
 
         // misc stuff
         descLabel.lineBreakMode = .byWordWrapping
         descLabel.numberOfLines = 0
-        timerLabel.textAlignment = .center
-        totalPointsLabel.textAlignment = .center
 
         let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
         tapGestureRecogniser.delegate = self
@@ -90,7 +84,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
         getClueButton.layer.cornerRadius = 10
         getClueButton.layer.masksToBounds = false
-        getClueButton.addTarget(self, action: #selector(presentClueViewController), for: .touchUpInside)
+        getClueButton.addTarget(self, action: #selector(clueButtonHandler), for: .touchUpInside)
 
         updateViewsData()
     }
@@ -102,14 +96,12 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         pointLabel.text = "\(objective.pointsCount)"
         userPhotoImageView.image = #imageLiteral(resourceName: "camera")
         getClueButton.setTitle("Get Clue", for: .normal)
-        timerLabel.text = "1:00"
-        totalPointsLabel.text = "0"
     }
 
     func setUpLayout() {
 
         for v in [ mapImageView, descLabel, pointLabel, userPhotoImageView,
-        getClueButton, lowerNavBarView, timerLabel, totalPointsLabel] {
+        getClueButton] {
             v.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(v)
         }
@@ -133,37 +125,43 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
             userPhotoImageView.widthAnchor.constraint(equalToConstant: 200),
 
             getClueButton.topAnchor.constraint(equalTo: userPhotoImageView.bottomAnchor, constant: 20),
-            getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            lowerNavBarView.topAnchor.constraint(greaterThanOrEqualTo: getClueButton.bottomAnchor, constant: 10),
-            lowerNavBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            lowerNavBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            lowerNavBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            lowerNavBarView.heightAnchor.constraint(equalToConstant: 30),
-
-            timerLabel.centerYAnchor.constraint(equalTo: lowerNavBarView.centerYAnchor),
-            timerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            timerLabel.trailingAnchor.constraint(lessThanOrEqualTo: totalPointsLabel.trailingAnchor),
-
-            totalPointsLabel.centerYAnchor.constraint(equalTo: timerLabel.centerYAnchor),
-            totalPointsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-
+            getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            
             ])
     }
 
-    @objc func presentClueViewController() {
+    @objc func clueButtonHandler() {
 
-        objective.pointsCount -= 2
+        if !objective.hintViewed {
+            presentPointLossAlert()
+        } else {
+            presentClueViewController()
+        }
 
+    }
+
+    @objc func presentPointLossAlert() {
+
+        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(pointDeductionValue)", preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(cancelAction)
+        let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
+            self.objective.pointsCount -= self.pointDeductionValue
+            self.objective.hintViewed = true
+            self.updateViewsData()
+            self.presentClueViewController() })
+        alert.addAction(continueAction)
+
+        present(alert, animated: true, completion: nil)
+
+    }
+
+    func presentClueViewController() {
         let clueViewController = ClueViewController(objective: objective)
         clueViewController.modalTransitionStyle = .crossDissolve
         clueViewController.modalPresentationStyle = .overCurrentContext
         present(clueViewController, animated: true, completion: nil)
-    }
-
-    @objc func dismissClueViewController() {
-
-        dismiss(animated: true, completion: nil)
     }
 
 }
@@ -173,32 +171,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @objc func selectPhoto() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            showPhotoMenu()
+            takePhotoWithCamera()
         } else {
             choosePhotoFromLibrary()
         }
-    }
-
-    func showPhotoMenu() {
-
-        let alert: UIAlertController
-
-        if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad ){
-            alert = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
-        } else {
-            alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        }
-        let actCancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alert.addAction(actCancel)
-        let actPhoto = UIAlertAction(title: "Take Photo", style: .default, handler: { _ in
-            self.takePhotoWithCamera() })
-        alert.addAction(actPhoto)
-        let actLibrary = UIAlertAction(title: "Choose From Library", style: .default, handler: { _ in
-            self.choosePhotoFromLibrary() })
-        alert.addAction(actLibrary)
-
-        present(alert, animated: true, completion: nil)
-
     }
 
     func takePhotoWithCamera() {
