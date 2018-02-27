@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "eye.png",
+      "filename" : "checkMark.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "eye-1.png",
+      "filename" : "checkMark-1.pdf",
       "scale" : "2x"
     },
     {

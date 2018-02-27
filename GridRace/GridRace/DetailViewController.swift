@@ -77,8 +77,6 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         userPhotoImageView.isUserInteractionEnabled = true
 
         userPhotoImageView.contentMode = .scaleAspectFit
-        userPhotoImageView.layer.borderColor = AppColors.textPrimaryColor.cgColor
-        userPhotoImageView.layer.borderWidth = 5
         mapImageView.contentMode = .scaleAspectFit
 
         getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
@@ -121,8 +119,8 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
             userPhotoImageView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 10),
             userPhotoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            userPhotoImageView.heightAnchor.constraint(equalToConstant: 200),
-            userPhotoImageView.widthAnchor.constraint(equalToConstant: 200),
+            userPhotoImageView.heightAnchor.constraint(equalToConstant: 180),
+            userPhotoImageView.widthAnchor.constraint(equalToConstant: 180),
 
             getClueButton.topAnchor.constraint(equalTo: userPhotoImageView.bottomAnchor, constant: 20),
             getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
