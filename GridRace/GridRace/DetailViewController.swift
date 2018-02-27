@@ -198,9 +198,22 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let retrivedImage = info[UIImagePickerControllerEditedImage] as? UIImage
         userPhotoImageView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
         dismiss(animated: true, completion: nil)
+
+        playHudAnimation()
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
+    }
+
+    func playHudAnimation() {
+        let hudView = HudView.hud(inView: navigationController!.view, animated: true)
+            hudView.text = "CheckPoint"
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5,
+                                      execute: {
+                                        hudView.hide()
+                                        self.navigationController?.popViewController(animated: true)
+        })
     }
 
 }
