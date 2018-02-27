@@ -28,7 +28,6 @@ class ObjectiveTableViewCell: UITableViewCell {
         pointsStarImageView.tintColor = AppColors.starPointsColor
         
         //label styling
-        titleLabel.textColor = AppColors.textPrimaryColor
         pointsLabel.textColor = AppColors.textPrimaryColor
         
         //add items to cell
