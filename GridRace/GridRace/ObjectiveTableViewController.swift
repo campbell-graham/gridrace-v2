@@ -11,12 +11,42 @@ import UIKit
 class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
+    var objectives = [Objective]()
     
     //will eventually take in data
     init(title: String, tabBarImage: UIImage) {
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
+        
+        let objective = Objective()
+        objective.name = "Test"
+        objective.desc = "desc"
+        objective.hintText = "hint text"
+        objective.pointsCount = 20
+        populateFakeData()
+        
+        print(objectives)
+    }
+    
+    func populateFakeData() {
+        if let path = Bundle.main.path(forResource: "fake", ofType: "json") {
+            do {
+                
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonDecoder = JSONDecoder()
+                objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+//                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+//                if let jsonResult = jsonResult as? Dictionary<String, Any> {
+//                    
+//                }
+            } catch {
+                // handle error
+            }
+        }
+        
+        tableView.reloadData()
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -65,7 +95,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return objectives.count
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -84,7 +114,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 44
     }
-
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -92,8 +122,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
-        cell.titleLabel.text = String(indexPath.row)
-        cell.pointsLabel.text = String(20)
+        cell.titleLabel.text = objectives[indexPath.row].name
+        cell.pointsLabel.text = String(objectives[indexPath.row].pointsCount)
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor
@@ -102,15 +132,15 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

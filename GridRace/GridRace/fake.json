@@ -1,0 +1,46 @@
+{
+    "objects": [
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test",
+                "desc": "desc",
+                "pointsCount": 5
+                },
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test2",
+                "desc": "desc",
+                "pointsCount": 6
+                },
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test3",
+                "desc": "desc",
+                "pointsCount": 56
+                },
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test4",
+                "desc": "desc",
+                "pointsCount": 23
+                },
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test5",
+                "desc": "desc",
+                "pointsCount": 4
+                },
+                {
+                "hintViewed": false,
+                "hintText": "hint text",
+                "name": "Test6",
+                "desc": "desc",
+                "pointsCount": 20
+                }
+                ]
+}
