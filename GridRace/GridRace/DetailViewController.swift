@@ -15,29 +15,30 @@ struct Objective {
     var hintText: String
     var pointsCount: Int
     var hintViewed: Bool
-
+    var pointDeductionValue: Int
 }
 
-class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
+class DetailViewController: UIViewController {
 
     var objective: Objective
 
-    let mapImageView = UIImageView()
-    let descLabel = UILabel()
-    let pointLabel = UILabel()
-    let userPhotoImageView = UIImageView()
-    let getClueButton = UIButton()
-    let pointDeductionValue = 2
+    private let mapImageView = UIImageView()
+    private let descLabel = UILabel()
+    private let pointLabel = UILabel()
+    private let userPhotoImageView = UIImageView()
+    private let getClueButton = UIButton()
 
     init(objective: Objective) {
+
         self.objective = objective
 
         super.init(nibName: nil, bundle: nil)
     }
 
     init() {
+
         self.objective = Objective(name: "office", desc: "Take photo at office and then there was a little boy that",
-                                   hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false)
+            hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false, pointDeductionValue: 2)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,17 +49,17 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
 
     override func viewDidLoad() {
+
         super.viewDidLoad()
 
         navigationController?.navigationBar.prefersLargeTitles = true
         title = objective.name
-        edgesForExtendedLayout = []
 
         initialiseViews()
         setUpLayout()
     }
 
-    func initialiseViews() {
+    private func initialiseViews() {
 
         //Colors
         view.backgroundColor = AppColors.backgroundColor
@@ -72,7 +73,6 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         descLabel.numberOfLines = 0
 
         let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
-        tapGestureRecogniser.delegate = self
         userPhotoImageView.addGestureRecognizer(tapGestureRecogniser)
         userPhotoImageView.isUserInteractionEnabled = true
         userPhotoImageView.tintColor = AppColors.greenHighlightColor
@@ -88,7 +88,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         updateViewsData()
     }
 
-    func updateViewsData() {
+    private func updateViewsData() {
 
         mapImageView.image = #imageLiteral(resourceName: "map")
         descLabel.text = objective.desc
@@ -97,7 +97,7 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         getClueButton.setTitle("Get Clue", for: .normal)
     }
 
-    func setUpLayout() {
+    private func setUpLayout() {
 
         for v in [ mapImageView, descLabel, pointLabel, userPhotoImageView,
         getClueButton] {
@@ -106,9 +106,9 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
         }
 
         NSLayoutConstraint.activate([
-            mapImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            mapImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mapImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapImageView.topAnchor.constraint(equalTo: view.topAnchor),
             mapImageView.heightAnchor.constraint(equalToConstant: 200),
 
             descLabel.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 5),
@@ -125,11 +125,10 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
             getClueButton.topAnchor.constraint(equalTo: userPhotoImageView.bottomAnchor, constant: 20),
             getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-            
-            ])
+        ])
     }
 
-    @objc func clueButtonHandler() {
+    @objc private func clueButtonHandler() {
 
         if !objective.hintViewed {
             presentPointLossAlert()
@@ -139,24 +138,23 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 
     }
 
-    @objc func presentPointLossAlert() {
+    @objc private func presentPointLossAlert() {
 
-        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(pointDeductionValue)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(objective.pointDeductionValue)", preferredStyle: .alert)
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
-            self.objective.pointsCount -= self.pointDeductionValue
+            self.objective.pointsCount -= self.objective.pointDeductionValue
             self.objective.hintViewed = true
             self.updateViewsData()
             self.presentClueViewController() })
         alert.addAction(continueAction)
 
         present(alert, animated: true, completion: nil)
-
     }
 
-    func presentClueViewController() {
+    private func presentClueViewController() {
         let clueViewController = ClueViewController(objective: objective)
         clueViewController.modalTransitionStyle = .crossDissolve
         clueViewController.modalPresentationStyle = .overCurrentContext
@@ -168,7 +166,8 @@ class DetailViewController: UIViewController, UIGestureRecognizerDelegate {
 extension DetailViewController:
 UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    @objc func selectPhoto() {
+    @objc private func selectPhoto() {
+
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             takePhotoWithCamera()
         } else {
@@ -176,7 +175,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         }
     }
 
-    func takePhotoWithCamera() {
+    private func takePhotoWithCamera() {
+
         let imagePicker = UIImagePickerController()
         imagePicker.sourceType = .camera
         imagePicker.delegate = self
@@ -184,7 +184,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         present(imagePicker, animated: true, completion: nil)
     }
 
-    func choosePhotoFromLibrary() {
+    private func choosePhotoFromLibrary() {
+
         let imagePicker = UIImagePickerController()
         imagePicker.sourceType = .photoLibrary
         imagePicker.delegate = self
@@ -196,24 +197,28 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // MARK:- Image Picker Delegates
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+
         let retrivedImage = info[UIImagePickerControllerEditedImage] as? UIImage
         userPhotoImageView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
         dismiss(animated: true, completion: nil)
 
         playHudAnimation()
     }
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+
         dismiss(animated: true, completion: nil)
     }
 
-    func playHudAnimation() {
+    private func playHudAnimation() {
+
         let hudView = HudView.hud(inView: navigationController!.view, animated: true)
             hudView.text = "CheckPoint"
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5,
-                                      execute: {
-                                        hudView.hide()
-                                        self.navigationController?.popViewController(animated: true)
+        execute: {
+            hudView.hide()
+            self.navigationController?.popViewController(animated: true)
         })
     }
 

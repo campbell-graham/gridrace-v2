@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ClueViewController: UIViewController, UIGestureRecognizerDelegate {
+class ClueViewController: UIViewController {
 
     let transparentBackgroundView = GradientView()
     let clueBackgroundView = UIView()
@@ -27,13 +27,12 @@ class ClueViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
-
 
         view.backgroundColor = .clear
 
         let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(dismiss))
-        tapGestureRecogniser.delegate = self
         transparentBackgroundView.addGestureRecognizer(tapGestureRecogniser)
 
         clueBackgroundView.layer.cornerRadius = 10
@@ -44,7 +43,6 @@ class ClueViewController: UIViewController, UIGestureRecognizerDelegate {
         clueLabel.numberOfLines = 0
 
         clueImageView.contentMode = .scaleAspectFit
-
 
         for v in [transparentBackgroundView, clueBackgroundView] {
             v.translatesAutoresizingMaskIntoConstraints = false
@@ -75,8 +73,8 @@ class ClueViewController: UIViewController, UIGestureRecognizerDelegate {
 
             clueLabel.topAnchor.constraint(equalTo: clueImageView.bottomAnchor, constant: 20),
             clueLabel.leadingAnchor.constraint(equalTo: clueBackgroundView.leadingAnchor, constant: 10),
-            clueLabel.trailingAnchor.constraint(equalTo: clueBackgroundView.trailingAnchor, constant: 10),
-            clueLabel.bottomAnchor.constraint(equalTo: clueBackgroundView.bottomAnchor, constant: 20)
+            clueLabel.trailingAnchor.constraint(equalTo: clueBackgroundView.trailingAnchor, constant: -10),
+            clueLabel.bottomAnchor.constraint(equalTo: clueBackgroundView.bottomAnchor, constant: -20)
         ])
     }
 
