@@ -19,11 +19,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
         
-        let objective = Objective()
-        objective.name = "Test"
-        objective.desc = "desc"
-        objective.hintText = "hint text"
-        objective.pointsCount = 20
         populateFakeData()
         
         print(objectives)
@@ -36,10 +31,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
                 let jsonDecoder = JSONDecoder()
                 objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
-//                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-//                if let jsonResult = jsonResult as? Dictionary<String, Any> {
-//                    
-//                }
+
             } catch {
                 // handle error
             }

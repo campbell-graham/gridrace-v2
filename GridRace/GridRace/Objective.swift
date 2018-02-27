@@ -10,12 +10,11 @@ import UIKit
 
 class Objective: Codable {
     
-    var name: String = ""
-    var desc: String = ""
-    var hintText: String = ""
+    let name: String
+    let desc: String
+    let hintText: String
     var pointsCount: Int = 0
     var hintViewed: Bool = false
-    
 }
 
 struct ObjectList: Codable {

@@ -10,9 +10,9 @@ import UIKit
 
 class ObjectiveTableViewCell: UITableViewCell {
     
-    var titleLabel = UILabel()
-    var pointsLabel = UILabel()
-    var pointsStarImageView = UIImageView()
+    let titleLabel = UILabel()
+    let pointsLabel = UILabel()
+    let pointsStarImageView = UIImageView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,12 +41,18 @@ class ObjectiveTableViewCell: UITableViewCell {
         pointsStarImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            //title label
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            
+            //points label
             pointsLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             pointsLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
             pointsLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            pointsLabel.widthAnchor.constraint(equalToConstant: 30),
+            
+            //star image view
             pointsStarImageView.trailingAnchor.constraint(equalTo: pointsLabel.leadingAnchor, constant: -8),
             pointsStarImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             pointsStarImageView.widthAnchor.constraint(equalToConstant: 30),
@@ -57,16 +63,4 @@ class ObjectiveTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }

@@ -10,7 +10,7 @@ import UIKit
 
 class CustomTableHeaderView: UITableViewHeaderFooterView {
     
-    var titleLabel = UILabel()
+    let titleLabel = UILabel()
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
