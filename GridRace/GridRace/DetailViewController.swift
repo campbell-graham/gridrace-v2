@@ -12,6 +12,7 @@ struct Objective {
     var name: String
     var desc: String
     var hintImage: UIImage
+    var hintText: String
     var pointsCount: Int
 
 }
@@ -37,7 +38,7 @@ class DetailViewController: UIViewController {
 
     init() {
         self.objective = Objective(name: "office", desc: "take photo at office and then there was a little boy that",
-                                   hintImage: #imageLiteral(resourceName: "camera"), pointsCount: 10)
+                                   hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,11 +78,14 @@ class DetailViewController: UIViewController {
         totalPointsLabel.textAlignment = .center
 
         userPhotoImageView.contentMode = .scaleAspectFit
+        userPhotoImageView.layer.borderColor = AppColors.textPrimaryColor.cgColor
+        userPhotoImageView.layer.borderWidth = 5
         mapImageView.contentMode = .scaleAspectFit
 
         getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
         getClueButton.layer.cornerRadius = 10
         getClueButton.layer.masksToBounds = false
+        getClueButton.addTarget(self, action: #selector(presentClueViewController), for: .touchUpInside)
 
         updateViewsData()
     }
@@ -140,7 +144,21 @@ class DetailViewController: UIViewController {
             totalPointsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor)
 
             ])
+    }
 
+    @objc func presentClueViewController() {
+
+        objective.pointsCount -= 2
+
+        let clueViewController = ClueViewController(objective: objective)
+        clueViewController.modalTransitionStyle = .crossDissolve
+        clueViewController.modalPresentationStyle = .overCurrentContext
+        present(clueViewController, animated: true, completion: nil)
+    }
+
+    @objc func dismissClueViewController() {
+
+        dismiss(animated: true, completion: nil)
     }
   
 
