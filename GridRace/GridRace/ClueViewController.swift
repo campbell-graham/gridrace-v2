@@ -15,7 +15,7 @@ class ClueViewController: UIViewController {
     let clueImageView = UIImageView()
     let clueLabel = UILabel()
 
-    init(objective: Objective) {
+    init(objective: ObjectiveStruct) {
 
         clueImageView.image = objective.hintImage
         clueLabel.text = objective.hintText

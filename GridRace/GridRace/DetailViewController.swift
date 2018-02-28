@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Objective {
+struct ObjectiveStruct {
     var name: String
     var desc: String
     var hintImage: UIImage
@@ -20,7 +20,7 @@ struct Objective {
 
 class DetailViewController: UIViewController {
 
-    var objective: Objective
+    var objective: ObjectiveStruct
 
     private let mapImageView = UIImageView()
     private let descLabel = UILabel()
@@ -28,7 +28,7 @@ class DetailViewController: UIViewController {
     private let userPhotoImageView = UIImageView()
     private let getClueButton = UIButton()
 
-    init(objective: Objective) {
+    init(objective: ObjectiveStruct) {
 
         self.objective = objective
 
@@ -37,7 +37,7 @@ class DetailViewController: UIViewController {
 
     init() {
 
-        self.objective = Objective(name: "office", desc: "Take photo at office and then there was a little boy that",
+        self.objective = ObjectiveStruct(name: "office", desc: "Take photo at office and then there was a little boy that",
             hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false, pointDeductionValue: 2)
 
         super.init(nibName: nil, bundle: nil)
