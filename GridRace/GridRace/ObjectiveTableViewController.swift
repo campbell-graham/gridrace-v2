@@ -107,8 +107,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         } else if section == 1 && completeObjectives.count == 0 {
             return UIView()
         }
-        
-        
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "CustomHeaderView") as! CustomTableHeaderView
         switch section {
         case 0:
@@ -133,7 +131,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
         cell.titleLabel.text = incompleteObjectives[indexPath.row].name
-        cell.pointsLabel.text = String(incompleteObjectives[indexPath.row].pointsCount)
+        cell.pointsLabel.text = String(incompleteObjectives[indexPath.row].points)
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor

@@ -14,7 +14,7 @@ class Objective: Codable {
     let desc: String
     var imageURL: URL?
     let hintText: String
-    var pointsCount: Int = 0
+    var points: Int = 0
     var hintViewed: Bool = false
     let latitude: Double?
     let longitude: Double?
