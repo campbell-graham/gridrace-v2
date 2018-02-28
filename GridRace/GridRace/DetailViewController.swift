@@ -25,7 +25,7 @@ class DetailViewController: UIViewController {
     var objective: ObjectiveStruct
 
     private let mapView = MKMapView()
-    private let descLabel = UILabel()
+    private let descLabel = UITextView()
     private let starImageView = UIImageView()
     private let pointLabel = UILabel()
     private let answerView: UIView
@@ -38,7 +38,7 @@ class DetailViewController: UIViewController {
         case 0: // imageview
             answerView = UIImageView()
         case 1: // textField
-            answerView = UITextField()
+            answerView = textFieldView()
         case 2: // pin view
             answerView = UIView()
         default:
@@ -51,14 +51,14 @@ class DetailViewController: UIViewController {
 
     init() {
 
-        self.objective = ObjectiveStruct(name: "office", desc: "Take photo at office and then there was a little boy that", objectiveType: 0,
+        self.objective = ObjectiveStruct(name: "Office", desc: "Take photo at office and and then there was a little boy that Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy oto at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy", objectiveType: 1,
             hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false, pointDeductionValue: 2)
 
         switch  objective.objectiveType {
         case 0: // imageview
             answerView = UIImageView()
         case 1: // textField
-            answerView = UITextField()
+            answerView = textFieldView()
         case 2: // pin view
             answerView = UIView()
         default:
@@ -79,6 +79,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
 
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(cancelHandler) )
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Get Clue", style: .done, target: self, action: #selector(clueButtonHandler) )
         title = objective.name
 
@@ -91,18 +92,18 @@ class DetailViewController: UIViewController {
         //Colors
         view.backgroundColor = AppColors.backgroundColor
         descLabel.textColor = AppColors.textPrimaryColor
-        pointLabel.textColor = AppColors.textSecondaryColor
-
-        // misc stuff
-        descLabel.lineBreakMode = .byWordWrapping
-        descLabel.numberOfLines = 0
-
-        starImageView.contentMode = .scaleAspectFit
-        starImageView.tintColor = AppColors.starPointsColor
-
-        pointLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        pointLabel.textColor = AppColors.greenHighlightColor
 
         updateViewsData()
+
+        // misc stuff
+        descLabel.backgroundColor = AppColors.backgroundColor
+        descLabel.font = UIFont.systemFont(ofSize: 16)
+
+        starImageView.contentMode = .scaleAspectFit
+        starImageView.tintColor = AppColors.greenHighlightColor
+
+        pointLabel.font = UIFont.boldSystemFont(ofSize: 16)
 
         switch answerView {
         case is UIImageView:
@@ -115,7 +116,8 @@ class DetailViewController: UIViewController {
                 answerView.image = #imageLiteral(resourceName: "camera")
             }
         case is UITextField:
-            if let answerView = answerView as? UITextField {
+            if let answerView = answerView as? textFieldView {
+                
             }
         case is UIView:
             if let answerView = answerView as? UIView {
@@ -128,7 +130,7 @@ class DetailViewController: UIViewController {
     private func updateViewsData() {
 
         descLabel.text = objective.desc
-        starImageView.image = #imageLiteral(resourceName: "star")
+        starImageView.image = #imageLiteral(resourceName: "circle")
         pointLabel.text = "\(objective.pointsCount)"
     }
 
@@ -148,7 +150,12 @@ class DetailViewController: UIViewController {
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mapView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
 
-            starImageView.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 16),
+            descLabel.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 16),
+            descLabel.leadingAnchor.constraint(equalTo: starImageView.trailingAnchor, constant: 16),
+            descLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            descLabel.heightAnchor.constraint(equalToConstant: 160),
+
+            starImageView.topAnchor.constraint(equalTo: descLabel.topAnchor),
             starImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             starImageView.heightAnchor.constraint(equalToConstant: 64),
             starImageView.widthAnchor.constraint(equalToConstant: 64),
@@ -156,22 +163,33 @@ class DetailViewController: UIViewController {
             pointLabel.centerXAnchor.constraint(equalTo: starImageView.centerXAnchor),
             pointLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
 
-            descLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
-            descLabel.leadingAnchor.constraint(equalTo: starImageView.trailingAnchor, constant: 16),
-            descLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 
-            answerView.topAnchor.constraint(greaterThanOrEqualTo: starImageView.bottomAnchor, constant: 16),
-            answerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            answerView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
         ])
 
-        if answerView is UIImageView {
+        switch answerView {
+        case is UIImageView:
             constraints += [
+                answerView.topAnchor.constraint(greaterThanOrEqualTo: starImageView.bottomAnchor, constant: 16),
+                answerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                answerView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
                 answerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
             answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor)]
+        case is textFieldView:
+            constraints += [
+                answerView.topAnchor.constraint(equalTo: starImageView.bottomAnchor),
+                answerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                answerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                answerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)]
+        default:
+            break
         }
 
         NSLayoutConstraint.activate(constraints)
+    }
+
+    @objc private func cancelHandler() {
+
+        navigationController?.popViewController(animated: true)
     }
 
     @objc private func clueButtonHandler() {
@@ -205,6 +223,12 @@ class DetailViewController: UIViewController {
         clueViewController.modalTransitionStyle = .crossDissolve
         clueViewController.modalPresentationStyle = .overCurrentContext
         present(clueViewController, animated: true, completion: nil)
+    }
+
+    //set textView to be scrolled to top
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        descLabel.setContentOffset(CGPoint.zero, animated: false)
     }
 
 }
