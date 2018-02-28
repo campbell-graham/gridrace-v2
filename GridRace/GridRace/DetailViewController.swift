@@ -11,6 +11,7 @@ import UIKit
 struct ObjectiveStruct {
     var name: String
     var desc: String
+    var objectiveType: Int // 0: take picture, 1: enter word, 2: enter pin
     var hintImage: UIImage
     var hintText: String
     var pointsCount: Int
@@ -24,21 +25,46 @@ class DetailViewController: UIViewController {
 
     private let mapImageView = UIImageView()
     private let descLabel = UILabel()
+    private let starImageView = UIImageView()
     private let pointLabel = UILabel()
-    private let userPhotoImageView = UIImageView()
+    private let answerView: UIView
     private let getClueButton = UIButton()
 
     init(objective: ObjectiveStruct) {
 
         self.objective = objective
 
+        switch  objective.objectiveType {
+        case 0: // imageview
+            answerView = UIImageView()
+        case 1: // textField
+            answerView = UITextField()
+        case 2: // pin view
+            answerView = UIView()
+        default:
+            answerView = UIView()
+
+        }
+
         super.init(nibName: nil, bundle: nil)
     }
 
     init() {
 
-        self.objective = ObjectiveStruct(name: "office", desc: "Take photo at office and then there was a little boy that",
+        self.objective = ObjectiveStruct(name: "office", desc: "Take photo at office and then there was a little boy that", objectiveType: 0,
             hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false, pointDeductionValue: 2)
+
+        switch  objective.objectiveType {
+        case 0: // imageview
+            answerView = UIImageView()
+        case 1: // textField
+            answerView = UITextField()
+        case 2: // pin view
+            answerView = UIView()
+        default:
+            answerView = UIView()
+
+        }
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -64,7 +90,7 @@ class DetailViewController: UIViewController {
         //Colors
         view.backgroundColor = AppColors.backgroundColor
         descLabel.textColor = AppColors.textPrimaryColor
-        pointLabel.textColor = AppColors.textPrimaryColor
+        pointLabel.textColor = AppColors.textSecondaryColor
         getClueButton.setTitleColor(AppColors.greenHighlightColor, for: .normal)
         getClueButton.backgroundColor = AppColors.cellColor
 
@@ -72,13 +98,12 @@ class DetailViewController: UIViewController {
         descLabel.lineBreakMode = .byWordWrapping
         descLabel.numberOfLines = 0
 
-        let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
-        userPhotoImageView.addGestureRecognizer(tapGestureRecogniser)
-        userPhotoImageView.isUserInteractionEnabled = true
-        userPhotoImageView.tintColor = AppColors.greenHighlightColor
-
-        userPhotoImageView.contentMode = .scaleAspectFit
         mapImageView.contentMode = .scaleAspectFit
+
+        starImageView.contentMode = .scaleAspectFit
+        starImageView.tintColor = AppColors.starPointsColor
+
+        pointLabel.font = UIFont.boldSystemFont(ofSize: 16)
 
         getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
         getClueButton.layer.cornerRadius = 10
@@ -86,46 +111,80 @@ class DetailViewController: UIViewController {
         getClueButton.addTarget(self, action: #selector(clueButtonHandler), for: .touchUpInside)
 
         updateViewsData()
+
+        switch answerView {
+        case is UIImageView:
+            if let answerView = answerView as? UIImageView {
+                let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
+                answerView.addGestureRecognizer(tapGestureRecogniser)
+                answerView.isUserInteractionEnabled = true
+                answerView.tintColor = AppColors.greenHighlightColor
+//                answerView.contentMode = .scaleAspectFit
+                answerView.image = #imageLiteral(resourceName: "camera")
+            }
+        case is UITextField:
+            if let answerView = answerView as? UITextField {
+            }
+        case is UIView:
+            if let answerView = answerView as? UIView {
+            }
+        default:
+            break
+        }
     }
 
     private func updateViewsData() {
 
         mapImageView.image = #imageLiteral(resourceName: "map")
         descLabel.text = objective.desc
+        starImageView.image = #imageLiteral(resourceName: "star")
         pointLabel.text = "\(objective.pointsCount)"
-        userPhotoImageView.image = #imageLiteral(resourceName: "camera")
         getClueButton.setTitle("Get Clue", for: .normal)
     }
 
     private func setUpLayout() {
 
-        for v in [ mapImageView, descLabel, pointLabel, userPhotoImageView,
+        for view in [ mapImageView, descLabel, starImageView, answerView,
         getClueButton] {
-            v.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(v)
+            view.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(view)
         }
 
-        NSLayoutConstraint.activate([
+        pointLabel.translatesAutoresizingMaskIntoConstraints = false
+        starImageView.addSubview(pointLabel)
+
+        var constraints = ([
             mapImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             mapImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mapImageView.heightAnchor.constraint(equalToConstant: 200),
 
-            descLabel.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 5),
-            descLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            descLabel.trailingAnchor.constraint(equalTo: pointLabel.leadingAnchor),
+            starImageView.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 16),
+            starImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            starImageView.heightAnchor.constraint(equalToConstant: 64),
+            starImageView.widthAnchor.constraint(equalToConstant: 64),
 
-            pointLabel.topAnchor.constraint(equalTo: descLabel.topAnchor),
-            pointLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            pointLabel.centerXAnchor.constraint(equalTo: starImageView.centerXAnchor),
+            pointLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
 
-            userPhotoImageView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 10),
-            userPhotoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            userPhotoImageView.heightAnchor.constraint(equalToConstant: 180),
-            userPhotoImageView.widthAnchor.constraint(equalToConstant: 180),
+            descLabel.topAnchor.constraint(equalTo: starImageView.topAnchor),
+            descLabel.leadingAnchor.constraint(equalTo: starImageView.trailingAnchor, constant: 16),
+            descLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 
-            getClueButton.topAnchor.constraint(equalTo: userPhotoImageView.bottomAnchor, constant: 20),
+            answerView.topAnchor.constraint(equalTo: starImageView.bottomAnchor, constant: 16),
+            answerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+
+            getClueButton.topAnchor.constraint(equalTo: answerView.bottomAnchor, constant: 20),
             getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+
+        if answerView is UIImageView {
+            constraints += [ answerView.heightAnchor.constraint(equalToConstant: 180),
+                answerView.widthAnchor.constraint(equalToConstant: 180)]
+        }
+
+        NSLayoutConstraint.activate(constraints)
     }
 
     @objc private func clueButtonHandler() {
@@ -199,7 +258,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
 
         let retrivedImage = info[UIImagePickerControllerEditedImage] as? UIImage
-        userPhotoImageView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
+        if let answerView = answerView as? UIImageView {
+            answerView.contentMode = .scaleAspectFit
+            answerView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
+        }
         dismiss(animated: true, completion: nil)
 
         playHudAnimation()
@@ -215,10 +277,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let hudView = HudView.hud(inView: navigationController!.view, animated: true)
             hudView.text = "CheckPoint"
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5,
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0,
         execute: {
             hudView.hide()
-            self.navigationController?.popViewController(animated: true)
+            //self.navigationController?.popViewController(animated: true)
         })
     }
 
