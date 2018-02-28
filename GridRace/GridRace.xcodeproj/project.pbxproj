@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3712BDE92044D9A300B4C9B3 /* ObjectiveTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */; };
+		3712BDEB2044E9EB00B4C9B3 /* CustomTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */; };
+		3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEE2045174100B4C9B3 /* Objective.swift */; };
+		3712BDF1204519D900B4C9B3 /* fake.json in Resources */ = {isa = PBXBuildFile; fileRef = 3712BDF0204519D900B4C9B3 /* fake.json */; };
 		376A5F852043A08D00D69090 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7ED2043CD0A00BA283B /* AppResources.swift */; };
 		AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */; };
 		AA1CD2C02044D29B0007A0C1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */; };
 		AA1CD2C2204513820007A0C1 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */; };
 		AA1CD2C4204519E10007A0C1 /* HudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C3204519E10007A0C1 /* HudView.swift */; };
+		37F2A7F22043DA7E00BA283B /* ObjectiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */; };
 		AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12320438BC500DF3A1C /* AppDelegate.swift */; };
 		AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12520438BC500DF3A1C /* ViewController.swift */; };
 		AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12720438BC500DF3A1C /* Main.storyboard */; };
@@ -26,7 +31,12 @@
 /* Begin PBXFileReference section */
 		13733228498CCA006EAA6DCA /* Pods-GridRace.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.debug.xcconfig"; sourceTree = "<group>"; };
 		2727F62BE70A41A8EF9B4686 /* Pods-GridRace.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.release.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.release.xcconfig"; sourceTree = "<group>"; };
+		3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewController.swift; sourceTree = "<group>"; };
+		3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableHeaderView.swift; sourceTree = "<group>"; };
+		3712BDEE2045174100B4C9B3 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
+		3712BDF0204519D900B4C9B3 /* fake.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fake.json; sourceTree = "<group>"; };
 		37F2A7ED2043CD0A00BA283B /* AppResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
+		37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewCell.swift; sourceTree = "<group>"; };
 		AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueViewController.swift; sourceTree = "<group>"; };
 		AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
@@ -99,10 +109,15 @@
 				AA29A12320438BC500DF3A1C /* AppDelegate.swift */,
 				AA29A12520438BC500DF3A1C /* ViewController.swift */,
 				AA29A12720438BC500DF3A1C /* Main.storyboard */,
+				3712BDF0204519D900B4C9B3 /* fake.json */,
 				AA29A12A20438BC500DF3A1C /* Assets.xcassets */,
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
 				AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */,
+				37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */,
+				3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */,
+				3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */,
+				3712BDEE2045174100B4C9B3 /* Objective.swift */,
 				AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */,
 				AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */,
 				AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */,
@@ -174,6 +189,7 @@
 			files = (
 				AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */,
 				AA29A13620438C9E00DF3A1C /* GoogleService-Info.plist in Resources */,
+				3712BDF1204519D900B4C9B3 /* fake.json in Resources */,
 				AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */,
 				AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */,
 			);
@@ -240,6 +256,10 @@
 				AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */,
 				AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */,
 				37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */,
+				3712BDEB2044E9EB00B4C9B3 /* CustomTableHeaderView.swift in Sources */,
+				3712BDE92044D9A300B4C9B3 /* ObjectiveTableViewController.swift in Sources */,
+				37F2A7F22043DA7E00BA283B /* ObjectiveTableViewCell.swift in Sources */,
+				3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */,
 				AA29A1382043D0CF00DF3A1C /* DetailViewController.swift in Sources */,
 				AA1CD2C02044D29B0007A0C1 /* GradientView.swift in Sources */,
 				AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */,

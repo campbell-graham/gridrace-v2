@@ -21,10 +21,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
-        
-        mainTabController.viewControllers = [UIViewController(), UIViewController()]
+
+        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Anytime", tabBarImage: #imageLiteral(resourceName: "clock_outline")))]
         
         window?.rootViewController = mainTabController
+        
+        
+        //global styling
+        UINavigationBar.appearance().barTintColor = AppColors.backgroundColor
+        UINavigationBar.appearance().tintColor = AppColors.textPrimaryColor
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
+        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
+        UITabBar.appearance().tintColor = AppColors.greenHighlightColor
         
         window?.makeKeyAndVisible()
         
