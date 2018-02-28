@@ -18,10 +18,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        
         populateFakeData()
-        
-        print(objectives)
     }
     
     func populateFakeData() {
@@ -77,11 +74,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             ])
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
@@ -122,17 +114,4 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         
         return cell
     }
-    
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
 }
