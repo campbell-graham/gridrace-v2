@@ -13,7 +13,12 @@ import FirebaseDatabase
 class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
-    var objectives = [Objective]() {
+    var incompleteObjectives = [Objective]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    var completeObjectives = [Objective]() {
         didSet {
             tableView.reloadData()
         }
@@ -35,7 +40,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 if let dict = snapshot.value as? [String: Any] {
                     let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
                     let jsonDecoder = JSONDecoder()
-                    self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+                    self.incompleteObjectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
                 }
             } catch {
                 
@@ -84,7 +89,15 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objectives.count
+        switch section {
+        case 0:
+            return incompleteObjectives.count
+        case 1:
+            return completeObjectives.count
+        default:
+            return 0
+        }
+       
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -111,8 +124,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
-        cell.titleLabel.text = objectives[indexPath.row].name
-        cell.pointsLabel.text = String(objectives[indexPath.row].pointsCount)
+        cell.titleLabel.text = incompleteObjectives[indexPath.row].name
+        cell.pointsLabel.text = String(incompleteObjectives[indexPath.row].pointsCount)
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor

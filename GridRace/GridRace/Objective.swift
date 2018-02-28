@@ -16,6 +16,8 @@ class Objective: Codable {
     let hintText: String
     var pointsCount: Int = 0
     var hintViewed: Bool = false
+    let latitude: Double?
+    let longitude: Double?
 }
 
 struct ObjectList: Codable {
