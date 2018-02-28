@@ -12,6 +12,7 @@ class Objective: Codable {
     
     let name: String
     let desc: String
+    var imageURL: URL?
     let hintText: String
     var pointsCount: Int = 0
     var hintViewed: Bool = false
