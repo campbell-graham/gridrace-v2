@@ -101,6 +101,14 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        //return a blank view for the header if that section does not have any objectives
+        if section == 0 && incompleteObjectives.count == 0 {
+            return UIView()
+        } else if section == 1 && completeObjectives.count == 0 {
+            return UIView()
+        }
+        
+        
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "CustomHeaderView") as! CustomTableHeaderView
         switch section {
         case 0:
