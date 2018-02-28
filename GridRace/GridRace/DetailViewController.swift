@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 struct ObjectiveStruct {
     var name: String
@@ -23,7 +24,7 @@ class DetailViewController: UIViewController {
 
     var objective: ObjectiveStruct
 
-    private let mapImageView = UIImageView()
+    private let mapView = MKMapView()
     private let descLabel = UILabel()
     private let starImageView = UIImageView()
     private let pointLabel = UILabel()
@@ -96,8 +97,6 @@ class DetailViewController: UIViewController {
         descLabel.lineBreakMode = .byWordWrapping
         descLabel.numberOfLines = 0
 
-        mapImageView.contentMode = .scaleAspectFit
-
         starImageView.contentMode = .scaleAspectFit
         starImageView.tintColor = AppColors.starPointsColor
 
@@ -128,7 +127,6 @@ class DetailViewController: UIViewController {
 
     private func updateViewsData() {
 
-        mapImageView.image = #imageLiteral(resourceName: "map")
         descLabel.text = objective.desc
         starImageView.image = #imageLiteral(resourceName: "star")
         pointLabel.text = "\(objective.pointsCount)"
@@ -136,7 +134,7 @@ class DetailViewController: UIViewController {
 
     private func setUpLayout() {
 
-        for view in [ mapImageView, descLabel, starImageView, answerView] {
+        for view in [ mapView, descLabel, starImageView, answerView] {
             view.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(view)
         }
@@ -145,12 +143,12 @@ class DetailViewController: UIViewController {
         starImageView.addSubview(pointLabel)
 
         var constraints = ([
-            mapImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            mapImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mapImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
+            mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mapView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
 
-            starImageView.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 16),
+            starImageView.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: 16),
             starImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             starImageView.heightAnchor.constraint(equalToConstant: 64),
             starImageView.widthAnchor.constraint(equalToConstant: 64),
@@ -164,7 +162,7 @@ class DetailViewController: UIViewController {
 
             answerView.topAnchor.constraint(greaterThanOrEqualTo: starImageView.bottomAnchor, constant: 16),
             answerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            answerView.bottomAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
+            answerView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
         ])
 
         if answerView is UIImageView {
@@ -264,7 +262,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     private func playHudAnimation() {
 
         let hudView = HudView.hud(inView: navigationController!.view, animated: true)
-            hudView.text = "CheckPoint"
+            hudView.text = "Complete!"
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0,
         execute: {
