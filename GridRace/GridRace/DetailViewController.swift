@@ -28,7 +28,6 @@ class DetailViewController: UIViewController {
     private let starImageView = UIImageView()
     private let pointLabel = UILabel()
     private let answerView: UIView
-    private let getClueButton = UIButton()
 
     init(objective: ObjectiveStruct) {
 
@@ -79,6 +78,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
 
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Get Clue", style: .done, target: self, action: #selector(clueButtonHandler) )
         title = objective.name
 
         initialiseViews()
@@ -91,8 +91,6 @@ class DetailViewController: UIViewController {
         view.backgroundColor = AppColors.backgroundColor
         descLabel.textColor = AppColors.textPrimaryColor
         pointLabel.textColor = AppColors.textSecondaryColor
-        getClueButton.setTitleColor(AppColors.greenHighlightColor, for: .normal)
-        getClueButton.backgroundColor = AppColors.cellColor
 
         // misc stuff
         descLabel.lineBreakMode = .byWordWrapping
@@ -104,11 +102,6 @@ class DetailViewController: UIViewController {
         starImageView.tintColor = AppColors.starPointsColor
 
         pointLabel.font = UIFont.boldSystemFont(ofSize: 16)
-
-        getClueButton.contentEdgeInsets = .init(top: 20, left: 30, bottom: 20, right: 30)
-        getClueButton.layer.cornerRadius = 10
-        getClueButton.layer.masksToBounds = false
-        getClueButton.addTarget(self, action: #selector(clueButtonHandler), for: .touchUpInside)
 
         updateViewsData()
 
@@ -139,13 +132,11 @@ class DetailViewController: UIViewController {
         descLabel.text = objective.desc
         starImageView.image = #imageLiteral(resourceName: "star")
         pointLabel.text = "\(objective.pointsCount)"
-        getClueButton.setTitle("Get Clue", for: .normal)
     }
 
     private func setUpLayout() {
 
-        for view in [ mapImageView, descLabel, starImageView, answerView,
-        getClueButton] {
+        for view in [ mapImageView, descLabel, starImageView, answerView] {
             view.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(view)
         }
@@ -157,7 +148,7 @@ class DetailViewController: UIViewController {
             mapImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             mapImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapImageView.heightAnchor.constraint(equalToConstant: 200),
+            mapImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.2),
 
             starImageView.topAnchor.constraint(equalTo: mapImageView.bottomAnchor, constant: 16),
             starImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -167,21 +158,19 @@ class DetailViewController: UIViewController {
             pointLabel.centerXAnchor.constraint(equalTo: starImageView.centerXAnchor),
             pointLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
 
-            descLabel.topAnchor.constraint(equalTo: starImageView.topAnchor),
+            descLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
             descLabel.leadingAnchor.constraint(equalTo: starImageView.trailingAnchor, constant: 16),
             descLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 
-            answerView.topAnchor.constraint(equalTo: starImageView.bottomAnchor, constant: 16),
+            answerView.topAnchor.constraint(greaterThanOrEqualTo: starImageView.bottomAnchor, constant: 16),
             answerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-
-            getClueButton.topAnchor.constraint(equalTo: answerView.bottomAnchor, constant: 20),
-            getClueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            answerView.bottomAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
         ])
 
         if answerView is UIImageView {
-            constraints += [ answerView.heightAnchor.constraint(equalToConstant: 180),
-                answerView.widthAnchor.constraint(equalToConstant: 180)]
+            constraints += [
+                answerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
+            answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor)]
         }
 
         NSLayoutConstraint.activate(constraints)
