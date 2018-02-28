@@ -29,6 +29,8 @@ class DetailViewController: UIViewController {
     private let starImageView = UIImageView()
     private let pointLabel = UILabel()
     private let answerView: UIView
+    private let interactImageView = UIImageView()
+    private let hintImageView = UIImageView()
 
     init(objective: ObjectiveStruct) {
 
@@ -93,6 +95,8 @@ class DetailViewController: UIViewController {
         view.backgroundColor = AppColors.backgroundColor
         descLabel.textColor = AppColors.textPrimaryColor
         pointLabel.textColor = AppColors.greenHighlightColor
+        interactImageView.tintColor = AppColors.greenHighlightColor
+        hintImageView.tintColor = AppColors.greenHighlightColor
 
         updateViewsData()
 
@@ -105,26 +109,25 @@ class DetailViewController: UIViewController {
 
         pointLabel.font = UIFont.boldSystemFont(ofSize: 16)
 
+        let interactGestureRecogniser: UITapGestureRecognizer
+
         switch answerView {
-        case is UIImageView:
-            if let answerView = answerView as? UIImageView {
-                let tapGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
-                answerView.addGestureRecognizer(tapGestureRecogniser)
-                answerView.isUserInteractionEnabled = true
-                answerView.tintColor = AppColors.greenHighlightColor
-//                answerView.contentMode = .scaleAspectFit
-                answerView.image = #imageLiteral(resourceName: "camera")
-            }
-        case is UITextField:
-            if let answerView = answerView as? textFieldView {
-                
-            }
-        case is UIView:
-            if let answerView = answerView as? UIView {
-            }
+        case is UIImageView :
+            interactGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
+        case is textFieldView :
+            interactGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(enterAnswer))
         default:
-            break
+            interactGestureRecogniser = UITapGestureRecognizer(target: self, action: nil)
         }
+
+        interactImageView.addGestureRecognizer(interactGestureRecogniser)
+        interactImageView.isUserInteractionEnabled = true
+        interactImageView.contentMode = .scaleAspectFit
+
+        let hintGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(clueButtonHandler))
+        hintImageView.addGestureRecognizer(hintGestureRecogniser)
+        hintImageView.isUserInteractionEnabled = true
+        hintImageView.contentMode = .scaleAspectFit
     }
 
     private func updateViewsData() {
@@ -163,6 +166,10 @@ class DetailViewController: UIViewController {
             pointLabel.centerXAnchor.constraint(equalTo: starImageView.centerXAnchor),
             pointLabel.centerYAnchor.constraint(equalTo: starImageView.centerYAnchor),
 
+
+            // TODO: add interactImageView Constraints
+            // TODO: add hintImageView Constraints
+            // remove get clue from nav bar
 
         ])
 
@@ -223,6 +230,10 @@ class DetailViewController: UIViewController {
         clueViewController.modalTransitionStyle = .crossDissolve
         clueViewController.modalPresentationStyle = .overCurrentContext
         present(clueViewController, animated: true, completion: nil)
+    }
+
+    @objc func enterAnswer() {
+
     }
 
     //set textView to be scrolled to top
