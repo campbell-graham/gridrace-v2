@@ -29,6 +29,7 @@ class ObjectiveTableViewCell: UITableViewCell {
         
         //label styling
         pointsLabel.textColor = AppColors.textPrimaryColor
+        pointsLabel.textAlignment = .center
         
         //add items to cell
         addSubview(titleLabel)

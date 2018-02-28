@@ -6,5 +6,6 @@ target 'GridRace' do
   use_frameworks!
 
   # Pods for GridRace
-
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
 end

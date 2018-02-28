@@ -7,35 +7,40 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
-    var objectives = [Objective]()
+    var objectives = [Objective]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     //will eventually take in data
     init(title: String, tabBarImage: UIImage) {
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        populateFakeData()
+        populateData()
     }
     
-    func populateFakeData() {
-        if let path = Bundle.main.path(forResource: "fake", ofType: "json") {
-            do {
-                
-                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-                let jsonDecoder = JSONDecoder()
-                objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+    func populateData() {
+        let ref = Database.database().reference()
 
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            do {
+                if let dict = snapshot.value as? [String: Any] {
+                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    let jsonDecoder = JSONDecoder()
+                    self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+                }
             } catch {
-                // handle error
+                
             }
-        }
-        
-        tableView.reloadData()
-        
+        })
     }
     
     required init?(coder aDecoder: NSCoder) {
