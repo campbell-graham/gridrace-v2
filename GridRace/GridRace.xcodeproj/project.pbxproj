@@ -12,18 +12,18 @@
 		3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEE2045174100B4C9B3 /* Objective.swift */; };
 		3712BDF1204519D900B4C9B3 /* fake.json in Resources */ = {isa = PBXBuildFile; fileRef = 3712BDF0204519D900B4C9B3 /* fake.json */; };
 		376A5F852043A08D00D69090 /* (null) in Sources */ = {isa = PBXBuildFile; };
+		377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 377D9B87204646B8001E7466 /* GoogleService-Info.plist */; };
 		37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7ED2043CD0A00BA283B /* AppResources.swift */; };
+		37F2A7F22043DA7E00BA283B /* ObjectiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */; };
 		AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */; };
 		AA1CD2C02044D29B0007A0C1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */; };
 		AA1CD2C2204513820007A0C1 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */; };
 		AA1CD2C4204519E10007A0C1 /* HudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C3204519E10007A0C1 /* HudView.swift */; };
-		37F2A7F22043DA7E00BA283B /* ObjectiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */; };
 		AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12320438BC500DF3A1C /* AppDelegate.swift */; };
 		AA29A12620438BC500DF3A1C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12520438BC500DF3A1C /* ViewController.swift */; };
 		AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12720438BC500DF3A1C /* Main.storyboard */; };
 		AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12A20438BC500DF3A1C /* Assets.xcassets */; };
 		AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */; };
-		AA29A13620438C9E00DF3A1C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */; };
 		AA29A1382043D0CF00DF3A1C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */; };
 		D6F94F1D7B3362B4876B49D2 /* Pods_GridRace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F14FC92863F3F26C6A68D7BE /* Pods_GridRace.framework */; };
 /* End PBXBuildFile section */
@@ -35,6 +35,7 @@
 		3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableHeaderView.swift; sourceTree = "<group>"; };
 		3712BDEE2045174100B4C9B3 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
 		3712BDF0204519D900B4C9B3 /* fake.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fake.json; sourceTree = "<group>"; };
+		377D9B87204646B8001E7466 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		37F2A7ED2043CD0A00BA283B /* AppResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewCell.swift; sourceTree = "<group>"; };
 		AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueViewController.swift; sourceTree = "<group>"; };
@@ -48,7 +49,6 @@
 		AA29A12A20438BC500DF3A1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA29A12D20438BC500DF3A1C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AA29A12F20438BC500DF3A1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		F14FC92863F3F26C6A68D7BE /* Pods_GridRace.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GridRace.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -113,7 +113,7 @@
 				AA29A12A20438BC500DF3A1C /* Assets.xcassets */,
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
-				AA29A13520438C9E00DF3A1C /* GoogleService-Info.plist */,
+				377D9B87204646B8001E7466 /* GoogleService-Info.plist */,
 				37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */,
 				3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */,
 				3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */,
@@ -188,8 +188,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */,
-				AA29A13620438C9E00DF3A1C /* GoogleService-Info.plist in Resources */,
 				3712BDF1204519D900B4C9B3 /* fake.json in Resources */,
+				377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */,
 				AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */,
 				AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */,
 			);
@@ -222,9 +222,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-GridRace/Pods-GridRace-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -407,7 +414,7 @@
 				DEVELOPMENT_TEAM = FNW7L4X44S;
 				INFOPLIST_FILE = GridRace/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Gridstone.Christian.Vassallo.GridRace;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gridstone.gridrace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -423,7 +430,7 @@
 				DEVELOPMENT_TEAM = FNW7L4X44S;
 				INFOPLIST_FILE = GridRace/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Gridstone.Christian.Vassallo.GridRace;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gridstone.gridrace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

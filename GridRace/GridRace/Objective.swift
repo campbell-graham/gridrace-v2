@@ -10,11 +10,15 @@ import UIKit
 
 class Objective: Codable {
     
+    let id: Int
     let name: String
     let desc: String
+    var imageURL: URL?
     let hintText: String
-    var pointsCount: Int = 0
-    var hintViewed: Bool = false
+    var points: Int = 0
+    let latitude: Double?
+    let longitude: Double?
+
 }
 
 struct ObjectList: Codable {
