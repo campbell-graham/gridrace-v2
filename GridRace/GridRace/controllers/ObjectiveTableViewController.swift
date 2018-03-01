@@ -47,6 +47,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func sortObjectives() {
+        completeObjectives.removeAll()
+        incompleteObjectives.removeAll()
         for (objective) in objectives {
             if ObjectiveManager.shared.completeObjectives.contains(objective.id) {
                 completeObjectives.append(objective)
@@ -116,6 +118,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         } catch {
             print ("Something went wrong when saving")
         }
+        
+        //sort at the end of saving
+        sortObjectives()
     }
     
     func initiateSave() {
@@ -135,6 +140,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 pointValues.forEach { ObjectiveManager.shared.objectivePointMap[$0.key] = $0.value }
                 let completeValues = try decoder.decode(Set<String>.self, from: completeData)
                 completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0)
+                    
+                sortObjectives()
                 }
             } catch {
                 print("Error decoding the local array, will re-download")
