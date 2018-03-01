@@ -27,7 +27,8 @@ class Objective: Codable {
 }
 
 struct ObjectList: Codable {
-    var objects: [Objective]
+    var places: [Objective]
+    var bonus: [Objective]
 }
 
 enum ObjectiveType: String, Codable {

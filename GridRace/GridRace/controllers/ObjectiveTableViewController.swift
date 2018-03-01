@@ -13,6 +13,7 @@ import FirebaseDatabase
 class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
+    var dataCategory: ObjectiveCategory
     
     var objectives = [Objective]() {
         didSet {
@@ -34,7 +35,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     //will eventually take in data
-    init(title: String, tabBarImage: UIImage) {
+    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory) {
+        self.dataCategory = dataCategory
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
@@ -66,7 +68,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                     if let dict = snapshot.value as? [String: Any] {
                         let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
                         let jsonDecoder = JSONDecoder()
-                        self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+                        
+                        self.objectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+
                         self.saveObjectives()
                     }
                 } catch {
@@ -98,15 +102,15 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func objectivesFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Objectives.plist")
+        return documentsDirectory().appendingPathComponent("Objectives_\(dataCategory.rawValue).plist")
     }
     
     func pointsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Points.plist")
+        return documentsDirectory().appendingPathComponent("Points_\(dataCategory.rawValue).plist")
     }
     
     func completeIDsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Completed.plist")
+        return documentsDirectory().appendingPathComponent("Completed_\(dataCategory.rawValue).plist")
     }
     
     func saveObjectives() {
