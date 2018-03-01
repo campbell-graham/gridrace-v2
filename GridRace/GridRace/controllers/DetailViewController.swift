@@ -192,7 +192,9 @@ class DetailViewController: UIViewController {
             ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.pointDeductionValue
             //self.objective.hintTaken = true
             self.updateViewsData()
-            self.presentClueViewController() })
+            self.presentClueViewController()
+            self.delegate?.initiateSave()
+        })
         alert.addAction(continueAction)
 
         present(alert, animated: true, completion: nil)

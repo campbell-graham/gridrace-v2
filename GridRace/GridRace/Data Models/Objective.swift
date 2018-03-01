@@ -10,18 +10,19 @@ import UIKit
 
 class Objective: Codable {
     
-    let id: Int
+    let id: String
     let name: String
     let desc: String
     var imageURL: URL?
     let hintText: String
-    var points: Int = 0
+    var points: Int
     let latitude: Double?
     let longitude: Double?
     let objectiveType: ObjectiveType
     
     var hintTaken: Bool {
-        return points != ObjectiveManager.shared.objectivePointMap[id]
+        let value = ObjectiveManager.shared.objectivePointMap[id]
+        return value != nil && value != points
     }
 
 }

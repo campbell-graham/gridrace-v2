@@ -20,7 +20,7 @@ struct AppColors {
 
 class ObjectiveManager {
     
-    typealias ObjectiveID = Int
+    typealias ObjectiveID = String
     typealias Value = Int
     
     var objectivePointMap = [ObjectiveID: Value]()
