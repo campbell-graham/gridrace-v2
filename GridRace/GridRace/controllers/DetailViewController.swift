@@ -22,6 +22,7 @@ class DetailViewController: UIViewController {
     private let hintImageView = UIImageView()
     private let pointDeductionValue = 2
     private var isCollapsed = false
+    private var collapseGestureRecogniser: UIPanGestureRecognizer?
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
     init(objective: Objective) {
@@ -76,8 +77,8 @@ class DetailViewController: UIViewController {
         descLabel.font = UIFont.systemFont(ofSize: 16)
         descLabel.isEditable = false
 
-        let collapseGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(collapseAnimationHandler))
-        pointBorderImageView.addGestureRecognizer(collapseGestureRecogniser)
+        collapseGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(collapseAnimationHandler))
+        pointBorderImageView.addGestureRecognizer(collapseGestureRecogniser!)
         pointBorderImageView.isUserInteractionEnabled = true
         pointBorderImageView.contentMode = .scaleAspectFit
 
@@ -134,7 +135,7 @@ class DetailViewController: UIViewController {
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 
-            collapsableDetailsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: (view.bounds.height) / 4 ),
+            collapsableDetailsView.heightAnchor.constraint(equalToConstant: view.frame.height * 0.6),
             collapsableDetailsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collapsableDetailsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collapsableDetailsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -159,8 +160,8 @@ class DetailViewController: UIViewController {
                 answerView.topAnchor.constraint(greaterThanOrEqualTo: descLabel.bottomAnchor, constant: 16),
                 answerView.centerXAnchor.constraint(equalTo: collapsableDetailsView.centerXAnchor),
                 answerView.bottomAnchor.constraint(lessThanOrEqualTo: interactImageView.bottomAnchor, constant: -16),
-                answerView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.3),
-            answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor)]
+                answerView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.5),
+                answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor)]
         case is ContainerView:
             constraints += [
                 answerView.topAnchor.constraint(equalTo: descLabel.bottomAnchor),
@@ -174,140 +175,139 @@ class DetailViewController: UIViewController {
         constraints += [
             interactImageView.topAnchor.constraint(greaterThanOrEqualTo: answerView.bottomAnchor, constant: 16),
             interactImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -(view.center.x / 2) ),
-            interactImageView.bottomAnchor.constraint(lessThanOrEqualTo: collapsableDetailsView.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            interactImageView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.20),
+            interactImageView.bottomAnchor.constraint(lessThanOrEqualTo: collapsableDetailsView.bottomAnchor, constant: -16),
+            interactImageView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.2),
             interactImageView.heightAnchor.constraint(equalTo: interactImageView.widthAnchor),
 
             hintImageView.topAnchor.constraint(equalTo: interactImageView.topAnchor),
             hintImageView.centerXAnchor.constraint(equalTo: collapsableDetailsView.centerXAnchor, constant: (view.center.x / 2) ),
             hintImageView.bottomAnchor.constraint(equalTo: interactImageView.bottomAnchor),
-            hintImageView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.20),
+            hintImageView.widthAnchor.constraint(equalTo: collapsableDetailsView.widthAnchor, multiplier: 0.2),
             hintImageView.heightAnchor.constraint(equalTo: hintImageView.widthAnchor)
         ]
 
         NSLayoutConstraint.activate(constraints)
     }
 
-    @objc private func collapseAnimationHandler() {
+    @objc private func collapseAnimationHandler(recognizer: UIPanGestureRecognizer) {
+        var translation = recognizer.translation(in: collapsableDetailsView.superview)
 
+        if recognizer.state == .began {
 
-
-        let translation = [recognizer translationInView:self.view.superview];
-
-        if (recognizer.state == UIGestureRecognizerStateBegan)
-        {
             onPanBegin()
         }
-        if (recognizer.state == UIGestureRecognizerStateEnded)
-        {
-            let velocity = [recognizer velocityInView:self.view];
-            panningEndedWithTranslation:(translation: translation, velocity: velocity)
+        if recognizer.state == .ended {
+            let velocity = recognizer.velocity(in: collapsableDetailsView)
+            panningEndedWithTranslation(translation: translation, velocity: velocity)
         }
-        else
-        {
-            CGPoint translation = [recognizer translationInView:self.view.superview];
-            panningChangedWithTranslation(translation: velocity)
+        else {
+            translation = recognizer.translation(in: collapsableDetailsView.superview)
+            panningChangedWithTranslation(translation: translation)
         }
+
+
     }
 
     private func onPanBegin() {
 
-        if self.collapsableDetailsAnimator.isRunning {
+        if let animator = collapsableDetailsAnimator, animator.isRunning {
             return
         }
 
         var targetFrame: CGRect
 
         if !isCollapsed {
-
-            isCollapsed = true
-
             let newY = self.view.bounds.height - self.tabBarController!.tabBar.bounds.height - self.pointBorderImageView.bounds.height - 32
             let oldFrame = self.collapsableDetailsView.frame
             targetFrame = CGRect(x: oldFrame.minX, y: newY, width: oldFrame.size.width, height: oldFrame.size.height)
-
         } else {
-
-            let bounds = self.collapsableDetailsView.bounds
+            let oldFrame = self.collapsableDetailsView.frame
             let newY = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.bounds.height + ((self.view.bounds.height) / 4) + 1
-            targetFrame = CGRect(x: bounds.minX, y: newY, width: bounds.width, height: bounds.height)
-
-            isCollapsed = false
+            targetFrame = CGRect(x: oldFrame.minX, y: newY, width: oldFrame.width, height: oldFrame.height)
         }
 
         collapsableDetailsAnimator = UIViewPropertyAnimator(duration: 0.6, curve: .easeIn,
-                                                            animations: {
-                                                                self.collapsableDetailsView.frame = targetFrame
+        animations: {
+            self.collapsableDetailsView.frame = targetFrame
         })
 
     }
 
-    private func panningChangedWithTranslation(translation: CGPoint)
-    {
-        if (self.playerViewAnimator.isRunning)
-        {
-        return;
+    private func panningChangedWithTranslation(translation: CGPoint) {
+
+        if let animator = self.collapsableDetailsAnimator, animator.isRunning {
+
+            return
         }
 
-        CGFloat translatedY = self.view.center.y + translation.y;
+        let translatedY = collapsableDetailsView.frame.origin.y + translation.y
 
-        CGFloat progress;
-        switch (self.playerState) {
-        case PlayerStateThumbnail:
-        progress = 1 - (translatedY / self.view.center.y);
-        break;
-        case PlayerStateFullscreen:
-        progress = (translatedY / self.view.center.y) - 1;
+        var progress: CGFloat
+        if self.isCollapsed {
+            progress = 1 - (translatedY / collapsableDetailsView.frame.origin.y);
+        } else {
+            progress = (translatedY / collapsableDetailsView.frame.origin.y) - 1;
         }
 
-        progress = MAX(0.001, MIN(0.999, progress));
+        progress = max(0.001, min(0.999, progress))
 
-        self.playerViewAnimator.fractionComplete = progress;
+        collapsableDetailsAnimator?.fractionComplete = progress
     }
 
-    private func panningEndedWithTranslation:(translation: CGPoint, velocity: CGPoint)
-    {
-        self.panGestureRecognizer.enabled = NO;
 
-        CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
-        __weak ViewController *weakSelf = self;
 
-        switch (self.playerState) {
-        case PlayerStateThumbnail:
+    private func panningEndedWithTranslation(translation: CGPoint, velocity: CGPoint) {
+
+        collapseGestureRecogniser!.isEnabled = false
+
+        let screenHeight = UIScreen.main.bounds.height
+        weak var weakSelf = self
+
+        if isCollapsed {
             if (translation.y <= -screenHeight / 3 || velocity.y <= -100)
             {
-                self.playerViewAnimator.reversed = NO;
-                [self.playerViewAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-                weakSelf.playerState = PlayerStateFullscreen;
-                weakSelf.panGestureRecognizer.enabled = YES;
-                }];
-                }
-                else
-                {
-                self.playerViewAnimator.reversed = YES;
-                [self.playerViewAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-                weakSelf.playerState = PlayerStateThumbnail;
-                weakSelf.panGestureRecognizer.enabled = YES;
-                }];
+                self.collapsableDetailsAnimator!.isReversed = false
+
+                self.collapsableDetailsAnimator!.addCompletion({ final in
+
+                weakSelf?.isCollapsed = false
+                weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                })
+            } else {
+                self.collapsableDetailsAnimator!.isReversed = true
+
+                self.collapsableDetailsAnimator!.addCompletion({ final in
+                    weakSelf?.isCollapsed = true
+                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                })
             }
-            break;
-        case PlayerStateFullscreen:
+        } else {
+
             if (translation.y >= screenHeight / 3 || velocity.y >= 100)
             {
-                self.playerViewAnimator.reversed = NO;
-                [self.playerViewAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-                weakSelf.playerState = PlayerStateThumbnail;
-                weakSelf.panGestureRecognizer.enabled = YES;
-                }];
+                self.collapsableDetailsAnimator!.isReversed = false
+
+                self.collapsableDetailsAnimator!.addCompletion({ final in
+                    weakSelf?.isCollapsed = true
+                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                })
             }
             else
             {
-                self.playerViewAnimator.reversed = YES;
-                [self.playerViewAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-                weakSelf.playerState = PlayerStateFullscreen;
-                weakSelf.panGestureRecognizer.enabled = YES;
-                }];
+                self.collapsableDetailsAnimator!.isReversed = true
+
+                self.collapsableDetailsAnimator!.addCompletion({ final in
+
+                    weakSelf?.isCollapsed = false
+                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                })
             }
+        }
+
+        let velocityVector = CGVector(dx: velocity.x / 100, dy: velocity.y / 100)
+        let springParameters = UISpringTimingParameters.init(dampingRatio: 0.8, initialVelocity: velocityVector)
+
+        collapsableDetailsAnimator?.continueAnimation(withTimingParameters: springParameters, durationFactor: 1.0)
     }
 
     @objc private func clueButtonHandler() {
