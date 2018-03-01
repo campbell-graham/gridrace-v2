@@ -27,7 +27,11 @@ class ObjectiveManager {
   
     var completeObjectives = Set<ObjectiveID>()
 
-    static let sharedObjectiveManager = ObjectiveManager()
+    static let shared = ObjectiveManager()
+
+    func pointValue(for objective: Objective) -> Value {
+        return objectivePointMap[objective.id] ?? objective.points
+    }
     
     private init() {
         

@@ -10,7 +10,6 @@
 		3712BDE92044D9A300B4C9B3 /* ObjectiveTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */; };
 		3712BDEB2044E9EB00B4C9B3 /* CustomTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */; };
 		3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEE2045174100B4C9B3 /* Objective.swift */; };
-		3712BDF1204519D900B4C9B3 /* fake.json in Resources */ = {isa = PBXBuildFile; fileRef = 3712BDF0204519D900B4C9B3 /* fake.json */; };
 		376A5F852043A08D00D69090 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 377D9B87204646B8001E7466 /* GoogleService-Info.plist */; };
 		37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7ED2043CD0A00BA283B /* AppResources.swift */; };
@@ -35,7 +34,6 @@
 		3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewController.swift; sourceTree = "<group>"; };
 		3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableHeaderView.swift; sourceTree = "<group>"; };
 		3712BDEE2045174100B4C9B3 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
-		3712BDF0204519D900B4C9B3 /* fake.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fake.json; sourceTree = "<group>"; };
 		377D9B87204646B8001E7466 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		37F2A7ED2043CD0A00BA283B /* AppResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewCell.swift; sourceTree = "<group>"; };
@@ -105,27 +103,50 @@
 		AA29A12220438BC500DF3A1C /* GridRace */ = {
 			isa = PBXGroup;
 			children = (
-				AA29C93C2047644300BE0BAE /* ContainerView.swift */,
-				AA29C93A204763FE00BE0BAE /* TextFieldViewController.swift */,
-				AA1CD2C3204519E10007A0C1 /* HudView.swift */,
-				AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */,
 				37F2A7ED2043CD0A00BA283B /* AppResources.swift */,
 				AA29A12320438BC500DF3A1C /* AppDelegate.swift */,
+				AA29C9402047B17C00BE0BAE /* Data Models */,
+				AA29C93F2047B10C00BE0BAE /* views */,
+				AA29C93E2047B0EB00BE0BAE /* controllers */,
 				AA29A12720438BC500DF3A1C /* Main.storyboard */,
-				3712BDF0204519D900B4C9B3 /* fake.json */,
 				AA29A12A20438BC500DF3A1C /* Assets.xcassets */,
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
 				377D9B87204646B8001E7466 /* GoogleService-Info.plist */,
-				37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */,
-				3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */,
-				3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */,
-				3712BDEE2045174100B4C9B3 /* Objective.swift */,
-				AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */,
-				AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */,
-				AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */,
 			);
 			path = GridRace;
+			sourceTree = "<group>";
+		};
+		AA29C93E2047B0EB00BE0BAE /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				AA29A1372043D0CF00DF3A1C /* DetailViewController.swift */,
+				AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */,
+				3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */,
+				AA29C93A204763FE00BE0BAE /* TextFieldViewController.swift */,
+			);
+			path = controllers;
+			sourceTree = "<group>";
+		};
+		AA29C93F2047B10C00BE0BAE /* views */ = {
+			isa = PBXGroup;
+			children = (
+				3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */,
+				37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */,
+				AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */,
+				AA29C93C2047644300BE0BAE /* ContainerView.swift */,
+				AA1CD2C3204519E10007A0C1 /* HudView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		AA29C9402047B17C00BE0BAE /* Data Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */,
+				3712BDEE2045174100B4C9B3 /* Objective.swift */,
+			);
+			path = "Data Models";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,7 +212,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */,
-				3712BDF1204519D900B4C9B3 /* fake.json in Resources */,
 				377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */,
 				AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */,
 				AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */,

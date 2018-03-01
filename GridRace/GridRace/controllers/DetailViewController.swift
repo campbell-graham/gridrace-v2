@@ -9,21 +9,9 @@
 import UIKit
 import MapKit
 
-struct ObjectiveStruct {
-    var name: String
-    var desc: String
-    var objectiveType: Int // 0: take picture, 1: enter word, 2: enter pin
-    var hintImage: UIImage
-    var hintText: String
-    var pointsCount: Int
-    var hintViewed: Bool
-    var pointDeductionValue: Int
-}
-
 class DetailViewController: UIViewController {
 
-    var objective: ObjectiveStruct
-
+    var objective: Objective
     private let mapView = MKMapView()
     private let descLabel = UITextView()
     private let pointBorderImageView = UIImageView()
@@ -31,37 +19,18 @@ class DetailViewController: UIViewController {
     private let answerView: UIView
     private let interactImageView = UIImageView()
     private let hintImageView = UIImageView()
+    private let pointDeductionValue = 2
 
-    init(objective: ObjectiveStruct) {
+    init(objective: Objective) {
 
         self.objective = objective
 
         switch  objective.objectiveType {
-        case 0: // imageview
+        case .photo: // imageview
             answerView = UIImageView()
-        case 1: // textField
+        case .text: // textField
             answerView = ContainerView()
-        case 2: // pin view
-            answerView = UIView()
-        default:
-            answerView = UIView()
-
-        }
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    init() {
-
-        self.objective = ObjectiveStruct(name: "Office", desc: "Take photo at office and and then there was a little boy that Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy oto at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy Take photo at office and and then there was a little boy", objectiveType: 1,
-            hintImage: #imageLiteral(resourceName: "eye"), hintText: "its in plain sight, or is it?", pointsCount: 10, hintViewed: false, pointDeductionValue: 2)
-
-        switch  objective.objectiveType {
-        case 0: // imageview
-            answerView = UIImageView()
-        case 1: // textField
-            answerView = ContainerView()
-        case 2: // pin view
+        case .password: // pin view
             answerView = UIView()
         default:
             answerView = UIView()
@@ -133,7 +102,7 @@ class DetailViewController: UIViewController {
 
         descLabel.text = objective.desc
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
-        pointLabel.text = "\(objective.pointsCount)"
+        pointLabel.text = "\(ObjectiveManager.shared.pointValue(for: self.objective))"
         interactImageView.image = answerView is UIImageView ? #imageLiteral(resourceName: "camera") : #imageLiteral(resourceName: "textCursor")
         hintImageView.image = #imageLiteral(resourceName: "hint")
     }
@@ -205,7 +174,7 @@ class DetailViewController: UIViewController {
 
     @objc private func clueButtonHandler() {
 
-        if !objective.hintViewed {
+        if !objective.hintTaken {
             presentPointLossAlert()
         } else {
             presentClueViewController()
@@ -215,13 +184,13 @@ class DetailViewController: UIViewController {
 
     @objc private func presentPointLossAlert() {
 
-        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(objective.pointDeductionValue)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(pointDeductionValue)", preferredStyle: .alert)
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
-            self.objective.pointsCount -= self.objective.pointDeductionValue
-            self.objective.hintViewed = true
+            ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.pointDeductionValue
+            //self.objective.hintTaken = true
             self.updateViewsData()
             self.presentClueViewController() })
         alert.addAction(continueAction)

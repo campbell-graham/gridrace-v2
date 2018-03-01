@@ -21,7 +21,7 @@ class Objective: Codable {
     let objectiveType: ObjectiveType
     
     var hintTaken: Bool {
-        return points != ObjectiveManager.sharedObjectiveManager.objectivePointMap[id]
+        return points != ObjectiveManager.shared.objectivePointMap[id]
     }
 
 }

@@ -40,10 +40,14 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
         downloadObjectives()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        tableView.reloadData()
+    }
     
     func sortObjectives() {
         for (objective) in objectives {
-            if ObjectiveManager.sharedObjectiveManager.completeObjectives.contains(objective.id) {
+            if ObjectiveManager.shared.completeObjectives.contains(objective.id) {
                 completeObjectives.append(objective)
             } else {
                 incompleteObjectives.append(objective)
@@ -78,9 +82,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func updatePoints() {
         for (objective) in incompleteObjectives {
-            ObjectiveManager.sharedObjectiveManager.objectivePointMap[objective.id] = objective.points
+            ObjectiveManager.shared.objectivePointMap[objective.id] = objective.points
         }
-        print(ObjectiveManager.sharedObjectiveManager.objectivePointMap)
+        print(ObjectiveManager.shared.objectivePointMap)
         tableView.reloadData()
     }
     
@@ -109,8 +113,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         let encoder = PropertyListEncoder()
         do {
             let objectivesData = try encoder.encode(objectives)
-            let pointsData = try encoder.encode(ObjectiveManager.sharedObjectiveManager.objectivePointMap)
-            let completeData = try encoder.encode(ObjectiveManager.sharedObjectiveManager.completeObjectives)
+            let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
+            let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
             try objectivesData.write(to: objectivesFilePath(), options: .atomic)
             try pointsData.write(to: pointsFilePath(), options: .atomic)
             try completeData.write(to: completeIDsFilePath(), options: .atomic)
@@ -126,8 +130,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             let decoder = PropertyListDecoder()
             do {
                 objectives = try decoder.decode([Objective].self, from: objectivesData)
-                ObjectiveManager.sharedObjectiveManager.objectivePointMap = try decoder.decode([Int: Int].self, from: pointsData)
-                ObjectiveManager.sharedObjectiveManager.completeObjectives = try decoder.decode(Set<Int>.self, from: completeData)
+                ObjectiveManager.shared.objectivePointMap = try decoder.decode([Int: Int].self, from: pointsData)
+                ObjectiveManager.shared.completeObjectives = try decoder.decode(Set<Int>.self, from: completeData)
             } catch {
                 print("Error decoding the local array, will re-download")
                 //delete local file and re-download if there is an issue
@@ -228,13 +232,20 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        navigationController?.pushViewController(DetailViewController(), animated: true)
+        switch indexPath.section {
+        case 0 :
+            navigationController?.pushViewController(DetailViewController(objective: incompleteObjectives[indexPath.row]), animated: true)
+        case 1 :
+            navigationController?.pushViewController(DetailViewController(objective: completeObjectives[indexPath.row] ), animated: true)
+        default:
+            print("invalid section")
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
         cell.titleLabel.text = indexPath.section == 0 ? incompleteObjectives[indexPath.row].name : completeObjectives[indexPath.row].name
-        cell.pointsLabel.text = "\(ObjectiveManager.sharedObjectiveManager.objectivePointMap[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
+        cell.pointsLabel.text = "\(ObjectiveManager.shared.objectivePointMap[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor
