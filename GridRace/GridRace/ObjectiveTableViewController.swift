@@ -38,7 +38,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        downloadData()
+        downloadObjectives()
+        
+        
+        //test prints
+        print("Documents folder is \(documentsDirectory())")
+        print("Data file path is \(dataFilePath())")
     }
     
     func sortObjectives() {
@@ -51,20 +56,29 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
-    func downloadData() {
-        let ref = Database.database().reference()
-
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            do {
-                if let dict = snapshot.value as? [String: Any] {
-                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
-                    let jsonDecoder = JSONDecoder()
-                    self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+    func downloadObjectives() {
+        
+        //download if doesn't exist already
+        if !FileManager.default.fileExists(atPath: dataFilePath().path){
+            let ref = Database.database().reference()
+            
+            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                do {
+                    if let dict = snapshot.value as? [String: Any] {
+                        let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                        let jsonDecoder = JSONDecoder()
+                        self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+                        self.saveObjectives()
+                    }
+                } catch {
+                    
                 }
-            } catch {
-                
-            }
-        })
+            })
+        } else {
+            loadObjectives()
+        }
+        
+       
     }
     
     func updatePoints() {
@@ -77,6 +91,49 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    func dataFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("Objectives.plist")
+    }
+    
+    func saveObjectives() {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(objectives)
+            
+            try data.write(to: dataFilePath(), options: .atomic)
+        } catch {
+            print ("Something went wrong when saving")
+        }
+    }
+    
+    func loadObjectives() {
+        let path = dataFilePath()
+        
+        if let data = try? Data(contentsOf: path) {
+            let decoder = PropertyListDecoder()
+            do {
+                objectives = try decoder.decode([Objective].self, from: data)
+                print("Loaded locally")
+            } catch {
+                print ("Error decoding the local array, will re-download")
+                //delete local file and re-download if there is an issue
+                do {
+                    try FileManager.default.removeItem(at: dataFilePath())
+                    downloadObjectives()
+                } catch {
+                    print("Well, it's fucked up now isn't it")
+                }
+                
+            }
+        }
     }
     
     override func viewDidLoad() {
