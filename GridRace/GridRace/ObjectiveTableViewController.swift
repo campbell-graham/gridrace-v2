@@ -66,7 +66,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         self.saveObjectives()
                     }
                 } catch {
-                    
+                    print(error)
                 }
             })
         } else {

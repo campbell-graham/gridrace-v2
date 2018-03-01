@@ -18,9 +18,20 @@ class Objective: Codable {
     var points: Int = 0
     let latitude: Double?
     let longitude: Double?
+    let objectiveType: ObjectiveType
+    
+    var hintTaken: Bool {
+        return points != ObjectiveManager.sharedObjectiveManager.objectivePointMap[id]
+    }
 
 }
 
 struct ObjectList: Codable {
     var objects: [Objective]
+}
+
+enum ObjectiveType: String, Codable {
+    case photo
+    case text
+    case password
 }
