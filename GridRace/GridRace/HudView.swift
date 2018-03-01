@@ -36,13 +36,13 @@ class HudView: UIView {
         let imageView = UIImageView(frame: CGRect(x: imagePoint.x, y: imagePoint.y, width: image.size.width, height: image.size.height))
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = AppColors.greenHighlightColor
+        imageView.tintColor = AppColors.textPrimaryColor
         addSubview(imageView)
 
         // Draw the text
         let attribs = [
             NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16),
-            NSAttributedStringKey.foregroundColor: AppColors.greenHighlightColor
+            NSAttributedStringKey.foregroundColor: AppColors.textPrimaryColor
             ] as [NSAttributedStringKey : Any]
         let textSize = text.size(withAttributes: attribs)
         let textPoint = CGPoint( x: center.x - round(textSize.width / 2), y: imageView.center.y + round(imageView.bounds.height / 2) + 10)
