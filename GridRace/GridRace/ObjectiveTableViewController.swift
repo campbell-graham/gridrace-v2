@@ -232,7 +232,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
-        cell.titleLabel.text = incompleteObjectives[indexPath.row].name
+        cell.titleLabel.text = indexPath.section == 0 ? incompleteObjectives[indexPath.row].name : completeObjectives[indexPath.row].name
         cell.pointsLabel.text = "\(ObjectiveManager.sharedObjectiveManager.objectivePointMap[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
         
         //make the title green if the objective is complete
