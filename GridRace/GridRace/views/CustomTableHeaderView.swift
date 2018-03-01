@@ -20,6 +20,9 @@ class CustomTableHeaderView: UITableViewHeaderFooterView {
         
         addSubview(titleLabel)
         
+        //styling
+        titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .ultraLight)
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([

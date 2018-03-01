@@ -264,8 +264,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         cell.titleLabel.text = objective.name
         cell.pointsLabel.text = "\(ObjectiveManager.shared.objectivePointMap[objective.id] ?? objective.points)"
         
-        //make the title green if the objective is complete
-        cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor
+        //set font to heavy if complete
+        
+        cell.titleLabel.font = indexPath.section == 0 ? UIFont.systemFont(ofSize: 16, weight: .ultraLight) : UIFont.systemFont(ofSize: 16, weight: .medium)
+        
         
         return cell
     }
