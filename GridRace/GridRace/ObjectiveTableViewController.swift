@@ -13,13 +13,22 @@ import FirebaseDatabase
 class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
     
     var tableView = UITableView()
+    
+    var objectives = [Objective]() {
+        didSet {
+            sortObjectives()
+        }
+    }
+    
     var incompleteObjectives = [Objective]() {
         didSet {
+            updatePoints()
             tableView.reloadData()
         }
     }
     var completeObjectives = [Objective]() {
         didSet {
+            updatePoints()
             tableView.reloadData()
         }
     }
@@ -29,10 +38,20 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        populateData()
+        downloadData()
     }
     
-    func populateData() {
+    func sortObjectives() {
+        for (objective) in objectives {
+            if ObjectiveManager.sharedObjectiveManager.completeObjectives.contains(objective.id) {
+                completeObjectives.append(objective)
+            } else {
+                incompleteObjectives.append(objective)
+            }
+        }
+    }
+    
+    func downloadData() {
         let ref = Database.database().reference()
 
         ref.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -40,12 +59,20 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 if let dict = snapshot.value as? [String: Any] {
                     let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
                     let jsonDecoder = JSONDecoder()
-                    self.incompleteObjectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
+                    self.objectives = try jsonDecoder.decode(ObjectList.self, from: data).objects
                 }
             } catch {
                 
             }
         })
+    }
+    
+    func updatePoints() {
+        for (objective) in incompleteObjectives {
+            ObjectiveManager.sharedObjectiveManager.pointsDictionary[objective.id] = objective.points
+        }
+        print(ObjectiveManager.sharedObjectiveManager.pointsDictionary)
+        tableView.reloadData()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -131,7 +158,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
         cell.titleLabel.text = incompleteObjectives[indexPath.row].name
-        cell.pointsLabel.text = String(incompleteObjectives[indexPath.row].points)
+        cell.pointsLabel.text = "\(ObjectiveManager.sharedObjectiveManager.pointsDictionary[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor
