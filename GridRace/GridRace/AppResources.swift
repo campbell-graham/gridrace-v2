@@ -19,8 +19,13 @@ struct AppColors {
 }
 
 class ObjectiveManager {
-    var pointsDictionary = [Int: Int]()
-    var completeObjectives = [Int]()
+    
+    typealias ObjectiveID = Int
+    typealias Value = Int
+    
+    var objectivePointMap = [ObjectiveID: Value]()
+  
+    var completeObjectives = Set<ObjectiveID>()
 
     static let sharedObjectiveManager = ObjectiveManager()
     

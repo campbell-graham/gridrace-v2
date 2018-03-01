@@ -39,11 +39,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
         downloadObjectives()
-        
-        
-        //test prints
-        print("Documents folder is \(documentsDirectory())")
-        print("Data file path is \(dataFilePath())")
     }
     
     func sortObjectives() {
@@ -59,7 +54,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func downloadObjectives() {
         
         //download if doesn't exist already
-        if !FileManager.default.fileExists(atPath: dataFilePath().path){
+        if !FileManager.default.fileExists(atPath: objectivesFilePath().path){
             let ref = Database.database().reference()
             
             ref.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -83,9 +78,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func updatePoints() {
         for (objective) in incompleteObjectives {
-            ObjectiveManager.sharedObjectiveManager.pointsDictionary[objective.id] = objective.points
+            ObjectiveManager.sharedObjectiveManager.objectivePointMap[objective.id] = objective.points
         }
-        print(ObjectiveManager.sharedObjectiveManager.pointsDictionary)
+        print(ObjectiveManager.sharedObjectiveManager.objectivePointMap)
         tableView.reloadData()
     }
     
@@ -98,40 +93,63 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return paths[0]
     }
     
-    func dataFilePath() -> URL {
+    func objectivesFilePath() -> URL {
         return documentsDirectory().appendingPathComponent("Objectives.plist")
+    }
+    
+    func pointsFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("Points.plist")
+    }
+    
+    func completeIDsFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("Completed.plist")
     }
     
     func saveObjectives() {
         let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(objectives)
-            
-            try data.write(to: dataFilePath(), options: .atomic)
+            let objectivesData = try encoder.encode(objectives)
+            let pointsData = try encoder.encode(ObjectiveManager.sharedObjectiveManager.objectivePointMap)
+            let completeData = try encoder.encode(ObjectiveManager.sharedObjectiveManager.completeObjectives)
+            try objectivesData.write(to: objectivesFilePath(), options: .atomic)
+            try pointsData.write(to: pointsFilePath(), options: .atomic)
+            try completeData.write(to: completeIDsFilePath(), options: .atomic)
         } catch {
             print ("Something went wrong when saving")
         }
     }
     
     func loadObjectives() {
-        let path = dataFilePath()
-        
-        if let data = try? Data(contentsOf: path) {
+       
+       //load objectives, points and completed data
+        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()) {
             let decoder = PropertyListDecoder()
             do {
-                objectives = try decoder.decode([Objective].self, from: data)
-                print("Loaded locally")
+                objectives = try decoder.decode([Objective].self, from: objectivesData)
+                ObjectiveManager.sharedObjectiveManager.objectivePointMap = try decoder.decode([Int: Int].self, from: pointsData)
+                ObjectiveManager.sharedObjectiveManager.completeObjectives = try decoder.decode(Set<Int>.self, from: completeData)
             } catch {
-                print ("Error decoding the local array, will re-download")
+                print("Error decoding the local array, will re-download")
                 //delete local file and re-download if there is an issue
                 do {
-                    try FileManager.default.removeItem(at: dataFilePath())
+                    try FileManager.default.removeItem(at: objectivesFilePath())
+                    try FileManager.default.removeItem(at: pointsFilePath())
+                    try FileManager.default.removeItem(at: completeIDsFilePath())
                     downloadObjectives()
                 } catch {
-                    print("Well, it's fucked up now isn't it")
+                    print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
                 }
                 
+            }
+        } else {
+            //delete local file and re-download if there is an issue
+            do {
+                try FileManager.default.removeItem(at: objectivesFilePath())
+                try FileManager.default.removeItem(at: pointsFilePath())
+                try FileManager.default.removeItem(at: completeIDsFilePath())
+                downloadObjectives()
+            } catch {
+                print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
             }
         }
     }
@@ -215,7 +233,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ObjectiveCell", for: indexPath) as! ObjectiveTableViewCell
         cell.titleLabel.text = incompleteObjectives[indexPath.row].name
-        cell.pointsLabel.text = "\(ObjectiveManager.sharedObjectiveManager.pointsDictionary[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
+        cell.pointsLabel.text = "\(ObjectiveManager.sharedObjectiveManager.objectivePointMap[indexPath.section == 0 ? incompleteObjectives[indexPath.row].id : completeObjectives[indexPath.row].id]!)"
         
         //make the title green if the objective is complete
         cell.titleLabel.textColor = indexPath.section == 1 ? AppColors.greenHighlightColor : AppColors.textPrimaryColor
