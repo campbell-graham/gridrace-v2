@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 
-class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
+class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ObjectiveTableViewControllerDelegate  {
     
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
@@ -127,6 +127,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
+    func initiateSave() {
+        print("Saving!")
+        saveObjectives()
+    }
+    
+    
     func loadObjectives() {
        
        //load objectives, points and completed data
@@ -238,9 +244,13 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.section {
         case 0 :
-            navigationController?.pushViewController(DetailViewController(objective: incompleteObjectives[indexPath.row]), animated: true)
+            let destination = DetailViewController(objective: incompleteObjectives[indexPath.row])
+            destination.delegate = self
+            navigationController?.pushViewController(destination, animated: true)
         case 1 :
-            navigationController?.pushViewController(DetailViewController(objective: completeObjectives[indexPath.row] ), animated: true)
+            let destination = DetailViewController(objective: completeObjectives[indexPath.row])
+            destination.delegate = self
+            navigationController?.pushViewController(destination, animated: true)
         default:
             print("invalid section")
         }
@@ -256,4 +266,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         
         return cell
     }
+}
+
+protocol ObjectiveTableViewControllerDelegate: class {
+    func initiateSave()
 }

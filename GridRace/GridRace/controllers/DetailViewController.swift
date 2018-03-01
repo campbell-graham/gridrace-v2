@@ -20,6 +20,8 @@ class DetailViewController: UIViewController {
     private let interactImageView = UIImageView()
     private let hintImageView = UIImageView()
     private let pointDeductionValue = 2
+    
+    var delegate: ObjectiveTableViewControllerDelegate?
 
     init(objective: Objective) {
 
@@ -31,8 +33,6 @@ class DetailViewController: UIViewController {
         case .text: // textField
             answerView = ContainerView()
         case .password: // pin view
-            answerView = UIView()
-        default:
             answerView = UIView()
 
         }
@@ -219,6 +219,7 @@ class DetailViewController: UIViewController {
             answerView.textLabel.text = answer
             playHudAnimation()
             ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+            delegate?.initiateSave()
         }
     }
 
@@ -285,7 +286,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         dismiss(animated: true, completion: nil)
 
         playHudAnimation()
-        ObjectiveManager.shared.completeObjectives.insert(self.objective.id) 
+        ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+        delegate?.initiateSave()
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
