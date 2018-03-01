@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline")))]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: ObjectiveCategory(rawValue: "bonus")))]
         
         window?.rootViewController = mainTabController
         
@@ -72,5 +72,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+}
+
+
+enum ObjectiveCategory: String {
+    case places
+    case bonus
+    
+    init(rawValue: String) {
+        switch rawValue {
+        case "places":
+            self = .places
+        case "bonus":
+            self = .bonus
+        default:
+            self = .places
+        }
+    }
 }
 

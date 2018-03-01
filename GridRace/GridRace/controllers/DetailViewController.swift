@@ -21,6 +21,8 @@ class DetailViewController: UIViewController {
     private let interactImageView = UIImageView()
     private let hintImageView = UIImageView()
     private let pointDeductionValue = 2
+    
+    var delegate: ObjectiveTableViewControllerDelegate?
     private var isCollapsed = false
     private var collapseGestureRecogniser: UIPanGestureRecognizer?
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
@@ -330,7 +332,9 @@ class DetailViewController: UIViewController {
             ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.pointDeductionValue
             //self.objective.hintTaken = true
             self.updateViewsData()
-            self.presentClueViewController() })
+            self.presentClueViewController()
+            self.delegate?.initiateSave()
+        })
         alert.addAction(continueAction)
 
         present(alert, animated: true, completion: nil)
@@ -357,6 +361,7 @@ class DetailViewController: UIViewController {
             answerView.textLabel.text = answer
             playHudAnimation()
             ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+            delegate?.initiateSave()
         }
     }
 
@@ -424,6 +429,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
         playHudAnimation()
         ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+        delegate?.initiateSave()
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
