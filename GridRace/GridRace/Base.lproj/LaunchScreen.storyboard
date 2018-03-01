@@ -22,12 +22,16 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="778"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="0WA-O9-nYa"/>
                             <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="6aW-Zn-dkT"/>
                             <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="ffP-5N-0MR"/>
+                            <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="fmk-GD-30q"/>
                             <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="h9g-mo-GUQ"/>
                             <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="heh-XM-Djm"/>
+                            <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="qHe-dr-B4Y"/>
+                            <constraint firstItem="Ukc-5Y-Tnd" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="xYX-gD-PQp"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

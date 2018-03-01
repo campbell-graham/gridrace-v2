@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+        
+        //firebase setup
+        FirebaseApp.configure()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         
         let mainTabController = UITabBarController()
@@ -23,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Anytime", tabBarImage: #imageLiteral(resourceName: "clock_outline")))]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline")))]
         
         window?.rootViewController = mainTabController
         
@@ -36,6 +40,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().tintColor = AppColors.greenHighlightColor
         
         window?.makeKeyAndVisible()
+        
+        
+       
         
         return true
     }

@@ -17,3 +17,21 @@ struct AppColors {
     static var greenHighlightColor = #colorLiteral(red: 0.07450980392, green: 0.8078431373, blue: 0.4, alpha: 1)
     static var starPointsColor = #colorLiteral(red: 0.9176470588, green: 1, blue: 0.3607843137, alpha: 1)
 }
+
+class ObjectiveManager {
+    
+    typealias ObjectiveID = Int
+    typealias Value = Int
+    
+    var objectivePointMap = [ObjectiveID: Value]()
+  
+    var completeObjectives = Set<ObjectiveID>()
+
+    static let sharedObjectiveManager = ObjectiveManager()
+    
+    private init() {
+        
+    }
+}
+
+
