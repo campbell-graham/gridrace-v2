@@ -218,6 +218,7 @@ class DetailViewController: UIViewController {
         if let answerView = answerView as? ContainerView {
             answerView.textLabel.text = answer
             playHudAnimation()
+            ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
         }
     }
 
@@ -284,6 +285,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         dismiss(animated: true, completion: nil)
 
         playHudAnimation()
+        ObjectiveManager.shared.completeObjectives.insert(self.objective.id) 
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
