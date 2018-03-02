@@ -245,11 +245,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.section {
         case 0 :
-            let destination = DetailViewController(objective: incompleteObjectives[indexPath.row])
+            let destination = MapViewController(objective: incompleteObjectives[indexPath.row])
             destination.delegate = self
             navigationController?.pushViewController(destination, animated: true)
         case 1 :
-            let destination = DetailViewController(objective: completeObjectives[indexPath.row])
+            let destination = MapViewController(objective: completeObjectives[indexPath.row])
             destination.delegate = self
             navigationController?.pushViewController(destination, animated: true)
         default:
