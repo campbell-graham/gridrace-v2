@@ -119,6 +119,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return documentsDirectory().appendingPathComponent("TextResponses.plist")
     }
     
+    func savedImageResponsesURLsFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("ImageResponsesURLs.plist")
+    }
+    
     func completeIDsFilePath() -> URL {
         return documentsDirectory().appendingPathComponent("Completed.plist")
     }
@@ -130,10 +134,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
             let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
             let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses)
+            let imageResponseURLData = try encoder.encode(ObjectiveManager.shared.savedImageResponses)
             try objectivesData.write(to: objectivesFilePath())
             try pointsData.write(to: pointsFilePath())
             try completeData.write(to: completeIDsFilePath())
             try textResponseData.write(to: savedTextResponsesFilePath())
+            try imageResponseURLData.write(to: savedImageResponsesURLsFilePath())
         } catch {
             print ("Something went wrong when saving")
         }
@@ -162,6 +168,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0) }
                 let textResponseValues = try decoder.decode([String: String].self, from: textResponseData)
                 textResponseValues.forEach {ObjectiveManager.shared.savedTextResponses[$0.key] = $0.value}
+                let imageResponseValues = try decoder.decode([String: String].self, from: textResponseData)
+                imageResponseValues.forEach {ObjectiveManager.shared.savedImageResponses[$0.key] = $0.value}
                 sortObjectives()
                 }
             catch {
@@ -195,6 +203,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         ObjectiveManager.shared.completeObjectives.removeAll()
         ObjectiveManager.shared.objectivePointMap.removeAll()
         ObjectiveManager.shared.savedTextResponses.removeAll()
+        ObjectiveManager.shared.savedImageResponses.removeAll()
         //save this information
         saveLocalData()
         tableView.reloadData()

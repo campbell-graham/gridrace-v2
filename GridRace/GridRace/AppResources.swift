@@ -22,12 +22,16 @@ class ObjectiveManager {
     
     typealias ObjectiveID = String
     typealias Value = Int
+    typealias ImageURL = String
     
     var objectivePointMap = [ObjectiveID: Value]()
   
     var completeObjectives = Set<ObjectiveID>()
     
     var savedTextResponses = [ObjectiveID: String]()
+    
+    //images will be saved seperately, with this dictionary pointing to their locations
+    var savedImageResponses = [ObjectiveID: ImageURL]()
 
     static let shared = ObjectiveManager()
 
