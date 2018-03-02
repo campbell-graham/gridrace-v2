@@ -74,6 +74,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         
                         tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
                         
+                        var dataReset = false
                         
                         //check that they are the same length and have the same data, reset if not
                         if tempObjectives.count == self.objectives.count {
@@ -81,19 +82,32 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                                 if !(objective == self.objectives[index]) {
                                     self.objectives = tempObjectives
                                     self.resetLocalData()
+                                    dataReset = true
                                     break
                                 }
                             }
                         } else {
                             self.objectives = tempObjectives
                             self.resetLocalData()
+                            dataReset = true
                         }
+                        
+                        //alert the user if their data has been reset
+                        if dataReset {
+                            let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data, and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                        
+                        
                         self.tableView.reloadData()
                     }
                 } catch {
                     print(error)
                 }
             })
+        
+        saveLocalData()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -186,22 +200,14 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func deleteAllDocumentsData() {
-        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-        if let directoryContents = try? FileManager.default.contentsOfDirectory(atPath: dirPath)
-        {
-            for path in directoryContents
-            {
-                let fullPath = (dirPath as NSString).appendingPathComponent(path)
-                do
-                {
-                    try FileManager.default.removeItem(atPath: fullPath)
-                    print("Files deleted")
-                }
-                catch let error as NSError
-                {
-                    print("Error deleting: \(error.localizedDescription)")
-                }
-            }
+        do {
+            try FileManager.default.removeItem(at: objectivesFilePath())
+            try FileManager.default.removeItem(at: pointsFilePath())
+            try FileManager.default.removeItem(at: completeIDsFilePath())
+            try FileManager.default.removeItem(at: savedTextResponsesFilePath())
+            try FileManager.default.removeItem(at: savedImageResponsesURLsFilePath())
+        } catch {
+            print("Error deleting documents")
         }
     }
     
