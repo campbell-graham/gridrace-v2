@@ -74,7 +74,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         
                         tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
                         
-                        //attempt a load of previous data
+                        //attempt a load of previous data, if it can't then it will fail safely
                         self.loadObjectives()
                         
                         //check that they are the same length and have the same data, reset if not
@@ -91,7 +91,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                             self.resetLocalData()
                         }
                         
-                        self.saveObjectives()
+                        
                         self.tableView.reloadData()
                     }
                 } catch {
@@ -121,7 +121,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return documentsDirectory().appendingPathComponent("Completed.plist")
     }
     
-    func saveObjectives() {
+    func saveLocalData() {
         let encoder = PropertyListEncoder()
         do {
             let objectivesData = try encoder.encode(objectives)
@@ -140,7 +140,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func initiateSave() {
         print("Saving!")
-        saveObjectives()
+        saveLocalData()
     }
     
     
@@ -179,21 +179,17 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 try FileManager.default.removeItem(at: completeIDsFilePath())
                 downloadObjectives()
             } catch {
-                print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
+                print("Triggered due to the download method attempting to load first to make comparisons, it is fine if this appears")
             }
         }
     }
     
     func resetLocalData() {
+        //clear the objective manager
         ObjectiveManager.shared.completeObjectives.removeAll()
         ObjectiveManager.shared.objectivePointMap.removeAll()
-        do {
-            try FileManager.default.removeItem(at: objectivesFilePath())
-            try FileManager.default.removeItem(at: pointsFilePath())
-            try FileManager.default.removeItem(at: completeIDsFilePath())
-        } catch {
-            print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
-        }
+        //save this information
+        saveLocalData()
         tableView.reloadData()
     }
     
