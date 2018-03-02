@@ -61,7 +61,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func downloadObjectives() {
         
         //download if doesn't exist already
-        if !FileManager.default.fileExists(atPath: objectivesFilePath().path){
+        
+            var tempObjectives = [Objective]()
+        
             let ref = Database.database().reference()
             
             ref.observeSingleEvent(of: .value, with: { (snapshot) in
@@ -70,19 +72,32 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
                         let jsonDecoder = JSONDecoder()
                         
-                        self.objectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
-
+                        tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+                        
+                        //attempt a load of previous data
+                        self.loadObjectives()
+                        
+                        //check that they are the same length and have the same data, reset if not
+                        if tempObjectives.count == self.objectives.count {
+                            for (index, objective) in tempObjectives.enumerated() {
+                                if !(objective == self.objectives[index]) {
+                                    self.objectives = tempObjectives
+                                    self.resetLocalData()
+                                    break
+                                }
+                            }
+                        } else {
+                            self.objectives = tempObjectives
+                            self.resetLocalData()
+                        }
+                        
                         self.saveObjectives()
+                        self.tableView.reloadData()
                     }
                 } catch {
                     print(error)
                 }
             })
-        } else {
-            loadObjectives()
-        }
-        
-       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -99,11 +114,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func pointsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Points_\(dataCategory.rawValue).plist")
+        return documentsDirectory().appendingPathComponent("Points.plist")
     }
     
     func completeIDsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Completed_\(dataCategory.rawValue).plist")
+        return documentsDirectory().appendingPathComponent("Completed.plist")
     }
     
     func saveObjectives() {
@@ -167,6 +182,19 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
             }
         }
+    }
+    
+    func resetLocalData() {
+        ObjectiveManager.shared.completeObjectives.removeAll()
+        ObjectiveManager.shared.objectivePointMap.removeAll()
+        do {
+            try FileManager.default.removeItem(at: objectivesFilePath())
+            try FileManager.default.removeItem(at: pointsFilePath())
+            try FileManager.default.removeItem(at: completeIDsFilePath())
+        } catch {
+            print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
+        }
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
