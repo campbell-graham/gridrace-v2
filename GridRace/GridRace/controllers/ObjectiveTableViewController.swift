@@ -38,7 +38,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        downloadObjectives()
+        loadLocalData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -74,8 +74,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         
                         tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
                         
-                        //attempt a load of previous data, if it can't then it will fail safely
-                        self.loadLocalData()
                         
                         //check that they are the same length and have the same data, reset if not
                         if tempObjectives.count == self.objectives.count {
@@ -130,11 +128,13 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func saveLocalData() {
         let encoder = PropertyListEncoder()
         do {
+            //encode data
             let objectivesData = try encoder.encode(objectives)
             let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
             let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
             let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses)
             let imageResponseURLData = try encoder.encode(ObjectiveManager.shared.savedImageResponses)
+            //write to files
             try objectivesData.write(to: objectivesFilePath())
             try pointsData.write(to: pointsFilePath())
             try completeData.write(to: completeIDsFilePath())
@@ -157,8 +157,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func loadLocalData() {
        
        //load objectives, points and completed data
-        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()),
-            let textResponseData = try? Data(contentsOf: savedTextResponsesFilePath()) {
+        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()), let imageResponseData = try? Data(contentsOf: savedImageResponsesURLsFilePath()), let textResponseData = try? Data(contentsOf: savedTextResponsesFilePath()) {
             let decoder = PropertyListDecoder()
             do {
                 objectives = try decoder.decode([Objective].self, from: objectivesData)
@@ -168,21 +167,22 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0) }
                 let textResponseValues = try decoder.decode([String: String].self, from: textResponseData)
                 textResponseValues.forEach {ObjectiveManager.shared.savedTextResponses[$0.key] = $0.value}
-                let imageResponseValues = try decoder.decode([String: URL].self, from: textResponseData)
+                let imageResponseValues = try decoder.decode([String: URL].self, from: imageResponseData)
                 imageResponseValues.forEach {ObjectiveManager.shared.savedImageResponses[$0.key] = $0.value}
                 sortObjectives()
                 }
             catch {
                 print("Error decoding the local array, will re-download")
-                //delete local file and re-download if there is an issue
+                //delete local files if there are issues assiging to local variables
                 deleteAllDocumentsData()
-                downloadObjectives()
             }
         } else {
-            //delete local file and re-download if there is an issue
-                deleteAllDocumentsData()
-                downloadObjectives()
+            //delete local files in case some exist and others do not
+            deleteAllDocumentsData()
         }
+        
+        //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
+        downloadObjectives()
     }
     
     func deleteAllDocumentsData() {
