@@ -87,14 +87,17 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                                 }
                             }
                         } else {
+                            //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
+                            if self.objectives.count != 0 {
+                                dataReset = true
+                            }
                             self.objectives = tempObjectives
                             self.resetLocalData()
-                            dataReset = true
                         }
                         
                         //alert the user if their data has been reset
                         if dataReset {
-                            let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data, and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                            let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
                             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
                             self.present(alert, animated: true, completion: nil)
                         }
@@ -188,18 +191,18 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             catch {
                 print("Error decoding the local array, will re-download")
                 //delete local files if there are issues assiging to local variables
-                deleteAllDocumentsData()
+                deleteDocumentData()
             }
         } else {
             //delete local files in case some exist and others do not
-            deleteAllDocumentsData()
+            deleteDocumentData()
         }
         
         //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
         downloadObjectives()
     }
     
-    func deleteAllDocumentsData() {
+    func deleteDocumentData() {
         do {
             try FileManager.default.removeItem(at: objectivesFilePath())
             try FileManager.default.removeItem(at: pointsFilePath())
@@ -213,7 +216,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func resetLocalData() {
         //delete everything from local documents
-        deleteAllDocumentsData()
+        deleteDocumentData()
         
         
         //clear the objective manager
