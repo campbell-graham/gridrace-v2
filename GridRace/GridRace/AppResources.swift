@@ -26,6 +26,8 @@ class ObjectiveManager {
     var objectivePointMap = [ObjectiveID: Value]()
   
     var completeObjectives = Set<ObjectiveID>()
+    
+    var savedTextResponses = [ObjectiveID: String]()
 
     static let shared = ObjectiveManager()
 

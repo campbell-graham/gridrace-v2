@@ -75,7 +75,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
                         
                         //attempt a load of previous data, if it can't then it will fail safely
-                        self.loadObjectives()
+                        self.loadLocalData()
                         
                         //check that they are the same length and have the same data, reset if not
                         if tempObjectives.count == self.objectives.count {
@@ -90,8 +90,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                             self.objectives = tempObjectives
                             self.resetLocalData()
                         }
-                        
-                        
                         self.tableView.reloadData()
                     }
                 } catch {
@@ -117,6 +115,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return documentsDirectory().appendingPathComponent("Points.plist")
     }
     
+    func savedTextResponsesFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("TextResponses.plist")
+    }
+    
     func completeIDsFilePath() -> URL {
         return documentsDirectory().appendingPathComponent("Completed.plist")
     }
@@ -127,9 +129,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             let objectivesData = try encoder.encode(objectives)
             let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
             let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
+            let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses)
             try objectivesData.write(to: objectivesFilePath())
             try pointsData.write(to: pointsFilePath())
             try completeData.write(to: completeIDsFilePath())
+            try textResponseData.write(to: savedTextResponsesFilePath())
         } catch {
             print ("Something went wrong when saving")
         }
@@ -144,21 +148,23 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     
-    func loadObjectives() {
+    func loadLocalData() {
        
        //load objectives, points and completed data
-        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()) {
+        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()),
+            let textResponseData = try? Data(contentsOf: savedTextResponsesFilePath()) {
             let decoder = PropertyListDecoder()
             do {
                 objectives = try decoder.decode([Objective].self, from: objectivesData)
                 let pointValues = try decoder.decode([String: Int].self, from: pointsData)
                 pointValues.forEach { ObjectiveManager.shared.objectivePointMap[$0.key] = $0.value }
                 let completeValues = try decoder.decode(Set<String>.self, from: completeData)
-                completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0)
-                    
+                completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0) }
+                let textResponseValues = try decoder.decode([String: String].self, from: textResponseData)
+                textResponseValues.forEach {ObjectiveManager.shared.savedTextResponses[$0.key] = $0.value}
                 sortObjectives()
                 }
-            } catch {
+            catch {
                 print("Error decoding the local array, will re-download")
                 //delete local file and re-download if there is an issue
                 do {
