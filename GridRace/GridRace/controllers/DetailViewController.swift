@@ -20,11 +20,10 @@ class DetailViewController: UIViewController {
     private let answerView: UIView
     private let interactImageView = UIImageView()
     private let hintImageView = UIImageView()
-    private let pointDeductionValue = 2
+    private let hintPointDeductionValue = 2
     
     var delegate: ObjectiveTableViewControllerDelegate?
     private var isCollapsed = false
-    private var collapseGestureRecogniser: UIPanGestureRecognizer?
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
     init(objective: Objective) {
@@ -38,8 +37,6 @@ class DetailViewController: UIViewController {
             answerView = ContainerView()
         case .password: // pin view
             answerView = UIView()
-        default:
-            break
 
         }
 
@@ -79,8 +76,8 @@ class DetailViewController: UIViewController {
         descLabel.font = UIFont.systemFont(ofSize: 16)
         descLabel.isEditable = false
 
-        collapseGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(collapseAnimationHandler))
-        pointBorderImageView.addGestureRecognizer(collapseGestureRecogniser!)
+        let collapseGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(collapseAnimationHandler))
+        pointBorderImageView.addGestureRecognizer(collapseGestureRecogniser)
         pointBorderImageView.isUserInteractionEnabled = true
         pointBorderImageView.contentMode = .scaleAspectFit
 
@@ -200,7 +197,7 @@ class DetailViewController: UIViewController {
         }
         if recognizer.state == .ended {
             let velocity = recognizer.velocity(in: collapsableDetailsView)
-            panningEndedWithTranslation(translation: translation, velocity: velocity)
+            panningEndedWithTranslation(recognizer: recognizer, translation: translation, velocity: velocity)
         }
         else {
             translation = recognizer.translation(in: collapsableDetailsView.superview)
@@ -258,12 +255,11 @@ class DetailViewController: UIViewController {
 
 
 
-    private func panningEndedWithTranslation(translation: CGPoint, velocity: CGPoint) {
+    private func panningEndedWithTranslation(recognizer: UIPanGestureRecognizer, translation: CGPoint, velocity: CGPoint) {
 
-        collapseGestureRecogniser!.isEnabled = false
+        recognizer.isEnabled = false
 
         let screenHeight = UIScreen.main.bounds.height
-        weak var weakSelf = self
 
         if isCollapsed {
             if (translation.y <= -screenHeight / 3 || velocity.y <= -100)
@@ -272,36 +268,34 @@ class DetailViewController: UIViewController {
 
                 self.collapsableDetailsAnimator!.addCompletion({ final in
 
-                weakSelf?.isCollapsed = false
-                weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                self.isCollapsed = false
+                recognizer.isEnabled = true
                 })
             } else {
                 self.collapsableDetailsAnimator!.isReversed = true
 
                 self.collapsableDetailsAnimator!.addCompletion({ final in
-                    weakSelf?.isCollapsed = true
-                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                    self.isCollapsed = true
+                    recognizer.isEnabled = true
                 })
             }
         } else {
 
-            if (translation.y >= screenHeight / 3 || velocity.y >= 100)
-            {
+            if (translation.y >= screenHeight / 3 || velocity.y >= 100) {
+
                 self.collapsableDetailsAnimator!.isReversed = false
 
                 self.collapsableDetailsAnimator!.addCompletion({ final in
-                    weakSelf?.isCollapsed = true
-                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                    self.isCollapsed = true
+                    recognizer.isEnabled = true
                 })
-            }
-            else
-            {
+            } else {
                 self.collapsableDetailsAnimator!.isReversed = true
 
                 self.collapsableDetailsAnimator!.addCompletion({ final in
 
-                    weakSelf?.isCollapsed = false
-                    weakSelf?.collapseGestureRecogniser!.isEnabled = true
+                    self.isCollapsed = false
+                    recognizer.isEnabled = true
                 })
             }
         }
@@ -324,12 +318,12 @@ class DetailViewController: UIViewController {
 
     @objc private func presentPointLossAlert() {
 
-        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(pointDeductionValue)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Warning:", message: "The amount of points gained for this objective will be reduced by \(hintPointDeductionValue)", preferredStyle: .alert)
 
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
-            ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.pointDeductionValue
+            ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.hintPointDeductionValue
             //self.objective.hintTaken = true
             self.updateViewsData()
             self.presentClueViewController()
