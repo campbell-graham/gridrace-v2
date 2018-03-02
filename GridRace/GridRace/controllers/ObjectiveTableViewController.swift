@@ -194,6 +194,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         //clear the objective manager
         ObjectiveManager.shared.completeObjectives.removeAll()
         ObjectiveManager.shared.objectivePointMap.removeAll()
+        ObjectiveManager.shared.savedTextResponses.removeAll()
         //save this information
         saveLocalData()
         tableView.reloadData()
