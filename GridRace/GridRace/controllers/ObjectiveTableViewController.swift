@@ -124,19 +124,19 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     func pointsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Points.plist")
+        return documentsDirectory().appendingPathComponent("Points_\(dataCategory.rawValue).plist")
     }
     
     func savedTextResponsesFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("TextResponses.plist")
+        return documentsDirectory().appendingPathComponent("TextResponses_\(dataCategory.rawValue).plist")
     }
     
     func savedImageResponsesURLsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("ImageResponsesURLs.plist")
+        return documentsDirectory().appendingPathComponent("ImageResponsesURLs_\(dataCategory.rawValue).plist")
     }
     
     func completeIDsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Completed.plist")
+        return documentsDirectory().appendingPathComponent("Completed_\(dataCategory.rawValue).plist")
     }
     
     func saveLocalData() {
