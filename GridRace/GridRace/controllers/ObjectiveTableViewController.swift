@@ -168,37 +168,48 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0) }
                 let textResponseValues = try decoder.decode([String: String].self, from: textResponseData)
                 textResponseValues.forEach {ObjectiveManager.shared.savedTextResponses[$0.key] = $0.value}
-                let imageResponseValues = try decoder.decode([String: String].self, from: textResponseData)
+                let imageResponseValues = try decoder.decode([String: URL].self, from: textResponseData)
                 imageResponseValues.forEach {ObjectiveManager.shared.savedImageResponses[$0.key] = $0.value}
                 sortObjectives()
                 }
             catch {
                 print("Error decoding the local array, will re-download")
                 //delete local file and re-download if there is an issue
-                do {
-                    try FileManager.default.removeItem(at: objectivesFilePath())
-                    try FileManager.default.removeItem(at: pointsFilePath())
-                    try FileManager.default.removeItem(at: completeIDsFilePath())
-                    downloadObjectives()
-                } catch {
-                    print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
-                }
-                
+                deleteAllDocumentsData()
+                downloadObjectives()
             }
         } else {
             //delete local file and re-download if there is an issue
-            do {
-                try FileManager.default.removeItem(at: objectivesFilePath())
-                try FileManager.default.removeItem(at: pointsFilePath())
-                try FileManager.default.removeItem(at: completeIDsFilePath())
+                deleteAllDocumentsData()
                 downloadObjectives()
-            } catch {
-                print("Triggered due to the download method attempting to load first to make comparisons, it is fine if this appears")
+        }
+    }
+    
+    func deleteAllDocumentsData() {
+        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        if let directoryContents = try? FileManager.default.contentsOfDirectory(atPath: dirPath)
+        {
+            for path in directoryContents
+            {
+                let fullPath = (dirPath as NSString).appendingPathComponent(path)
+                do
+                {
+                    try FileManager.default.removeItem(atPath: fullPath)
+                    print("Files deleted")
+                }
+                catch let error as NSError
+                {
+                    print("Error deleting: \(error.localizedDescription)")
+                }
             }
         }
     }
     
     func resetLocalData() {
+        //delete everything from local documents
+        deleteAllDocumentsData()
+        
+        
         //clear the objective manager
         ObjectiveManager.shared.completeObjectives.removeAll()
         ObjectiveManager.shared.objectivePointMap.removeAll()
