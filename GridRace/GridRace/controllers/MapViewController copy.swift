@@ -79,26 +79,29 @@ class MapViewController: UIViewController {
         ])
     }
 
+    private var originY: CGFloat = 0.0
+
     @objc private func collapseAnimationHandler(recognizer: UIPanGestureRecognizer) {
-        var translation = recognizer.translation(in: view.superview)
+        let translation = recognizer.translation(in: view)
 
         if recognizer.state == .began {
 
             onPanBegin()
         }
         if recognizer.state == .ended {
+
             let velocity = recognizer.velocity(in: view)
             panningEndedWithTranslation(recognizer: recognizer, translation: translation, velocity: velocity)
         }
         else {
-            translation = recognizer.translation(in: view.superview)
             panningChangedWithTranslation(translation: translation)
         }
 
 
     }
 
-    // when user starts panning set the end position of the collapsableView
+    private var stupidHeight: CGFloat = 0.0
+
     private func onPanBegin() {
 
         if let animator = collapsableDetailsAnimator, animator.isRunning {
@@ -111,10 +114,14 @@ class MapViewController: UIViewController {
             let newY = view.bounds.height - self.tabBarController!.tabBar.bounds.height - detailViewController.panView.bounds.height - detailViewController.pointBorderImageView.bounds.height - 32
             let oldFrame = collapsableDetailsView.frame
             targetFrame = CGRect(x: oldFrame.minX, y: newY, width: oldFrame.size.width, height: oldFrame.size.height)
+
+            stupidHeight = targetFrame.origin.y - oldFrame.origin.y
         } else {
             let oldFrame = collapsableDetailsView.frame
-            let newY = UIApplication.shared.statusBarFrame.height + self.navigationController!.navigationBar.bounds.height + mapView.bounds.height - collapsableDetailsView.bounds.height + 1
+            let newY = UIApplication.shared.statusBarFrame.height + navigationController!.navigationBar.bounds.height + mapView.bounds.height - collapsableDetailsView.bounds.height + 1
             targetFrame = CGRect(x: oldFrame.minX, y: newY, width: oldFrame.width, height: oldFrame.height)
+
+            stupidHeight =  oldFrame.origin.y - targetFrame.origin.y
         }
 
         collapsableDetailsAnimator = UIViewPropertyAnimator(duration: 0.6, curve: .easeIn,
@@ -128,17 +135,16 @@ class MapViewController: UIViewController {
     private func panningChangedWithTranslation(translation: CGPoint) {
 
         if let animator = self.collapsableDetailsAnimator, animator.isRunning {
-
             return
         }
 
-        let translatedY = collapsableDetailsView.frame.origin.y + translation.y
+        print("Translation", translation)
 
         var progress: CGFloat
         if self.isCollapsed {
-            progress = 1 - (translatedY / collapsableDetailsView.frame.origin.y);
+            progress = -(translation.y / stupidHeight)
         } else {
-            progress = (translatedY / collapsableDetailsView.frame.origin.y) - 1;
+            progress = (translation.y / stupidHeight)
         }
 
         progress = max(0.001, min(0.999, progress))
