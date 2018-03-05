@@ -59,6 +59,19 @@ class DetailViewController: UIViewController {
 
         initialiseViews()
         setUpLayout()
+    
+        //present old data if it exists
+        switch objective.objectiveType {
+        case .text:
+            if (data.textResponse != nil) {
+                (answerView as! ContainerView).textLabel.text = data.textResponse
+            }
+        case .password:
+            print("Not implemented yet")
+        case .photo:
+            print("Not implemented yet")
+        }
+            
     }
 
     private func initialiseViews() {
@@ -356,6 +369,7 @@ class DetailViewController: UIViewController {
         if let answerView = answerView as? ContainerView {
             answerView.textLabel.text = answer
             playHudAnimation()
+            data.textResponse = answer
             data.completed = true
             delegate?.initiateSave()
         }
