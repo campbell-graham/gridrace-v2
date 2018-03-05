@@ -32,7 +32,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             detailViewController.delegate = self.delegate
         }
     }
-    private var isCollapsed = true
+    private var isCollapsed = false
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
     init(objective: Objective) {
@@ -277,25 +277,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             return nil
         }
     }
-}
 
+    //Mark- pan animation code
 
-
-
-//MARK:- animation extension
-extension MapViewController {
+    // the value between the animated views highest possible point and lowest possible point of detailView
+    private var totalYMovement: CGFloat = 0.0
 
     @objc private func collapseAnimationHandler(recognizer: UIPanGestureRecognizer) {
 
         // translation is a numeric value that represents how much pixels the user has moved from start of panning
         let translation = recognizer.translation(in: view)
 
-        var totalYMovement: CGFloat = 0.0 // the value between the animated views highest possible point and lowest possible point
 
         if recognizer.state == .began {
 
             // on start of user panning, set destination frame of the animated viewController
-            totalYMovement = onPanBegin()
+            onPanBegin()
         }
 
         if recognizer.state == .ended {
@@ -308,19 +305,18 @@ extension MapViewController {
 
         else {
             // when the user stops panning, decide where the collapsible view should bounce back to
-            panningChangedWithTranslation(translation: translation, totalYMovement: totalYMovement)
+            panningChangedWithTranslation(translation: translation)
         }
     }
 
-    private func onPanBegin() -> CGFloat {
+    private func onPanBegin() {
 
         if let animator = collapsableDetailsAnimator, animator.isRunning {
-            return CGFloat(0.0)
+            return
         }
 
         var targetFrame: CGRect
         let oldFrame = collapsableDetailsView.frame
-        var totalYMovement: CGFloat = 0.0
 
         if !isCollapsed {
 
@@ -342,11 +338,11 @@ extension MapViewController {
             self.collapsableDetailsView.frame = targetFrame
         })
 
-        return totalYMovement
+        return
     }
 
 
-    private func panningChangedWithTranslation(translation: CGPoint, totalYMovement: CGFloat) {
+    private func panningChangedWithTranslation(translation: CGPoint) {
 
         if let animator = self.collapsableDetailsAnimator, animator.isRunning {
             return
@@ -418,6 +414,5 @@ extension MapViewController {
 
         collapsableDetailsAnimator?.continueAnimation(withTimingParameters: springParameters, durationFactor: 1.0)
     }
-
 }
 
