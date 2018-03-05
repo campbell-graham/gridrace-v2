@@ -37,7 +37,7 @@ class Objective: Codable, Equatable {
             return false
         }
         if lhs.objectiveType != rhs.objectiveType {
-        
+            return false
         }
         
         return true

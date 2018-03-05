@@ -35,10 +35,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     private var isCollapsed = false
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
-    init(objective: Objective, data: ObjectiveUserData) {
+    init(objectives: [Objective], data: ObjectiveUserData) {
 
-        self.objectives.append(objective)
-        self.detailViewController = DetailViewController(objective: objective, data: data )
+        self.objectives = objectives
+        self.detailViewController = DetailViewController(objective: objectives[0], data: data )
         super.init(nibName: nil, bundle: nil)
 
         addChildViewController(detailViewController)
@@ -151,6 +151,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     topLeft.longitude = min(topLeft.longitude,  objCord.longitude)
                     bottomRight.latitude = min(bottomRight.latitude, objCord.latitude)
                     bottomRight.longitude = max(bottomRight.longitude, objCord.longitude)
+
+                    addPreciseCircle(coordinate: objCord)
+                    addRandomCircle(coordinate: objCord, radius: 150.0)
                 }
             }
 
@@ -161,7 +164,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             let span = MKCoordinateSpan( latitudeDelta: abs(topLeft.latitude - bottomRight.latitude) * extraSpace,
                                          longitudeDelta: abs(topLeft.longitude - bottomRight.longitude) * extraSpace)
             region = MKCoordinateRegion(center: center, span: span)
-            region = mapView.regionThatFits(region)
 
         }
 
