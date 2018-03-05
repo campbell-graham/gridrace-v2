@@ -147,10 +147,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         do {
             //encode data
             let objectivesData = try encoder.encode(objectives)
-            let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
-            let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
-            let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses)
-            let imageResponseURLData = try encoder.encode(ObjectiveManager.shared.savedImageResponses)
+            let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
+            let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives.filter({$0.contains(dataCategory.rawValue.capitalized.first!)}))
+            let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
+            let imageResponseURLData = try encoder.encode(ObjectiveManager.shared.savedImageResponses.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
             //write to files
             try objectivesData.write(to: objectivesFilePath())
             try pointsData.write(to: pointsFilePath())
