@@ -23,6 +23,10 @@ struct AppResources {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths.first!
     }
+    
+    static var firstLaunchDate: Date {
+        return UserDefaults.standard.object(forKey: "FirstLaunchDate") as! Date
+    }
 
 }
 

@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //create timer if first time launching
         if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
             UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
-            //create timer object
+            //add date object to user defaults
+            UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
         }
         
         //firebase setup
