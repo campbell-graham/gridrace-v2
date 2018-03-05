@@ -11,37 +11,35 @@ import UIKit
 class Objective: Codable, Equatable {
    
     static func ==(lhs: Objective, rhs: Objective) -> Bool {
-        var isSame = true
-        
         if lhs.id != rhs.id {
-            isSame = false
+            return false
         }
         if lhs.name != rhs.name {
-            isSame = false
+            return false
         }
         if lhs.desc != rhs.desc {
-            isSame = false
+            return false
         }
         if lhs.imageURL != rhs.imageURL {
-            isSame = false
+            return false
         }
         if lhs.hintText != rhs.hintText {
-            isSame = false
+            return false
         }
         if lhs.points != rhs.points {
-            isSame = false
+            return false
         }
         if lhs.latitude != rhs.latitude {
-            isSame = false
+            return false
         }
         if lhs.longitude != rhs.longitude {
-            isSame = false
+            return false
         }
         if lhs.objectiveType != rhs.objectiveType {
-            isSame = false
+        
         }
         
-        return isSame
+        return true
     }
     
    
