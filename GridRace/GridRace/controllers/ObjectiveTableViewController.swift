@@ -173,11 +173,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             catch {
                 print("Error decoding the local array, will re-download")
                 //delete local files if there are issues assiging to local variables
-                deleteDocumentData()
+                resetLocalData()
             }
         } else {
             //delete local files in case some exist and others do not
-            deleteDocumentData()
+            resetLocalData()
         }
         
         //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
@@ -188,6 +188,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         do {
             try FileManager.default.removeItem(at: objectivesFilePath())
             try FileManager.default.removeItem(at: userDataFilePath())
+            for (data) in userData {
+                if let imageURL = data.imageResponseURL {
+                    try FileManager.default.removeItem(at: imageURL)
+                }
+            }
         } catch {
             print("Error deleting documents")
         }

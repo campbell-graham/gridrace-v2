@@ -6,17 +6,20 @@
 //  Copyright © 2018 Gridstone. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class ObjectiveUserData: Codable {
     
     let objectiveID: String
     var adjustedPoints: Int?
     var completed: Bool = false
-    var imageURL: URL?
+    var imageResponseURL: URL?
     var textResponse: String?
     
     init(id: String) {
         objectiveID = id
     }
+
+    
+   
 }

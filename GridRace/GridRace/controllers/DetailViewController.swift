@@ -61,17 +61,21 @@ class DetailViewController: UIViewController {
         setUpLayout()
     
         //present old data if it exists
-        switch objective.objectiveType {
-        case .text:
-            if (data.textResponse != nil) {
-                (answerView as! ContainerView).textLabel.text = data.textResponse
+        if data.completed {
+            switch objective.objectiveType {
+            case .text:
+                if (data.textResponse != nil) {
+                    (answerView as! ContainerView).textLabel.text = data.textResponse
+                }
+            case .password:
+                print("Not implemented yet")
+            case .photo:
+                if let answerView = answerView as? UIImageView, let imageURL = data.imageResponseURL {
+                    answerView.contentMode = .scaleAspectFit
+                    answerView.image = UIImage(contentsOfFile: imageURL.path)?.resized(withBounds:  CGSize(width: 200, height: 200))
+                }
             }
-        case .password:
-            print("Not implemented yet")
-        case .photo:
-            print("Not implemented yet")
         }
-            
     }
 
     private func initialiseViews() {
@@ -392,6 +396,12 @@ class DetailViewController: UIViewController {
         super.viewDidLayoutSubviews()
         descLabel.setContentOffset(CGPoint.zero, animated: false)
     }
+    
+    func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+
 
 }
 
@@ -436,6 +446,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             answerView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
         }
         dismiss(animated: true, completion: nil)
+        
+        //save image
+        let imageData = UIImageJPEGRepresentation(retrivedImage!, 1)
+        let imageFilePath = documentsDirectory().appendingPathComponent("Photo_\(objective.id).jpeg")
+        do {
+            try imageData?.write(to: imageFilePath)
+            data.imageResponseURL = imageFilePath
+        } catch {
+            print("Failed to save image")
+        }
 
         playHudAnimation()
         data.completed = true
@@ -446,5 +466,5 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
         dismiss(animated: true, completion: nil)
     }
-
+    
 }
