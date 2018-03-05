@@ -157,19 +157,22 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func loadLocalData() {
         //load objectives, points and completed data
-        guard let objectivesDataToRead = try? Data(contentsOf: objectivesFilePath()), let userDataToRead = try? Data(contentsOf: userDataFilePath())  else {
-            return
-        }
-        let decoder = PropertyListDecoder()
-        do {
-            objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
-            userData = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
-            sortObjectives()
-        } catch {
-            print("Error decoding the local array, will re-download")
-            //delete local files if there are issues assiging to local variables
+        if let objectivesDataToRead = try? Data(contentsOf: objectivesFilePath()), let userDataToRead = try? Data(contentsOf: userDataFilePath()) {
+            let decoder = PropertyListDecoder()
+            do {
+                objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
+                userData = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
+                sortObjectives()
+            } catch {
+                print("Error decoding the local array, will re-download")
+                //delete local files if there are issues assiging to local variables
+                resetLocalData()
+            }
+        } else {
+            //files don't exist or have issues so reset
             resetLocalData()
         }
+
         //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
         downloadObjectives()
     }
@@ -296,7 +299,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         let data = userData.first(where: {$0.objectiveID == obj.id})
-        let destination = DetailViewController(objective: obj, data: data!)
+        let destination = MapViewController(objective: obj, data: data!)
         destination.delegate = self
         navigationController?.pushViewController(destination, animated: true)
         

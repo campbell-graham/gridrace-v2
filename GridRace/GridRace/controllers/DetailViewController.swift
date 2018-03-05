@@ -12,8 +12,6 @@ class DetailViewController: UIViewController {
 
     var objective: Objective
     var data: ObjectiveUserData
-    private let mapView = MKMapView()
-    private let collapsableDetailsView = UIView()
     let panView = PanView()
     private let descLabel = UITextView()
     let pointBorderImageView = UIImageView()
