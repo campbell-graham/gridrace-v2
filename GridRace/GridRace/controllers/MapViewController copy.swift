@@ -32,7 +32,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             detailViewController.delegate = self.delegate
         }
     }
-    private var isCollapsed = false
+    private var isCollapsed = true
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
     init(objective: Objective) {
@@ -237,7 +237,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         self.mapView.delegate = self
 
         // generate a random offset in meters that is within the radius (so that the objective location will fall in new circle)
-        let randOffset = coordinate.latitude + (randBetween(lower: 1, upper: Int(radius - 20) ) as CLLocationDistance)
+        let randOffset = coordinate.latitude + (randBetween(lower: 20, upper: Int(radius - 10) ) as CLLocationDistance)
 
         // use offset to create a new random center for the overlay circle
         let randCenter = locationWithBearing(bearing: randOffset, distanceMeters: randOffset, origin: coordinate)
@@ -247,12 +247,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     }
 
     func randBetween(lower: Int, upper: Int) -> Double {
-        var random = 0
-        while random == 0 {
-            random = Int(arc4random_uniform(UInt32(upper - lower + 1))) + lower
-        }
 
-        return Double(random)
+        return Double( Int(arc4random_uniform(UInt32(upper - lower))) + lower)
     }
 
     // magic from internet to offset a location coordinate by meters (bearing is the direction to offset [in degress])
