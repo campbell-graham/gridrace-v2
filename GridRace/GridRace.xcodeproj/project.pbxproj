@@ -12,6 +12,7 @@
 		3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEE2045174100B4C9B3 /* Objective.swift */; };
 		376A5F852043A08D00D69090 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 377D9B87204646B8001E7466 /* GoogleService-Info.plist */; };
+		379AD944204CCD5D00250582 /* ObjectiveUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379AD943204CCD5D00250582 /* ObjectiveUserData.swift */; };
 		37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7ED2043CD0A00BA283B /* AppResources.swift */; };
 		37F2A7F22043DA7E00BA283B /* ObjectiveTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */; };
 		AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */; };
@@ -35,6 +36,7 @@
 		3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableHeaderView.swift; sourceTree = "<group>"; };
 		3712BDEE2045174100B4C9B3 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
 		377D9B87204646B8001E7466 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		379AD943204CCD5D00250582 /* ObjectiveUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveUserData.swift; sourceTree = "<group>"; };
 		37F2A7ED2043CD0A00BA283B /* AppResources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		37F2A7F12043DA7E00BA283B /* ObjectiveTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewCell.swift; sourceTree = "<group>"; };
 		AA1CD2BD2044C6DA0007A0C1 /* ClueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClueViewController.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			children = (
 				AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */,
 				3712BDEE2045174100B4C9B3 /* Objective.swift */,
+				379AD943204CCD5D00250582 /* ObjectiveUserData.swift */,
 			);
 			path = "Data Models";
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				376A5F852043A08D00D69090 /* (null) in Sources */,
 				AA1CD2C2204513820007A0C1 /* UIImageExtension.swift in Sources */,
 				AA29C93D2047644300BE0BAE /* ContainerView.swift in Sources */,
+				379AD944204CCD5D00250582 /* ObjectiveUserData.swift in Sources */,
 				AA1CD2C4204519E10007A0C1 /* HudView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

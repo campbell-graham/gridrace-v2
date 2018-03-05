@@ -18,29 +18,7 @@ struct AppColors {
     static var starPointsColor = #colorLiteral(red: 0.9176470588, green: 1, blue: 0.3607843137, alpha: 1)
 }
 
-class ObjectiveManager {
-    
-    typealias ObjectiveID = String
-    typealias Value = Int
-    
-    var objectivePointMap = [ObjectiveID: Value]()
-  
-    var completeObjectives = Set<ObjectiveID>()
-    
-    var savedTextResponses = [ObjectiveID: String]()
-    
-    //images will be saved seperately, with this dictionary pointing to their locations
-    var savedImageResponses = [ObjectiveID: URL]()
 
-    static let shared = ObjectiveManager()
 
-    func pointValue(for objective: Objective) -> Value {
-        return objectivePointMap[objective.id] ?? objective.points
-    }
-    
-    private init() {
-        
-    }
-}
 
 

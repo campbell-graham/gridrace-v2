@@ -12,6 +12,7 @@ import MapKit
 class DetailViewController: UIViewController {
 
     var objective: Objective
+    var data: ObjectiveUserData
     private let mapView = MKMapView()
     private let collapsableDetailsView = UIView()
     private let descLabel = UITextView()
@@ -26,9 +27,10 @@ class DetailViewController: UIViewController {
     private var isCollapsed = false
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
-    init(objective: Objective) {
+    init(objective: Objective, data: ObjectiveUserData) {
 
         self.objective = objective
+        self.data = data
 
         switch  objective.objectiveType {
         case .photo: // imageview
@@ -108,7 +110,7 @@ class DetailViewController: UIViewController {
 
         descLabel.text = objective.desc
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
-        pointLabel.text = "\(ObjectiveManager.shared.pointValue(for: self.objective))"
+        pointLabel.text = data.adjustedPoints != nil ? "\(data.adjustedPoints!)" : "\(objective.points)"
         interactImageView.image = answerView is UIImageView ? #imageLiteral(resourceName: "camera") : #imageLiteral(resourceName: "textCursor")
         hintImageView.image = #imageLiteral(resourceName: "hint")
     }
@@ -308,7 +310,7 @@ class DetailViewController: UIViewController {
 
     @objc private func clueButtonHandler() {
 
-        if !objective.hintTaken {
+        if data.adjustedPoints == nil {
             presentPointLossAlert()
         } else {
             presentClueViewController()
@@ -323,7 +325,7 @@ class DetailViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
-            ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.hintPointDeductionValue
+            self.data.adjustedPoints = self.objective.points - self.hintPointDeductionValue
             //self.objective.hintTaken = true
             self.updateViewsData()
             self.presentClueViewController()
@@ -354,7 +356,7 @@ class DetailViewController: UIViewController {
         if let answerView = answerView as? ContainerView {
             answerView.textLabel.text = answer
             playHudAnimation()
-            ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+            data.completed = true
             delegate?.initiateSave()
         }
     }
@@ -422,7 +424,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         dismiss(animated: true, completion: nil)
 
         playHudAnimation()
-        ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+        data.completed = true
         delegate?.initiateSave()
     }
 

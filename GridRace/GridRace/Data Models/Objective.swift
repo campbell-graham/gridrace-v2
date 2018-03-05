@@ -55,10 +55,7 @@ class Objective: Codable, Equatable {
     let longitude: Double?
     let objectiveType: ObjectiveType
     
-    var hintTaken: Bool {
-        let value = ObjectiveManager.shared.objectivePointMap[id]
-        return value != nil && value != points
-    }
+    
 }
 
 struct ObjectList: Codable {

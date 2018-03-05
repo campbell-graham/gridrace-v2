@@ -14,6 +14,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
+    var userData = [ObjectiveUserData]()
     
     var objectives = [Objective]() {
         didSet {
@@ -50,8 +51,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         completeObjectives.removeAll()
         incompleteObjectives.removeAll()
         for (objective) in objectives {
-            if ObjectiveManager.shared.completeObjectives.contains(objective.id) {
-                completeObjectives.append(objective)
+            if let x = userData.first(where: {$0.objectiveID == objective.id})  {
+                if x.completed {
+                    completeObjectives.append(objective)
+                } else {
+                    incompleteObjectives.append(objective)
+                }
             } else {
                 incompleteObjectives.append(objective)
             }
@@ -126,37 +131,21 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         return documentsDirectory().appendingPathComponent("Objectives_\(dataCategory.rawValue).plist")
     }
     
-    func pointsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Points_\(dataCategory.rawValue).plist")
-    }
-    
-    func savedTextResponsesFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("TextResponses_\(dataCategory.rawValue).plist")
-    }
-    
-    func savedImageResponsesURLsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("ImageResponsesURLs_\(dataCategory.rawValue).plist")
-    }
-    
-    func completeIDsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Completed_\(dataCategory.rawValue).plist")
+    func userDataFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("UserData_\(dataCategory.rawValue).plist")
     }
     
     func saveLocalData() {
         let encoder = PropertyListEncoder()
         do {
             //encode data
-            let objectivesData = try encoder.encode(objectives)
-            let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
-            let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives.filter({$0.contains(dataCategory.rawValue.capitalized.first!)}))
-            let textResponseData = try encoder.encode(ObjectiveManager.shared.savedTextResponses.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
-            let imageResponseURLData = try encoder.encode(ObjectiveManager.shared.savedImageResponses.filter({$0.key.contains(dataCategory.rawValue.capitalized.first!)}))
+            let objectivesDataToWrite = try encoder.encode(objectives)
+            let userDataToWrite = try encoder.encode(userData)
+            
             //write to files
-            try objectivesData.write(to: objectivesFilePath())
-            try pointsData.write(to: pointsFilePath())
-            try completeData.write(to: completeIDsFilePath())
-            try textResponseData.write(to: savedTextResponsesFilePath())
-            try imageResponseURLData.write(to: savedImageResponsesURLsFilePath())
+            try objectivesDataToWrite.write(to: objectivesFilePath())
+            try userDataToWrite.write(to: userDataFilePath())
+           
         } catch {
             print ("Something went wrong when saving")
         }
@@ -174,18 +163,11 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func loadLocalData() {
        
        //load objectives, points and completed data
-        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()), let imageResponseData = try? Data(contentsOf: savedImageResponsesURLsFilePath()), let textResponseData = try? Data(contentsOf: savedTextResponsesFilePath()) {
+        if let objectivesDataToRead = try? Data(contentsOf: objectivesFilePath()), let userDataToRead = try? Data(contentsOf: userDataFilePath()){
             let decoder = PropertyListDecoder()
             do {
-                objectives = try decoder.decode([Objective].self, from: objectivesData)
-                let pointValues = try decoder.decode([String: Int].self, from: pointsData)
-                pointValues.forEach { ObjectiveManager.shared.objectivePointMap[$0.key] = $0.value }
-                let completeValues = try decoder.decode(Set<String>.self, from: completeData)
-                completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0) }
-                let textResponseValues = try decoder.decode([String: String].self, from: textResponseData)
-                textResponseValues.forEach {ObjectiveManager.shared.savedTextResponses[$0.key] = $0.value}
-                let imageResponseValues = try decoder.decode([String: URL].self, from: imageResponseData)
-                imageResponseValues.forEach {ObjectiveManager.shared.savedImageResponses[$0.key] = $0.value}
+                objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
+                userData = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
                 sortObjectives()
                 }
             catch {
@@ -205,10 +187,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func deleteDocumentData() {
         do {
             try FileManager.default.removeItem(at: objectivesFilePath())
-            try FileManager.default.removeItem(at: pointsFilePath())
-            try FileManager.default.removeItem(at: completeIDsFilePath())
-            try FileManager.default.removeItem(at: savedTextResponsesFilePath())
-            try FileManager.default.removeItem(at: savedImageResponsesURLsFilePath())
+            try FileManager.default.removeItem(at: userDataFilePath())
         } catch {
             print("Error deleting documents")
         }
@@ -218,12 +197,13 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         //delete everything from local documents
         deleteDocumentData()
         
+        //re-populate user data
+        userData.removeAll()
+        for (objective) in objectives {
+            userData.append(ObjectiveUserData(id: objective.id))
+        }
         
-        //clear the objective manager
-        ObjectiveManager.shared.completeObjectives.removeAll()
-        ObjectiveManager.shared.objectivePointMap.removeAll()
-        ObjectiveManager.shared.savedTextResponses.removeAll()
-        ObjectiveManager.shared.savedImageResponses.removeAll()
+        
         //save this information
         saveLocalData()
         tableView.reloadData()
@@ -303,18 +283,26 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        var objective: Objective?
+        
         switch indexPath.section {
         case 0 :
-            let destination = DetailViewController(objective: incompleteObjectives[indexPath.row])
-            destination.delegate = self
-            navigationController?.pushViewController(destination, animated: true)
+            objective = incompleteObjectives[indexPath.row]
         case 1 :
-            let destination = DetailViewController(objective: completeObjectives[indexPath.row])
-            destination.delegate = self
-            navigationController?.pushViewController(destination, animated: true)
+            objective = completeObjectives[indexPath.row]
         default:
             print("invalid section")
         }
+        
+        //ensure that it found a valid object
+        if let objective = objective {
+            let data = userData.first(where: {$0.objectiveID == objective.id})
+            let destination = DetailViewController(objective: objective, data: data!)
+            destination.delegate = self
+            navigationController?.pushViewController(destination, animated: true)
+        }
+        
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -322,7 +310,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         let objective = indexPath.section == 0 ? incompleteObjectives[indexPath.row] : completeObjectives[indexPath.row]
         
         cell.titleLabel.text = objective.name
-        cell.pointsLabel.text = "\(ObjectiveManager.shared.objectivePointMap[objective.id] ?? objective.points)"
+        if let points = userData.first(where: {$0.objectiveID == objective.id})?.adjustedPoints {
+            cell.pointsLabel.text = String(points)
+        } else {
+            cell.pointsLabel.text = String(objective.points)
+        }
+        
         
         //set font to heavy if complete
         

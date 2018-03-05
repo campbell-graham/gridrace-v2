@@ -7,3 +7,16 @@
 //
 
 import Foundation
+
+class ObjectiveUserData: Codable {
+    
+    let objectiveID: String
+    var adjustedPoints: Int?
+    var completed: Bool = false
+    var imageURL: URL?
+    var textResponse: String?
+    
+    init(id: String) {
+        objectiveID = id
+    }
+}
