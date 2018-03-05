@@ -18,24 +18,15 @@ struct AppColors {
     static var starPointsColor = #colorLiteral(red: 0.9176470588, green: 1, blue: 0.3607843137, alpha: 1)
 }
 
-class ObjectiveManager {
-    
-    typealias ObjectiveID = String
-    typealias Value = Int
-    
-    var objectivePointMap = [ObjectiveID: Value]()
-  
-    var completeObjectives = Set<ObjectiveID>()
-
-    static let shared = ObjectiveManager()
-
-    func pointValue(for objective: Objective) -> Value {
-        return objectivePointMap[objective.id] ?? objective.points
+struct AppResources {
+    static func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths.first!
     }
-    
-    private init() {
-        
-    }
+
 }
+
+
+
 
 
