@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class Objective: Codable, Equatable {
    
@@ -52,6 +53,15 @@ class Objective: Codable, Equatable {
     let latitude: Double?
     let longitude: Double?
     let objectiveType: ObjectiveType
+    var coordinate: CLLocationCoordinate2D? {
+
+        if let lat = latitude, let long = longitude {
+            let cord = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            return cord
+        }
+
+        return nil
+    }
     
     
 }
