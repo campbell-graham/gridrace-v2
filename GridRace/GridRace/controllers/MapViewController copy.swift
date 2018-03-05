@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class MapViewController: UIViewController, CLLocationManagerDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
     var objectives = [Objective]()
     private let mapView = MKMapView()
@@ -137,6 +137,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
 
             if let objCord = objectives[0].coordinate {
                 region = MKCoordinateRegionMakeWithDistance( objCord, 1000, 1000)
+                addPreciseCircle(coordinate: objCord)
+                addRandomCircle(coordinate: objCord, radius: 150.0)
             }
         } else { // if there are many location set region to fit them all
 
@@ -222,6 +224,62 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         present(alert, animated: true, completion: nil)
         alert.addAction(okAction)
+    }
+
+
+    func addPreciseCircle(coordinate: CLLocationCoordinate2D){
+        self.mapView.delegate = self
+        let circle = MKCircle(center: coordinate, radius: 10 as CLLocationDistance)
+        self.mapView.add(circle)
+    }
+
+    func addRandomCircle(coordinate: CLLocationCoordinate2D, radius: Double){
+        self.mapView.delegate = self
+
+        // generate a random offset in meters that is within the radius (so that the objective location will fall in new circle)
+        let randOffset = coordinate.latitude + (randBetween(lower: 1, upper: Int(radius - 20) ) as CLLocationDistance)
+
+        // use offset to create a new random center for the overlay circle
+        let randCenter = locationWithBearing(bearing: randOffset, distanceMeters: randOffset, origin: coordinate)
+
+        let circle = MKCircle(center: randCenter, radius: radius as CLLocationDistance)
+        self.mapView.add(circle)
+    }
+
+    func randBetween(lower: Int, upper: Int) -> Double {
+        var random = 0
+        while random == 0 {
+            random = Int(arc4random_uniform(UInt32(upper - lower + 1))) + lower
+        }
+
+        return Double(random)
+    }
+
+    // magic from internet to offset a location coordinate by meters (bearing is the direction to offset [in degress])
+    func locationWithBearing(bearing:Double, distanceMeters:Double, origin:CLLocationCoordinate2D) -> CLLocationCoordinate2D {
+        let distRadians = distanceMeters / (6372797.6)
+
+        let rbearing = bearing * Double.pi / 180.0
+
+        let lat1 = origin.latitude * Double.pi / 180
+        let lon1 = origin.longitude * Double.pi / 180
+
+        let lat2 = asin(sin(lat1) * cos(distRadians) + cos(lat1) * sin(distRadians) * cos(rbearing))
+        let lon2 = lon1 + atan2(sin(rbearing) * sin(distRadians) * cos(lat1), cos(distRadians) - sin(lat1) * sin(lat2))
+
+        return CLLocationCoordinate2D(latitude: lat2 * 180 / Double.pi, longitude: lon2 * 180 / Double.pi)
+    }
+
+    func mapView(_ mapView: MKMapView!, rendererFor overlay: MKOverlay!) -> MKOverlayRenderer! {
+        if overlay is MKCircle {
+            let circle = MKCircleRenderer(overlay: overlay)
+            circle.strokeColor = #colorLiteral(red: 0.002938413294, green: 0.002939529018, blue: 0.002938266611, alpha: 1)
+            circle.fillColor = #colorLiteral(red: 0.002938413294, green: 0.002939529018, blue: 0.002938266611, alpha: 0.4145440925)
+            circle.lineWidth = 1
+            return circle
+        } else {
+            return nil
+        }
     }
 }
 
