@@ -14,6 +14,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
+    var userData = [ObjectiveUserData]()
     
     var objectives = [Objective]() {
         didSet {
@@ -38,9 +39,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        downloadObjectives()
+        loadLocalData()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         navigationController?.navigationBar.prefersLargeTitles = true
         tableView.reloadData()
@@ -50,8 +51,12 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         completeObjectives.removeAll()
         incompleteObjectives.removeAll()
         for (objective) in objectives {
-            if ObjectiveManager.shared.completeObjectives.contains(objective.id) {
-                completeObjectives.append(objective)
+            if let x = userData.first(where: {$0.objectiveID == objective.id})  {
+                if x.completed {
+                    completeObjectives.append(objective)
+                } else {
+                    incompleteObjectives.append(objective)
+                }
             } else {
                 incompleteObjectives.append(objective)
             }
@@ -61,60 +66,81 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func downloadObjectives() {
         
         //download if doesn't exist already
-        if !FileManager.default.fileExists(atPath: objectivesFilePath().path){
-            let ref = Database.database().reference()
-            
-            ref.observeSingleEvent(of: .value, with: { (snapshot) in
-                do {
-                    if let dict = snapshot.value as? [String: Any] {
-                        let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
-                        let jsonDecoder = JSONDecoder()
-                        
-                        self.objectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
-
-                        self.saveObjectives()
-                    }
-                } catch {
-                    print(error)
-                }
-            })
-        } else {
-            loadObjectives()
-        }
         
-       
+        var tempObjectives = [Objective]()
+        
+        let ref = Database.database().reference()
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            do {
+                if let dict = snapshot.value as? [String: Any] {
+                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    let jsonDecoder = JSONDecoder()
+                    
+                    tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+                    
+                    var dataReset = false
+                    
+                    //check that they are the same length and have the same data, reset if not
+                    if tempObjectives.count == self.objectives.count {
+                        for (index, objective) in tempObjectives.enumerated() {
+                            if !(objective == self.objectives[index]) {
+                                self.objectives = tempObjectives
+                                self.resetLocalData()
+                                dataReset = true
+                                break
+                            }
+                        }
+                    } else {
+                        //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
+                        if self.objectives.count != 0 {
+                            dataReset = true
+                        }
+                        self.objectives = tempObjectives
+                        self.resetLocalData()
+                    }
+                    
+                    //alert the user if their data has been reset
+                    if dataReset {
+                        let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                    
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print(error)
+            }
+        })
+        
+        saveLocalData()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func documentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
-    }
-    
     func objectivesFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Objectives_\(dataCategory.rawValue).plist")
+        return AppResources.documentsDirectory().appendingPathComponent("Objectives_\(dataCategory.rawValue).plist")
     }
     
-    func pointsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Points_\(dataCategory.rawValue).plist")
+    func userDataFilePath() -> URL {
+        return AppResources.documentsDirectory().appendingPathComponent("UserData_\(dataCategory.rawValue).plist")
     }
     
-    func completeIDsFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("Completed_\(dataCategory.rawValue).plist")
-    }
-    
-    func saveObjectives() {
+    func saveLocalData() {
         let encoder = PropertyListEncoder()
         do {
-            let objectivesData = try encoder.encode(objectives)
-            let pointsData = try encoder.encode(ObjectiveManager.shared.objectivePointMap)
-            let completeData = try encoder.encode(ObjectiveManager.shared.completeObjectives)
-            try objectivesData.write(to: objectivesFilePath())
-            try pointsData.write(to: pointsFilePath())
-            try completeData.write(to: completeIDsFilePath())
+            //encode data
+            let objectivesDataToWrite = try encoder.encode(objectives)
+            let userDataToWrite = try encoder.encode(userData)
+            
+            //write to files
+            try objectivesDataToWrite.write(to: objectivesFilePath())
+            try userDataToWrite.write(to: userDataFilePath())
+            
         } catch {
             print ("Something went wrong when saving")
         }
@@ -125,48 +151,57 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     func initiateSave() {
         print("Saving!")
-        saveObjectives()
+        saveLocalData()
     }
     
     
-    func loadObjectives() {
-       
-       //load objectives, points and completed data
-        if let objectivesData = try? Data(contentsOf: objectivesFilePath()), let pointsData = try? Data(contentsOf: pointsFilePath()), let completeData = try? Data(contentsOf: completeIDsFilePath()) {
-            let decoder = PropertyListDecoder()
-            do {
-                objectives = try decoder.decode([Objective].self, from: objectivesData)
-                let pointValues = try decoder.decode([String: Int].self, from: pointsData)
-                pointValues.forEach { ObjectiveManager.shared.objectivePointMap[$0.key] = $0.value }
-                let completeValues = try decoder.decode(Set<String>.self, from: completeData)
-                completeValues.forEach { ObjectiveManager.shared.completeObjectives.insert($0)
-                    
-                sortObjectives()
-                }
-            } catch {
-                print("Error decoding the local array, will re-download")
-                //delete local file and re-download if there is an issue
-                do {
-                    try FileManager.default.removeItem(at: objectivesFilePath())
-                    try FileManager.default.removeItem(at: pointsFilePath())
-                    try FileManager.default.removeItem(at: completeIDsFilePath())
-                    downloadObjectives()
-                } catch {
-                    print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
-                }
-                
-            }
-        } else {
-            //delete local file and re-download if there is an issue
-            do {
-                try FileManager.default.removeItem(at: objectivesFilePath())
-                try FileManager.default.removeItem(at: pointsFilePath())
-                try FileManager.default.removeItem(at: completeIDsFilePath())
-                downloadObjectives()
-            } catch {
-                print("Failed to delete corrupt data, if this triggers then sad react only cause there's not a lot you can do")
-            }
+    func loadLocalData() {
+        //load objectives, points and completed data
+        guard let objectivesDataToRead = try? Data(contentsOf: objectivesFilePath()), let userDataToRead = try? Data(contentsOf: userDataFilePath())  else {
+            return
         }
+        let decoder = PropertyListDecoder()
+        do {
+            objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
+            userData = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
+            sortObjectives()
+        } catch {
+            print("Error decoding the local array, will re-download")
+            //delete local files if there are issues assiging to local variables
+            resetLocalData()
+        }
+        //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
+        downloadObjectives()
+    }
+    
+    func deleteDocumentData() {
+        do {
+            try FileManager.default.removeItem(at: objectivesFilePath())
+            try FileManager.default.removeItem(at: userDataFilePath())
+            for (data) in userData {
+                if let imageURL = data.imageResponseURL {
+                    try FileManager.default.removeItem(at: imageURL)
+                }
+            }
+        } catch {
+            print("Error deleting documents")
+        }
+    }
+    
+    func resetLocalData() {
+        //delete everything from local documents
+        deleteDocumentData()
+        
+        //re-populate user data
+        userData.removeAll()
+        for (objective) in objectives {
+            userData.append(ObjectiveUserData(id: objective.id))
+        }
+        
+        
+        //save this information
+        saveLocalData()
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {
@@ -214,7 +249,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         default:
             return 0
         }
-       
+        
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -242,19 +277,29 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         tableView.deselectRow(at: indexPath, animated: true)
+        var objective: Objective?
+        
         switch indexPath.section {
         case 0 :
-            let destination = MapViewController(objective: incompleteObjectives[indexPath.row])
-            destination.delegate = self
-            navigationController?.pushViewController(destination, animated: true)
+            objective = incompleteObjectives[indexPath.row]
         case 1 :
-            let destination = MapViewController(objective: completeObjectives[indexPath.row])
-            destination.delegate = self
-            navigationController?.pushViewController(destination, animated: true)
+            objective = completeObjectives[indexPath.row]
         default:
             print("invalid section")
         }
+        
+        //ensure that it found a valid object
+        guard let obj = objective else {
+            return
+        }
+        
+        let data = userData.first(where: {$0.objectiveID == obj.id})
+        let destination = DetailViewController(objective: obj, data: data!)
+        destination.delegate = self
+        navigationController?.pushViewController(destination, animated: true)
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -262,12 +307,16 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         let objective = indexPath.section == 0 ? incompleteObjectives[indexPath.row] : completeObjectives[indexPath.row]
         
         cell.titleLabel.text = objective.name
-        cell.pointsLabel.text = "\(ObjectiveManager.shared.objectivePointMap[objective.id] ?? objective.points)"
+        if let points = userData.first(where: {$0.objectiveID == objective.id})?.adjustedPoints {
+            cell.pointsLabel.text = String(points)
+        } else {
+            cell.pointsLabel.text = String(objective.points)
+        }
+        
         
         //set font to heavy if complete
         
         cell.titleLabel.font = indexPath.section == 0 ? UIFont.systemFont(ofSize: 16, weight: .ultraLight) : UIFont.systemFont(ofSize: 16, weight: .medium)
-        
         
         return cell
     }

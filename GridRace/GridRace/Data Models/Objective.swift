@@ -9,8 +9,41 @@
 import UIKit
 import MapKit
 
-class Objective: Codable {
-
+class Objective: Codable, Equatable {
+   
+    static func ==(lhs: Objective, rhs: Objective) -> Bool {
+        if lhs.id != rhs.id {
+            return false
+        }
+        if lhs.name != rhs.name {
+            return false
+        }
+        if lhs.desc != rhs.desc {
+            return false
+        }
+        if lhs.imageURL != rhs.imageURL {
+            return false
+        }
+        if lhs.hintText != rhs.hintText {
+            return false
+        }
+        if lhs.points != rhs.points {
+            return false
+        }
+        if lhs.latitude != rhs.latitude {
+            return false
+        }
+        if lhs.longitude != rhs.longitude {
+            return false
+        }
+        if lhs.objectiveType != rhs.objectiveType {
+        
+        }
+        
+        return true
+    }
+    
+   
     let id: String
     let name: String
     let desc: String
@@ -30,11 +63,7 @@ class Objective: Codable {
         return nil
     }
     
-    var hintTaken: Bool {
-        let value = ObjectiveManager.shared.objectivePointMap[id]
-        return value != nil && value != points
-    }
-
+    
 }
 
 struct ObjectList: Codable {

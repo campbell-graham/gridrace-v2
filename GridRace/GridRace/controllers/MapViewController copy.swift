@@ -35,10 +35,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     private var isCollapsed = false
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
-    init(objective: Objective) {
+    init(objective: Objective, data: ObjectiveUserData) {
 
         self.objectives.append(objective)
-        self.detailViewController = DetailViewController(objective: objective)
+        self.detailViewController = DetailViewController(objective: objective, data: data )
         super.init(nibName: nil, bundle: nil)
 
         addChildViewController(detailViewController)

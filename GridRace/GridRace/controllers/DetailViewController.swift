@@ -11,6 +11,9 @@ import UIKit
 class DetailViewController: UIViewController {
 
     var objective: Objective
+    var data: ObjectiveUserData
+    private let mapView = MKMapView()
+    private let collapsableDetailsView = UIView()
     let panView = PanView()
     private let descLabel = UITextView()
     let pointBorderImageView = UIImageView()
@@ -23,9 +26,10 @@ class DetailViewController: UIViewController {
     var delegate: ObjectiveTableViewControllerDelegate?
     
 
-    init(objective: Objective) {
+    init(objective: Objective, data: ObjectiveUserData) {
 
         self.objective = objective
+        self.data = data
 
         switch  objective.objectiveType {
         case .photo: // imageview
@@ -54,6 +58,23 @@ class DetailViewController: UIViewController {
 
         initialiseViews()
         setUpLayout()
+    
+        //present old data if it exists
+        if data.completed {
+            switch objective.objectiveType {
+            case .text:
+                if (data.textResponse != nil) {
+                    (answerView as! ContainerView).textLabel.text = data.textResponse
+                }
+            case .password:
+                print("Not implemented yet")
+            case .photo:
+                if let answerView = answerView as? UIImageView, let imageURL = data.imageResponseURL {
+                    answerView.contentMode = .scaleAspectFit
+                    answerView.image = UIImage(contentsOfFile: imageURL.path)?.resized(withBounds:  CGSize(width: 200, height: 200))
+                }
+            }
+        }
     }
 
     private func initialiseViews() {
@@ -103,7 +124,7 @@ class DetailViewController: UIViewController {
 
         descLabel.text = objective.desc
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
-        pointLabel.text = "\(ObjectiveManager.shared.pointValue(for: self.objective))"
+        pointLabel.text = data.adjustedPoints != nil ? "\(data.adjustedPoints!)" : "\(objective.points)"
         interactImageView.image = answerView is UIImageView ? #imageLiteral(resourceName: "camera") : #imageLiteral(resourceName: "textCursor")
         hintImageView.image = #imageLiteral(resourceName: "hint")
     }
@@ -179,13 +200,12 @@ class DetailViewController: UIViewController {
    
 
     @objc private func clueButtonHandler() {
-
-        if !objective.hintTaken {
+        
+        guard let points = data.adjustedPoints else {
             presentPointLossAlert()
-        } else {
-            presentClueViewController()
+            return
         }
-
+            presentClueViewController()
     }
 
     @objc private func presentPointLossAlert() {
@@ -195,7 +215,7 @@ class DetailViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         let continueAction = UIAlertAction(title: "Continue", style: .default, handler: { _ in
-            ObjectiveManager.shared.objectivePointMap[self.objective.id] = self.objective.points - self.hintPointDeductionValue
+            self.data.adjustedPoints = self.objective.points - self.hintPointDeductionValue
             //self.objective.hintTaken = true
             self.updateViewsData()
             self.presentClueViewController()
@@ -226,7 +246,8 @@ class DetailViewController: UIViewController {
         if let answerView = answerView as? ContainerView {
             answerView.textLabel.text = answer
             playHudAnimation()
-            ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+            data.textResponse = answer
+            data.completed = true
             delegate?.initiateSave()
         }
     }
@@ -248,7 +269,7 @@ class DetailViewController: UIViewController {
         super.viewDidLayoutSubviews()
         descLabel.setContentOffset(CGPoint.zero, animated: false)
     }
-
+    
 }
 
 extension DetailViewController:
@@ -292,9 +313,19 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             answerView.image = retrivedImage?.resized(withBounds:  CGSize(width: 200, height: 200))
         }
         dismiss(animated: true, completion: nil)
+        
+        //save image
+        let imageData = UIImageJPEGRepresentation(retrivedImage!, 1)
+        let imageFilePath = AppResources.documentsDirectory().appendingPathComponent("Photo_\(objective.id).jpeg")
+        do {
+            try imageData?.write(to: imageFilePath)
+            data.imageResponseURL = imageFilePath
+        } catch {
+            print("Failed to save image")
+        }
 
         playHudAnimation()
-        ObjectiveManager.shared.completeObjectives.insert(self.objective.id)
+        data.completed = true
         delegate?.initiateSave()
     }
 
@@ -302,5 +333,5 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
         dismiss(animated: true, completion: nil)
     }
-
+    
 }
