@@ -326,13 +326,12 @@ class DetailViewController: UIViewController {
     }
 
     @objc private func clueButtonHandler() {
-
-        if data.adjustedPoints == nil {
+        
+        guard let points = data.adjustedPoints else {
             presentPointLossAlert()
-        } else {
-            presentClueViewController()
+            return
         }
-
+            presentClueViewController()
     }
 
     @objc private func presentPointLossAlert() {
@@ -397,12 +396,6 @@ class DetailViewController: UIViewController {
         descLabel.setContentOffset(CGPoint.zero, animated: false)
     }
     
-    func documentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
-    }
-
-
 }
 
 extension DetailViewController:
@@ -449,7 +442,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         
         //save image
         let imageData = UIImageJPEGRepresentation(retrivedImage!, 1)
-        let imageFilePath = documentsDirectory().appendingPathComponent("Photo_\(objective.id).jpeg")
+        let imageFilePath = AppResources.documentsDirectory().appendingPathComponent("Photo_\(objective.id).jpeg")
         do {
             try imageData?.write(to: imageFilePath)
             data.imageResponseURL = imageFilePath

@@ -18,6 +18,14 @@ struct AppColors {
     static var starPointsColor = #colorLiteral(red: 0.9176470588, green: 1, blue: 0.3607843137, alpha: 1)
 }
 
+struct AppResources {
+    static func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths.first!
+    }
+
+}
+
 
 
 
