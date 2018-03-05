@@ -9,10 +9,16 @@
 import UIKit
 import MapKit
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, CLLocationManagerDelegate {
 
-    var objective: Objective
+    var objectives = [Objective]()
     private let mapView = MKMapView()
+
+    //user location
+    private let locationManager = CLLocationManager()
+    private var userLocation: CLLocation?
+    private var updatingLocation = false
+    private var lastLocationError: Error?
 
     private let detailViewController: DetailViewController
     private lazy var collapsableDetailsView: UIView = {
@@ -31,7 +37,7 @@ class MapViewController: UIViewController {
 
     init(objective: Objective) {
 
-        self.objective = objective
+        self.objectives.append(objective)
         self.detailViewController = DetailViewController(objective: objective)
         super.init(nibName: nil, bundle: nil)
 
@@ -49,13 +55,17 @@ class MapViewController: UIViewController {
         super.viewDidLoad()
 
         navigationController?.navigationBar.prefersLargeTitles = false
-        title = objective.name
+        title = objectives[0].name
 
         setUpLayout()
 
-
+        //set up animation panGestureRecognizer
         let collapseGestureRecogniser = UIPanGestureRecognizer(target: self, action: #selector(collapseAnimationHandler))
         detailViewController.panView.addGestureRecognizer(collapseGestureRecogniser)
+
+        // show user, and zoom to objective location
+        mapView.showsUserLocation = true
+        showLocations()
     }
 
     private func setUpLayout() {
@@ -78,11 +88,147 @@ class MapViewController: UIViewController {
         ])
     }
 
+    @objc func getLocation() {
+        //ask permission for user location  (also had to add "NSLocationWhenInUseUsageDescription" to Info.plist file)
+        let authStatus = CLLocationManager.authorizationStatus()
+        if authStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+            return
+        }
+        // if permission denied show popup alert
+        if authStatus == .denied || authStatus == .restricted {
+            showLocationServicesDeniedAlert()
+            return
+        }
+        //start/stop searching for user location
+        if updatingLocation {
+            stopLocationManager()
+        } else {
+            userLocation = nil
+            lastLocationError = nil
+            startLocationManager()
+        }
+    }
 
+    func startLocationManager() {
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+            updatingLocation = true
+        }
+    }
+
+    func stopLocationManager() {
+        if updatingLocation {
+            locationManager.stopUpdatingLocation()
+            locationManager.delegate = nil
+            updatingLocation = false
+        }
+    }
+
+    func showLocations() {
+
+        // set region to userLocation to begin with
+        var region = MKCoordinateRegionMakeWithDistance( mapView.userLocation.coordinate, 1000, 1000)
+
+        // if there only one location, set region to that location
+        if objectives.count == 1 {
+
+            if let objCord = objectives[0].coordinate {
+                region = MKCoordinateRegionMakeWithDistance( objCord, 1000, 1000)
+            }
+        } else { // if there are many location set region to fit them all
+
+            var topLeft = CLLocationCoordinate2D(latitude: -90,  longitude: 180)
+            var bottomRight = CLLocationCoordinate2D(latitude: 90, longitude: -180)
+
+            for objective in objectives {
+                if let objCord = objective.coordinate {
+                    topLeft.latitude = max(topLeft.latitude,  objCord.latitude)
+                    topLeft.longitude = min(topLeft.longitude,  objCord.longitude)
+                    bottomRight.latitude = min(bottomRight.latitude, objCord.latitude)
+                    bottomRight.longitude = max(bottomRight.longitude, objCord.longitude)
+                }
+            }
+
+            let center = CLLocationCoordinate2D(
+                latitude: topLeft.latitude - (topLeft.latitude - bottomRight.latitude) / 2,
+                longitude: topLeft.longitude - (topLeft.longitude - bottomRight.longitude) / 2)
+            let extraSpace = 1.1
+            let span = MKCoordinateSpan( latitudeDelta: abs(topLeft.latitude - bottomRight.latitude) * extraSpace,
+                                         longitudeDelta: abs(topLeft.longitude - bottomRight.longitude) * extraSpace)
+            region = MKCoordinateRegion(center: center, span: span)
+            region = mapView.regionThatFits(region)
+
+        }
+
+        mapView.setRegion(region, animated: true)
+    }
+
+    // MARK: - CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("didFailWithError \(error)")
+        if (error as NSError).code == CLError.locationUnknown.rawValue {
+            return
+        }
+        lastLocationError = error
+        stopLocationManager()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let newLocation = locations.last!
+        print("didUpdateLocations \(newLocation)")
+        // only update location if its been at least 5 seconds from last update
+        guard newLocation.timestamp.timeIntervalSinceNow > -5 else { return }
+        // filter out invalid location updates
+        guard newLocation.horizontalAccuracy > 0 else { return }
+
+
+        var distance = CLLocationDistance(Double.greatestFiniteMagnitude)
+        if let location = userLocation {
+            distance = newLocation.distance(from: location)
+        }
+
+        // only update if current location hasnt been retrieved or the new update is more accurate
+        if userLocation == nil || userLocation!.horizontalAccuracy > newLocation.horizontalAccuracy {
+            lastLocationError = nil
+            userLocation = newLocation
+            zoomTo(location: userLocation!)
+            if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
+                print("*** We're done!")
+                stopLocationManager()
+            }
+        }
+        else if distance < 1 {
+            let timeInterval = newLocation.timestamp.timeIntervalSince(userLocation!.timestamp)
+            if timeInterval > 10 {
+                print("*** Force done!")
+                stopLocationManager()
+            }
+        }
+    }
+
+    func zoomTo(location: CLLocation) {
+        let region = MKCoordinateRegionMakeWithDistance( location.coordinate, 1000, 1000)
+        mapView.setRegion(mapView.regionThatFits(region), animated: true)
+    }
+
+    func showLocationServicesDeniedAlert() {
+        let alert = UIAlertController(
+            title: "Location Services Disabled",
+            message: "Please enable location services for this app in Settings.",
+            preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        present(alert, animated: true, completion: nil)
+        alert.addAction(okAction)
+    }
 }
 
 
-// animation extension
+
+
+//MARK:- animation extension
 extension MapViewController {
 
     @objc private func collapseAnimationHandler(recognizer: UIPanGestureRecognizer) {

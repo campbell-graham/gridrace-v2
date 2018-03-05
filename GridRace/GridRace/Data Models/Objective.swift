@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import MapKit
 
 class Objective: Codable {
-    
+
     let id: String
     let name: String
     let desc: String
@@ -19,6 +20,15 @@ class Objective: Codable {
     let latitude: Double?
     let longitude: Double?
     let objectiveType: ObjectiveType
+    var coordinate: CLLocationCoordinate2D? {
+
+        if let lat = latitude, let long = longitude {
+            let cord = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            return cord
+        }
+
+        return nil
+    }
     
     var hintTaken: Bool {
         let value = ObjectiveManager.shared.objectivePointMap[id]
