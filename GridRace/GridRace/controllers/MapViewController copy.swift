@@ -14,6 +14,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     var objectives = [Objective]()
     let objective: Objective
     private let mapView = MKMapView()
+    private var zoomToUser = false
 
     //user location
     private let locationManager = CLLocationManager()
@@ -152,8 +153,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
             region = MKCoordinateRegionMakeWithDistance( objCord, 1000, 1000)
 
-        // if there are many location set region to fit them all
+
         } else {
+            self.zoomToUser = true
+        }
+
+        // if there are many location set region to fit them all
+        /*else {
 
             var topLeft = CLLocationCoordinate2D(latitude: -90,  longitude: 180)
             var bottomRight = CLLocationCoordinate2D(latitude: 90, longitude: -180)
@@ -175,7 +181,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                                          longitudeDelta: abs(topLeft.longitude - bottomRight.longitude) * extraSpace)
             region = MKCoordinateRegion(center: center, span: span)
 
-        }
+        }*/
 
         mapView.setRegion(region, animated: true)
     }
@@ -208,7 +214,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if userLocation == nil || userLocation!.horizontalAccuracy > newLocation.horizontalAccuracy {
             lastLocationError = nil
             userLocation = newLocation
-            //zoomTo(location: userLocation!)
+            if zoomToUser {
+                zoomTo(location: userLocation!)
+                zoomToUser = false
+            }
             if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
                 print("*** We're done!")
                 stopLocationManager()
