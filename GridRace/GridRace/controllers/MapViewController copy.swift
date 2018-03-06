@@ -12,6 +12,7 @@ import MapKit
 class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
     var objectives = [Objective]()
+    let objective: Objective
     private let mapView = MKMapView()
 
     //user location
@@ -35,10 +36,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     private var isCollapsed = false
     private var collapsableDetailsAnimator: UIViewPropertyAnimator?
 
-    init(objectives: [Objective], data: ObjectiveUserData) {
+    init(objective: Objective, objectives: [Objective], data: ObjectiveUserData) {
 
+        self.objective = objective
         self.objectives = objectives
-        self.detailViewController = DetailViewController(objective: objectives[0], data: data )
+        self.detailViewController = DetailViewController(objective: objective, data: data )
         super.init(nibName: nil, bundle: nil)
 
         addChildViewController(detailViewController)
@@ -55,7 +57,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         super.viewDidLoad()
 
         navigationController?.navigationBar.prefersLargeTitles = false
-        title = objectives[0].name
+        title = objective.name
 
         setUpLayout()
 
@@ -65,6 +67,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
 
         // show user, and zoom to objective location
         mapView.showsUserLocation = true
+
+        addCircles()
+        getUserLocation()
         showLocations()
     }
 
@@ -88,7 +93,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         ])
     }
 
-    @objc func getLocation() {
+    @objc func getUserLocation() {
         //ask permission for user location  (also had to add "NSLocationWhenInUseUsageDescription" to Info.plist file)
         let authStatus = CLLocationManager.authorizationStatus()
         if authStatus == .notDetermined {
@@ -127,20 +132,28 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         }
     }
 
+    func addCircles() {
+        for objective in objectives {
+            if let objCord = objective.coordinate {
+
+                addPreciseCircle(coordinate: objCord)
+                addRandomCircle(coordinate: objCord, radius: 150.0)
+            }
+        }
+    }
+
     func showLocations() {
 
         // set region to userLocation to begin with
         var region = MKCoordinateRegionMakeWithDistance( mapView.userLocation.coordinate, 1000, 1000)
 
         // if there only one location, set region to that location
-        if objectives.count == 1 {
+        if let objCord = objective.coordinate {
 
-            if let objCord = objectives[0].coordinate {
-                region = MKCoordinateRegionMakeWithDistance( objCord, 1000, 1000)
-                addPreciseCircle(coordinate: objCord)
-                addRandomCircle(coordinate: objCord, radius: 150.0)
-            }
-        } else { // if there are many location set region to fit them all
+            region = MKCoordinateRegionMakeWithDistance( objCord, 1000, 1000)
+
+        // if there are many location set region to fit them all
+        } else {
 
             var topLeft = CLLocationCoordinate2D(latitude: -90,  longitude: 180)
             var bottomRight = CLLocationCoordinate2D(latitude: 90, longitude: -180)
@@ -151,9 +164,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
                     topLeft.longitude = min(topLeft.longitude,  objCord.longitude)
                     bottomRight.latitude = min(bottomRight.latitude, objCord.latitude)
                     bottomRight.longitude = max(bottomRight.longitude, objCord.longitude)
-
-                    addPreciseCircle(coordinate: objCord)
-                    addRandomCircle(coordinate: objCord, radius: 150.0)
                 }
             }
 

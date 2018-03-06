@@ -19,6 +19,8 @@
 		AA1CD2C02044D29B0007A0C1 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */; };
 		AA1CD2C2204513820007A0C1 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */; };
 		AA1CD2C4204519E10007A0C1 /* HudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1CD2C3204519E10007A0C1 /* HudView.swift */; };
+		AA23AB21204E0A8300F6CCEF /* walking.gpx in Resources */ = {isa = PBXBuildFile; fileRef = AA23AB20204E0A8300F6CCEF /* walking.gpx */; };
+		AA23AB23204E11FE00F6CCEF /* PasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA23AB22204E11FE00F6CCEF /* PasswordView.swift */; };
 		AA23CECC2048E6450003E1D2 /* MapViewController copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA23CECB2048E6450003E1D2 /* MapViewController copy.swift */; };
 		AA23CECE2048F5FD0003E1D2 /* PanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA23CECD2048F5FD0003E1D2 /* PanView.swift */; };
 		AA29A12420438BC500DF3A1C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29A12320438BC500DF3A1C /* AppDelegate.swift */; };
@@ -45,6 +47,8 @@
 		AA1CD2BF2044D29A0007A0C1 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		AA1CD2C1204513820007A0C1 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		AA1CD2C3204519E10007A0C1 /* HudView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HudView.swift; sourceTree = "<group>"; };
+		AA23AB20204E0A8300F6CCEF /* walking.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = walking.gpx; sourceTree = "<group>"; };
+		AA23AB22204E11FE00F6CCEF /* PasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordView.swift; sourceTree = "<group>"; };
 		AA23CECB2048E6450003E1D2 /* MapViewController copy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapViewController copy.swift"; sourceTree = "<group>"; };
 		AA23CECD2048F5FD0003E1D2 /* PanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanView.swift; sourceTree = "<group>"; };
 		AA29A12020438BC500DF3A1C /* GridRace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GridRace.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,6 +123,7 @@
 				AA29A12C20438BC500DF3A1C /* LaunchScreen.storyboard */,
 				AA29A12F20438BC500DF3A1C /* Info.plist */,
 				377D9B87204646B8001E7466 /* GoogleService-Info.plist */,
+				AA23AB20204E0A8300F6CCEF /* walking.gpx */,
 			);
 			path = GridRace;
 			sourceTree = "<group>";
@@ -144,6 +149,7 @@
 				AA29C93C2047644300BE0BAE /* ContainerView.swift */,
 				AA1CD2C3204519E10007A0C1 /* HudView.swift */,
 				AA23CECD2048F5FD0003E1D2 /* PanView.swift */,
+				AA23AB22204E11FE00F6CCEF /* PasswordView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -221,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA29A12E20438BC500DF3A1C /* LaunchScreen.storyboard in Resources */,
+				AA23AB21204E0A8300F6CCEF /* walking.gpx in Resources */,
 				377D9B88204646B8001E7466 /* GoogleService-Info.plist in Resources */,
 				AA29A12B20438BC500DF3A1C /* Assets.xcassets in Resources */,
 				AA29A12920438BC500DF3A1C /* Main.storyboard in Resources */,
@@ -292,6 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA23AB23204E11FE00F6CCEF /* PasswordView.swift in Sources */,
 				AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */,
 				37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */,
 				AA23CECE2048F5FD0003E1D2 /* PanView.swift in Sources */,

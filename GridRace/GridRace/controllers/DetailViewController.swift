@@ -35,7 +35,7 @@ class DetailViewController: UIViewController {
         case .text: // textField
             answerView = ContainerView()
         case .password: // pin view
-            answerView = UIView()
+            answerView = PasswordView()
 
         }
 
@@ -123,8 +123,16 @@ class DetailViewController: UIViewController {
         descLabel.text = objective.desc
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
         pointLabel.text = data.adjustedPoints != nil ? "\(data.adjustedPoints!)" : "\(objective.points)"
-        interactImageView.image = answerView is UIImageView ? #imageLiteral(resourceName: "camera") : #imageLiteral(resourceName: "textCursor")
         hintImageView.image = #imageLiteral(resourceName: "hint")
+
+        switch  answerView {
+        case is UIImageView:
+            interactImageView.image = #imageLiteral(resourceName: "camera")
+        case is ContainerView:
+            interactImageView.image = #imageLiteral(resourceName: "textCursor")
+        default:
+            interactImageView.image = #imageLiteral(resourceName: "flag")
+        }
     }
 
     private func setUpLayout() {
@@ -168,14 +176,12 @@ class DetailViewController: UIViewController {
                 answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor),
 
                 interactImageView.topAnchor.constraint(greaterThanOrEqualTo: answerView.bottomAnchor, constant: 16),]
-        case is ContainerView:
+        default:
             constraints += [
                 answerView.topAnchor.constraint(equalTo: descLabel.bottomAnchor),
                 answerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 answerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 answerView.bottomAnchor.constraint(equalTo: interactImageView.topAnchor)]
-        default:
-            break
         }
 
         constraints += [
@@ -193,9 +199,8 @@ class DetailViewController: UIViewController {
         ]
 
         NSLayoutConstraint.activate(constraints)
-    }
 
-   
+    }
 
     @objc private func clueButtonHandler() {
         
@@ -266,6 +271,12 @@ class DetailViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         descLabel.setContentOffset(CGPoint.zero, animated: false)
+
+        if let answerView = answerView as? PasswordView {
+
+            answerView.activateButtonConstraints()
+        }
+
     }
     
 }
