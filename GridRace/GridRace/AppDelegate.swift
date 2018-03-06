@@ -13,16 +13,35 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let formatter = DateFormatter()
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        //create timer if first time launching
+        //set up date formatter
+        formatter.dateFormat = "HH:mm:ss"
+        
+        //create date if first time launching
         if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
             UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
             //add date object to user defaults
             UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
         }
+        
+        _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {_ in
+            let interval = Date().timeIntervalSince(AppResources.firstLaunchDate)
+            
+            let ti = NSInteger(interval)
+            
+            let seconds = ti % 60
+            let minutes = seconds % 60
+            let hours = ti % 3600
+            
+            AppResources.timeToDisplay = NSString(format: "%0.2d:%0.2d:%0.2d",hours,minutes,seconds) as String
+        })
+        
+        
+        
         
         //firebase setup
         FirebaseApp.configure()

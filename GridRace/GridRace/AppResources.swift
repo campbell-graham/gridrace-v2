@@ -27,6 +27,8 @@ struct AppResources {
     static var firstLaunchDate: Date {
         return UserDefaults.standard.object(forKey: "FirstLaunchDate") as! Date
     }
+    
+    static var timeToDisplay: String = "00:00:00"
 
 }
 
