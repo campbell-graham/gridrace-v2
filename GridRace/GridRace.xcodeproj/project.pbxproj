@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370BBB02204E16D2005C4A56 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370BBB01204E16D2005C4A56 /* TimerView.swift */; };
 		3712BDE92044D9A300B4C9B3 /* ObjectiveTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */; };
 		3712BDEB2044E9EB00B4C9B3 /* CustomTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */; };
 		3712BDEF2045174100B4C9B3 /* Objective.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712BDEE2045174100B4C9B3 /* Objective.swift */; };
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		13733228498CCA006EAA6DCA /* Pods-GridRace.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.debug.xcconfig"; sourceTree = "<group>"; };
 		2727F62BE70A41A8EF9B4686 /* Pods-GridRace.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GridRace.release.xcconfig"; path = "Pods/Target Support Files/Pods-GridRace/Pods-GridRace.release.xcconfig"; sourceTree = "<group>"; };
+		370BBB01204E16D2005C4A56 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		3712BDE82044D9A300B4C9B3 /* ObjectiveTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveTableViewController.swift; sourceTree = "<group>"; };
 		3712BDEA2044E9EB00B4C9B3 /* CustomTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableHeaderView.swift; sourceTree = "<group>"; };
 		3712BDEE2045174100B4C9B3 /* Objective.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Objective.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				AA29C93C2047644300BE0BAE /* ContainerView.swift */,
 				AA1CD2C3204519E10007A0C1 /* HudView.swift */,
 				AA23CECD2048F5FD0003E1D2 /* PanView.swift */,
+				370BBB01204E16D2005C4A56 /* TimerView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				370BBB02204E16D2005C4A56 /* TimerView.swift in Sources */,
 				AA1CD2BE2044C6DA0007A0C1 /* ClueViewController.swift in Sources */,
 				37F2A7EE2043CD0A00BA283B /* AppResources.swift in Sources */,
 				AA23CECE2048F5FD0003E1D2 /* PanView.swift in Sources */,

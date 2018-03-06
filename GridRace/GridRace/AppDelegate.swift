@@ -13,14 +13,38 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let formatter = DateFormatter()
+    let timerView = TimerView()
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        //create date if first time launching
+        if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
+            UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
+            //add date object to user defaults
+            UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
+        }
+        
+        _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {_ in
+            let interval = Date().timeIntervalSince(AppResources.firstLaunchDate)
+            
+            let ti = NSInteger(interval)
+            
+            let seconds = ti % 60
+            let minutes = (ti / 60) % 60
+            let hours = ti / 3600
+            
+            AppResources.timeToDisplay = NSString(format: "%0.2d:%0.2d:%0.2d", hours, minutes, seconds) as String
+            self.timerView.timeLabel.text = AppResources.timeToDisplay
+        })
         
         //firebase setup
         FirebaseApp.configure()
         
         window = UIWindow(frame: UIScreen.main.bounds)
+        
+        
         
         let mainTabController = UITabBarController()
         
@@ -41,7 +65,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.makeKeyAndVisible()
         
-        
+        addTimerToWindow(heightFromBottom: mainTabController.tabBar.bounds.height)
+    
        
         
         return true
@@ -69,6 +94,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func addTimerToWindow(heightFromBottom height: CGFloat) {
+        window?.addSubview(timerView)
+        
+        timerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            timerView.leadingAnchor.constraint(equalTo: (window?.leadingAnchor)!),
+            timerView.trailingAnchor.constraint(equalTo: (window?.trailingAnchor)!),
+            timerView.bottomAnchor.constraint(equalTo: (window?.bottomAnchor)!, constant: -height),
+            timerView.heightAnchor.constraint(equalToConstant: 40)
+        ])
     }
 }
 
