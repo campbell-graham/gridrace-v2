@@ -15,6 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let formatter = DateFormatter()
     let timerView = TimerView()
+    static let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"))
+    static let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: ObjectiveCategory(rawValue: "bonus"))
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -50,8 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         mainTabController.tabBar.barTintColor = AppColors.backgroundColor
         mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
+        
+        
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"))), UINavigationController(rootViewController: ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: ObjectiveCategory(rawValue: "bonus")))]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: AppDelegate.placesViewController), UINavigationController(rootViewController: AppDelegate.bonusViewController)]
         
         window?.rootViewController = mainTabController
         
@@ -104,9 +108,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSLayoutConstraint.activate([
             timerView.leadingAnchor.constraint(equalTo: (window?.leadingAnchor)!),
             timerView.trailingAnchor.constraint(equalTo: (window?.trailingAnchor)!),
-            timerView.bottomAnchor.constraint(equalTo: (window?.bottomAnchor)!, constant: -height),
-            timerView.heightAnchor.constraint(equalToConstant: 40)
+            timerView.bottomAnchor.constraint(equalTo: (window?.bottomAnchor)!),
+            timerView.heightAnchor.constraint(equalToConstant: height)
         ])
+    }
+    
+    static func getAllObjectives() -> [Objective] {
+        var objectives = [Objective]()
+        
+        for (objective) in AppDelegate.placesViewController.objectives {
+            objectives.append(objective)
+        }
+        for (objective) in AppDelegate.bonusViewController.objectives {
+            objectives.append(objective)
+        }
+        return objectives
+    }
+    
+    static func getAllObjectiveData() -> [ObjectiveUserData] {
+        var objectivesData = [ObjectiveUserData]()
+        
+        for (objectiveData) in AppDelegate.placesViewController.userData {
+            objectivesData.append(objectiveData)
+        }
+        for (objectiveData) in AppDelegate.bonusViewController.userData {
+            objectivesData.append(objectiveData)
+        }
+        return objectivesData
     }
 }
 
