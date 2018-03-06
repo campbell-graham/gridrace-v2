@@ -299,7 +299,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         let data = userData.first(where: {$0.objectiveID == obj.id})
-        let destination = MapViewController(objectives: incompleteObjectives, data: data!)
+        let destination = MapViewController(objective: obj, objectives: incompleteObjectives, data: data!)
         destination.delegate = self
         navigationController?.pushViewController(destination, animated: true)
         
