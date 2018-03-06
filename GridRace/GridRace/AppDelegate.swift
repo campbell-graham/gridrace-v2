@@ -34,10 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let ti = NSInteger(interval)
             
             let seconds = ti % 60
-            let minutes = seconds % 60
-            let hours = ti % 3600
+            let minutes = (ti / 60) % 60
+            let hours = ti / 3600
             
             AppResources.timeToDisplay = NSString(format: "%0.2d:%0.2d:%0.2d",hours,minutes,seconds) as String
+            print(AppResources.timeToDisplay)
         })
         
         
