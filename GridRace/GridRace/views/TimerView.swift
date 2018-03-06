@@ -16,11 +16,11 @@ class TimerView: UIView {
         super.init(frame: frame)
         
         //view styling
-        backgroundColor = AppColors.greenHighlightColor
+        tintColor = AppColors.backgroundColor
         
         //label styling
         timeLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        timeLabel.textColor = AppColors.backgroundColor
+        timeLabel.textColor = AppColors.greenHighlightColor
         
         addSubview(timeLabel)
         

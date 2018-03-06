@@ -19,9 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        //set up date formatter
-        formatter.dateFormat = "HH:mm:ss"
-        
         //create date if first time launching
         if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
             UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
@@ -40,7 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             AppResources.timeToDisplay = NSString(format: "%0.2d:%0.2d:%0.2d", hours, minutes, seconds) as String
             self.timerView.timeLabel.text = AppResources.timeToDisplay
-            print(AppResources.timeToDisplay)
         })
         
         //firebase setup
