@@ -106,10 +106,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         timerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            timerView.leadingAnchor.constraint(equalTo: (window?.leadingAnchor)!),
-            timerView.trailingAnchor.constraint(equalTo: (window?.trailingAnchor)!),
+            timerView.centerXAnchor.constraint (equalTo: (window?.centerXAnchor)!),
             timerView.bottomAnchor.constraint(equalTo: (window?.bottomAnchor)!),
-            timerView.heightAnchor.constraint(equalToConstant: height)
+            timerView.heightAnchor.constraint(equalToConstant: height),
+            timerView.widthAnchor.constraint(equalToConstant: (window?.frame.width)! * 0.3)
         ])
     }
     
