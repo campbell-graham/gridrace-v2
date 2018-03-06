@@ -208,7 +208,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if userLocation == nil || userLocation!.horizontalAccuracy > newLocation.horizontalAccuracy {
             lastLocationError = nil
             userLocation = newLocation
-            zoomTo(location: userLocation!)
+            //zoomTo(location: userLocation!)
             if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
                 print("*** We're done!")
                 stopLocationManager()
