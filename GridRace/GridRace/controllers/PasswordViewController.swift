@@ -23,9 +23,9 @@ class PasswordViewController: UIViewController {
             let button = UIButton()
 
             button.setTitle("\(index)", for: .normal)
-
             button.tag = index
             button.addTarget(self, action: #selector(buttonTouched), for: .touchUpInside)
+            button.showsTouchWhenHighlighted = true
             buttons.append(button)
 
             button.translatesAutoresizingMaskIntoConstraints = false
