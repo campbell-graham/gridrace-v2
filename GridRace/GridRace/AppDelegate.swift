@@ -24,48 +24,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        //create date if first time launching
-        if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
-            UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
-            window?.rootViewController = StartScreenViewController()
-        } else {
-            _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {_ in
-                let interval = Date().timeIntervalSince(AppResources.firstLaunchDate)
-                
-                let ti = NSInteger(interval)
-                
-                let seconds = ti % 60
-                let minutes = (ti / 60) % 60
-                let hours = ti / 3600
-                
-                AppResources.timeToDisplay = NSString(format: "%0.2d:%0.2d:%0.2d", hours, minutes, seconds) as String
-                self.timerView.timeLabel.text = AppResources.timeToDisplay
-            })
-            
-            let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"), objectives: &AppResources.placesObjectives, data: &AppResources.placesUserData)
-            let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: .bonus, objectives: &AppResources.bonusObjectives, data: &AppResources.bonusUserData)
-            
-            let mainTabController = UITabBarController()
-            
-            mainTabController.tabBar.barTintColor = AppColors.backgroundColor
-            mainTabController.tabBar.tintColor = AppColors.textPrimaryColor
-            
-            mainTabController.viewControllers = [UINavigationController(rootViewController: placesViewController), UINavigationController(rootViewController: bonusViewController)]
-            
-            addTimerToTabBar(tabBar: mainTabController.tabBar)
-            
-            window?.rootViewController = mainTabController
-            
-        }
-        
-        
-        
         //global styling
         UINavigationBar.appearance().barTintColor = AppColors.backgroundColor
         UINavigationBar.appearance().tintColor = AppColors.textPrimaryColor
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
         UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : AppColors.greenHighlightColor]
         UITabBar.appearance().tintColor = AppColors.greenHighlightColor
+        
+        //create date if first time launching
+        if !UserDefaults.standard.bool(forKey: "HasLaunchedOnce") {
+            UserDefaults.standard.set(true, forKey: "HasLaunchedOnce")
+            window?.rootViewController = StartScreenViewController()
+        } else {
+            window?.rootViewController = CustomTabBarController()
+        }
         
         window?.makeKeyAndVisible()
     
