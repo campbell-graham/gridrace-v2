@@ -110,29 +110,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ])
     }
     
-//    func getAllObjectives() -> [Objective] {
-//        var objectives = [Objective]()
-//
-//        for (objective) in placesViewController.objectives {
-//            objectives.append(objective)
-//        }
-//        for (objective) in bonusViewController.objectives {
-//            objectives.append(objective)
-//        }
-//        return objectives
-//    }
-//
-//    func getAllObjectiveData() -> [ObjectiveUserData] {
-//        var objectivesData = [ObjectiveUserData]()
-//
-//        for (objectiveData) in placesViewController.userData {
-//            objectivesData.append(objectiveData)
-//        }
-//        for (objectiveData) in bonusViewController.userData {
-//            objectivesData.append(objectiveData)
-//        }
-//        return objectivesData
-//    }
 }
 
 
