@@ -15,6 +15,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
     var userData = [ObjectiveUserData]()
+    var hasFirebaseConnection = false
     
     var objectives = [Objective]() {
         didSet {
@@ -34,7 +35,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     //will eventually take in data
-    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory) {
+    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory, objectives: inout [Objective], data: inout [ObjectiveUserData]) {
+        self.objectives = objectives
+        self.userData = data
         self.dataCategory = dataCategory
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -88,6 +91,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                                 self.objectives = tempObjectives
                                 self.resetLocalData()
                                 dataReset = true
+                                UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
                                 break
                             }
                         }
@@ -106,8 +110,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                         alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
                     }
-                    
-                    
                     self.tableView.reloadData()
                 }
             } catch {
@@ -172,7 +174,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             //files don't exist or have issues so reset
             resetLocalData()
         }
-
+        
         //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
         downloadObjectives()
     }
@@ -210,6 +212,16 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //check connection and set variable as required
+        let connectedRef = Database.database().reference(withPath: ".info/connected")
+        connectedRef.observe(.value, with: { snapshot in
+            if let connected = snapshot.value as? Bool, connected {
+                self.hasFirebaseConnection = true
+            } else {
+                self.hasFirebaseConnection = false
+            }
+        })
+        
         //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -237,6 +249,14 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             ])
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10000), execute: {
+            if !self.hasFirebaseConnection {
+                let alert = UIAlertController(title: "Failed to download for \(self.dataCategory.rawValue.capitalized)!", message: "We were unable to download up to date data, so please note that the objectives in this app may not be accurate", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        })
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
