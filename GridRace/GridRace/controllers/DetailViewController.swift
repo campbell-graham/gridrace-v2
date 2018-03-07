@@ -34,7 +34,7 @@ class DetailViewController: UIViewController {
         case .photo: // imageview
             answerView = UIImageView()
         case .text: // textField
-            answerView = ContainerView()
+            answerView = TextResponseView()
         case .password: // pin view
 
             passwordViewController = PasswordViewController()
@@ -76,7 +76,7 @@ class DetailViewController: UIViewController {
             switch objective.objectiveType {
             case .text:
                 if (data.textResponse != nil) {
-                    (answerView as! ContainerView).textLabel.text = data.textResponse
+                    (answerView as! TextResponseView).textLabel.text = data.textResponse
                 }
             case .password:
                 print("Not implemented yet")
@@ -116,7 +116,7 @@ class DetailViewController: UIViewController {
         switch answerView {
         case is UIImageView :
             interactGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(selectPhoto))
-        case is ContainerView :
+        case is TextResponseView :
             interactGestureRecogniser = UITapGestureRecognizer(target: self, action: #selector(enterAnswer))
         default:
             interactGestureRecogniser = UITapGestureRecognizer(target: self, action: nil)
@@ -146,7 +146,7 @@ class DetailViewController: UIViewController {
         switch  answerView {
         case is UIImageView:
             interactImageView.image = #imageLiteral(resourceName: "camera")
-        case is ContainerView:
+        case is TextResponseView:
             interactImageView.image = #imageLiteral(resourceName: "textCursor")
         default:
             interactImageView.image = #imageLiteral(resourceName: "flag")
@@ -194,7 +194,7 @@ class DetailViewController: UIViewController {
                 answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor),
 
                 interactImageView.topAnchor.constraint(greaterThanOrEqualTo: answerView.bottomAnchor, constant: 16),]
-        case is ContainerView:
+        case is TextResponseView:
             constraints += [
                 answerView.topAnchor.constraint(equalTo: descLabel.bottomAnchor),
                 answerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -276,7 +276,7 @@ class DetailViewController: UIViewController {
 
     func enterAnswerCompletion(answer: String) {
 
-        if let answerView = answerView as? ContainerView {
+        if let answerView = answerView as? TextResponseView {
             answerView.textLabel.text = answer
             playHudAnimation()
             data.textResponse = answer
