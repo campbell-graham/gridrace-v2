@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ContainerView: UIView {
+class TextResponseView: UIView {
 
     let textLabel = UILabel()
 
