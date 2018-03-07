@@ -29,6 +29,11 @@ struct AppResources {
     }
     
     static var timeToDisplay: String = "00:00:00"
+    
+    static var placesObjectives = [Objective]()
+    static var bonusObjectives = [Objective]()
+    static var placesUserData = [ObjectiveUserData]()
+    static var bonusUserData = [ObjectiveUserData]()
 
 }
 

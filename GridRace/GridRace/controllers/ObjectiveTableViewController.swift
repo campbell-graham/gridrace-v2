@@ -15,7 +15,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
     var userData = [ObjectiveUserData]()
-    var didSuccessfullyDownload = false
+    var hasFirebaseConnection = false
     
     var objectives = [Objective]() {
         didSet {
@@ -35,7 +35,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     //will eventually take in data
-    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory) {
+    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory, objectives: inout [Objective], data: inout [ObjectiveUserData]) {
+        self.objectives = objectives
+        self.userData = data
         self.dataCategory = dataCategory
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -72,49 +74,48 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         
         let ref = Database.database().reference()
         
-                ref.observeSingleEvent(of: .value, with: { (snapshot) in
-                    self.didSuccessfullyDownload = true
-                    do {
-                        if let dict = snapshot.value as? [String: Any] {
-                            let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
-                            let jsonDecoder = JSONDecoder()
-                            
-                            tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
-                            
-                            var dataReset = false
-                            
-                            //check that they are the same length and have the same data, reset if not
-                            if tempObjectives.count == self.objectives.count {
-                                for (index, objective) in tempObjectives.enumerated() {
-                                    if !(objective == self.objectives[index]) {
-                                        self.objectives = tempObjectives
-                                        self.resetLocalData()
-                                        dataReset = true
-                                        UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
-                                        break
-                                    }
-                                }
-                            } else {
-                                //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
-                                if self.objectives.count != 0 {
-                                    dataReset = true
-                                }
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            do {
+                if let dict = snapshot.value as? [String: Any] {
+                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    let jsonDecoder = JSONDecoder()
+                    
+                    tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+                    
+                    var dataReset = false
+                    
+                    //check that they are the same length and have the same data, reset if not
+                    if tempObjectives.count == self.objectives.count {
+                        for (index, objective) in tempObjectives.enumerated() {
+                            if !(objective == self.objectives[index]) {
                                 self.objectives = tempObjectives
                                 self.resetLocalData()
+                                dataReset = true
+                                UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
+                                break
                             }
-                            
-                            //alert the user if their data has been reset
-                            if dataReset {
-                                let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
-                                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-                                self.present(alert, animated: true, completion: nil)
-                            }
-                            self.tableView.reloadData()
                         }
-                    } catch {
-                        print(error)
+                    } else {
+                        //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
+                        if self.objectives.count != 0 {
+                            dataReset = true
+                        }
+                        self.objectives = tempObjectives
+                        self.resetLocalData()
                     }
-                })
+                    
+                    //alert the user if their data has been reset
+                    if dataReset {
+                        let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print(error)
+            }
+        })
         
         saveLocalData()
     }
@@ -173,7 +174,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             //files don't exist or have issues so reset
             resetLocalData()
         }
-
+        
         //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
         downloadObjectives()
     }
@@ -211,6 +212,16 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //check connection and set variable as required
+        let connectedRef = Database.database().reference(withPath: ".info/connected")
+        connectedRef.observe(.value, with: { snapshot in
+            if let connected = snapshot.value as? Bool, connected {
+                self.hasFirebaseConnection = true
+            } else {
+                self.hasFirebaseConnection = false
+            }
+        })
+        
         //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -240,8 +251,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             ])
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10000), execute: {
-            if !self.didSuccessfullyDownload {
-                let alert = UIAlertController(title: "Failed to download!", message: "We were unable to download up to date data, so note that the objectives in this app may not be accurate", preferredStyle: .alert)
+            if !self.hasFirebaseConnection {
+                let alert = UIAlertController(title: "Failed to download for \(self.dataCategory.rawValue.capitalized)!", message: "We were unable to download up to date data, so please note that the objectives in this app may not be accurate", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
