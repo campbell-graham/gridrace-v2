@@ -109,7 +109,14 @@ class PasswordViewController: UIViewController {
             attempt = "\(sender.tag)"
         } else if attempt.count == 4 {
 
-            attempt = attempt == passcode ? "correct" : "wrong"
+            if attempt == passcode {
+
+                present(SummaryViewController(), animated: true, completion: nil)
+            } else {
+                
+                attempt = "wrong"
+            }
+
         } 
 
         if buttonCompletion != nil {
