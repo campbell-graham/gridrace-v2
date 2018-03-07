@@ -22,6 +22,7 @@ class StartScreenViewController: UIViewController {
         startButton.setTitleColor(AppColors.backgroundColor, for: .normal)
         startButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         startButton.layer.cornerRadius = 10
+        startButton.alpha = 0
         
         //image set up
         backgroundImage.image = #imageLiteral(resourceName: "gridrace_splash-min")
@@ -48,6 +49,12 @@ class StartScreenViewController: UIViewController {
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        UIView.animate(withDuration: 0.5, animations: {
+        self.startButton.alpha = 1.0
+        })
     }
     
     required init?(coder aDecoder: NSCoder) {
