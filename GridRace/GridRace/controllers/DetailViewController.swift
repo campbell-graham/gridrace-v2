@@ -20,6 +20,7 @@ class DetailViewController: UIViewController {
     private let interactImageView = UIImageView()
     private let hintImageView = UIImageView()
     private let hintPointDeductionValue = 2
+    private var passwordViewController: PasswordViewController?
     
     var delegate: ObjectiveTableViewControllerDelegate?
     
@@ -35,15 +36,26 @@ class DetailViewController: UIViewController {
         case .text: // textField
             answerView = ContainerView()
         case .password: // pin view
-            answerView = PasswordView()
 
+            passwordViewController = PasswordViewController()
+            answerView = passwordViewController!.view
         }
 
         super.init(nibName: nil, bundle: nil)
+
+        defer {
+            addChildViewController(passwordViewController!)
+            passwordViewController!.didMove(toParentViewController: self)
+            passwordViewController?.buttonCompletion = self.updateLabel
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func updateLabel(attempt: String) {
+        self.descLabel.text = "\(objective.desc) \n attempt: \(attempt) "
     }
 
 
@@ -120,7 +132,9 @@ class DetailViewController: UIViewController {
 
     private func updateViewsData() {
 
-        descLabel.text = objective.desc
+        if objective.objectiveType == .password {
+            descLabel.text = "\(objective.desc) \n attempt: "
+        }
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
         pointLabel.text = data.adjustedPoints != nil ? "\(data.adjustedPoints!)" : "\(objective.points)"
         hintImageView.image = #imageLiteral(resourceName: "hint")
@@ -176,27 +190,39 @@ class DetailViewController: UIViewController {
                 answerView.heightAnchor.constraint(equalTo: answerView.widthAnchor),
 
                 interactImageView.topAnchor.constraint(greaterThanOrEqualTo: answerView.bottomAnchor, constant: 16),]
-        default:
+        case is ContainerView:
             constraints += [
                 answerView.topAnchor.constraint(equalTo: descLabel.bottomAnchor),
                 answerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 answerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 answerView.bottomAnchor.constraint(equalTo: interactImageView.topAnchor)]
+        default:
+            constraints += [
+                answerView.topAnchor.constraint(equalTo: descLabel.bottomAnchor),
+                answerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                answerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                answerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)]
         }
 
-        constraints += [
+        if objective.objectiveType != .password {
+            constraints += [
 
-            interactImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -(view.center.x / 2) ),
-            interactImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
-            interactImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
-            interactImageView.heightAnchor.constraint(equalTo: interactImageView.widthAnchor),
+                interactImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -(view.center.x / 2) ),
+                interactImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+                interactImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
+                interactImageView.heightAnchor.constraint(equalTo: interactImageView.widthAnchor),
 
-            hintImageView.topAnchor.constraint(equalTo: interactImageView.topAnchor),
-            hintImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: (view.center.x / 2) ),
-            hintImageView.bottomAnchor.constraint(equalTo: interactImageView.bottomAnchor),
-            hintImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
-            hintImageView.heightAnchor.constraint(equalTo: hintImageView.widthAnchor)
-        ]
+                hintImageView.topAnchor.constraint(equalTo: interactImageView.topAnchor),
+                hintImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: (view.center.x / 2) ),
+                hintImageView.bottomAnchor.constraint(equalTo: interactImageView.bottomAnchor),
+                hintImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
+                hintImageView.heightAnchor.constraint(equalTo: hintImageView.widthAnchor)
+            ]
+        } else {
+
+            interactImageView.isHidden = true
+            hintImageView.isHidden = true
+        }
 
         NSLayoutConstraint.activate(constraints)
 
@@ -272,9 +298,9 @@ class DetailViewController: UIViewController {
         super.viewDidLayoutSubviews()
         descLabel.setContentOffset(CGPoint.zero, animated: false)
 
-        if let answerView = answerView as? PasswordView {
+        if let VC = childViewControllers.last as? PasswordViewController {
 
-            answerView.activateButtonConstraints()
+            VC.activateButtonConstraints()
         }
 
     }
