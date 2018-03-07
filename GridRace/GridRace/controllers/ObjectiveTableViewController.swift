@@ -15,6 +15,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
     var userData = [ObjectiveUserData]()
+    var didSuccessfullyDownload = false
     
     var objectives = [Objective]() {
         didSet {
@@ -71,49 +72,49 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         
         let ref = Database.database().reference()
         
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            do {
-                if let dict = snapshot.value as? [String: Any] {
-                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
-                    let jsonDecoder = JSONDecoder()
-                    
-                    tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
-                    
-                    var dataReset = false
-                    
-                    //check that they are the same length and have the same data, reset if not
-                    if tempObjectives.count == self.objectives.count {
-                        for (index, objective) in tempObjectives.enumerated() {
-                            if !(objective == self.objectives[index]) {
+                ref.observeSingleEvent(of: .value, with: { (snapshot) in
+                    self.didSuccessfullyDownload = true
+                    do {
+                        if let dict = snapshot.value as? [String: Any] {
+                            let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                            let jsonDecoder = JSONDecoder()
+                            
+                            tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+                            
+                            var dataReset = false
+                            
+                            //check that they are the same length and have the same data, reset if not
+                            if tempObjectives.count == self.objectives.count {
+                                for (index, objective) in tempObjectives.enumerated() {
+                                    if !(objective == self.objectives[index]) {
+                                        self.objectives = tempObjectives
+                                        self.resetLocalData()
+                                        dataReset = true
+                                        UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
+                                        break
+                                    }
+                                }
+                            } else {
+                                //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
+                                if self.objectives.count != 0 {
+                                    dataReset = true
+                                }
                                 self.objectives = tempObjectives
                                 self.resetLocalData()
-                                dataReset = true
-                                break
                             }
+                            
+                            //alert the user if their data has been reset
+                            if dataReset {
+                                let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                                self.present(alert, animated: true, completion: nil)
+                            }
+                            self.tableView.reloadData()
                         }
-                    } else {
-                        //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
-                        if self.objectives.count != 0 {
-                            dataReset = true
-                        }
-                        self.objectives = tempObjectives
-                        self.resetLocalData()
+                    } catch {
+                        print(error)
                     }
-                    
-                    //alert the user if their data has been reset
-                    if dataReset {
-                        let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                    
-                    
-                    self.tableView.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        })
+                })
         
         saveLocalData()
     }
@@ -237,6 +238,14 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             ])
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10000), execute: {
+            if !self.didSuccessfullyDownload {
+                let alert = UIAlertController(title: "Failed to download!", message: "We were unable to download up to date data, so note that the objectives in this app may not be accurate", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        })
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

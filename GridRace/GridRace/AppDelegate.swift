@@ -15,8 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let formatter = DateFormatter()
     let timerView = TimerView()
-    static let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"))
-    static let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: ObjectiveCategory(rawValue: "bonus"))
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -46,7 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        
+        let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"))
+        let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: ObjectiveCategory(rawValue: "bonus"))
         
         let mainTabController = UITabBarController()
         
@@ -55,7 +54,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
 
-        mainTabController.viewControllers = [UINavigationController(rootViewController: AppDelegate.placesViewController), UINavigationController(rootViewController: AppDelegate.bonusViewController)]
+        mainTabController.viewControllers = [UINavigationController(rootViewController: placesViewController), UINavigationController(rootViewController: bonusViewController)]
+        
+        addTimerToTabBar(tabBar: mainTabController.tabBar)
         
         window?.rootViewController = mainTabController
         
@@ -68,11 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBar.appearance().tintColor = AppColors.greenHighlightColor
         
         window?.makeKeyAndVisible()
-        
-        addTimerToWindow(heightFromBottom: mainTabController.tabBar.bounds.height)
     
-       
-        
         return true
     }
 
@@ -100,42 +97,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    func addTimerToWindow(heightFromBottom height: CGFloat) {
-        window?.addSubview(timerView)
+    func addTimerToTabBar(tabBar: UITabBar) {
+        tabBar.addSubview(timerView)
         
         timerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            timerView.centerXAnchor.constraint (equalTo: (window?.centerXAnchor)!),
-            timerView.bottomAnchor.constraint(equalTo: (window?.bottomAnchor)!),
-            timerView.heightAnchor.constraint(equalToConstant: height),
-            timerView.widthAnchor.constraint(equalToConstant: (window?.frame.width)! * 0.3)
+            timerView.centerXAnchor.constraint (equalTo: tabBar.centerXAnchor),
+            timerView.bottomAnchor.constraint(equalTo: tabBar.bottomAnchor),
+            timerView.heightAnchor.constraint(equalToConstant: tabBar.bounds.height),
+            timerView.widthAnchor.constraint(equalToConstant: tabBar.frame.width * 0.3)
         ])
     }
     
-    static func getAllObjectives() -> [Objective] {
-        var objectives = [Objective]()
-        
-        for (objective) in AppDelegate.placesViewController.objectives {
-            objectives.append(objective)
-        }
-        for (objective) in AppDelegate.bonusViewController.objectives {
-            objectives.append(objective)
-        }
-        return objectives
-    }
-    
-    static func getAllObjectiveData() -> [ObjectiveUserData] {
-        var objectivesData = [ObjectiveUserData]()
-        
-        for (objectiveData) in AppDelegate.placesViewController.userData {
-            objectivesData.append(objectiveData)
-        }
-        for (objectiveData) in AppDelegate.bonusViewController.userData {
-            objectivesData.append(objectiveData)
-        }
-        return objectivesData
-    }
+//    func getAllObjectives() -> [Objective] {
+//        var objectives = [Objective]()
+//
+//        for (objective) in placesViewController.objectives {
+//            objectives.append(objective)
+//        }
+//        for (objective) in bonusViewController.objectives {
+//            objectives.append(objective)
+//        }
+//        return objectives
+//    }
+//
+//    func getAllObjectiveData() -> [ObjectiveUserData] {
+//        var objectivesData = [ObjectiveUserData]()
+//
+//        for (objectiveData) in placesViewController.userData {
+//            objectivesData.append(objectiveData)
+//        }
+//        for (objectiveData) in bonusViewController.userData {
+//            objectivesData.append(objectiveData)
+//        }
+//        return objectivesData
+//    }
 }
 
 
