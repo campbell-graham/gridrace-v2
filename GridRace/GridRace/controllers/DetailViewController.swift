@@ -44,9 +44,11 @@ class DetailViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
 
         defer {
-            addChildViewController(passwordViewController!)
-            passwordViewController!.didMove(toParentViewController: self)
-            passwordViewController?.buttonCompletion = self.updateLabel
+            if passwordViewController != nil {
+                addChildViewController(passwordViewController!)
+                passwordViewController!.didMove(toParentViewController: self)
+                passwordViewController?.buttonCompletion = self.updateLabel
+            }
         }
     }
 
@@ -134,6 +136,8 @@ class DetailViewController: UIViewController {
 
         if objective.objectiveType == .password {
             descLabel.text = "\(objective.desc) \n attempt: "
+        } else {
+            descLabel.text = objective.desc
         }
         pointBorderImageView.image = #imageLiteral(resourceName: "circle")
         pointLabel.text = data.adjustedPoints != nil ? "\(data.adjustedPoints!)" : "\(objective.points)"
