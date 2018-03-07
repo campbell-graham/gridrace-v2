@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         addTimerToTabBar(tabBar: mainTabController.tabBar)
         
-        window?.rootViewController = mainTabController
+        window?.rootViewController = StartScreenViewController()
         
         
         //global styling
