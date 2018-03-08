@@ -82,7 +82,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         view.addSubview(collectionView)
 
         pageControl.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.addSubview(pageControl)
+        view.addSubview(pageControl)
 
         let views: [String: Any] = [
             "mainTextLabel" : mainTextLabel,
@@ -95,21 +95,27 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             "pointsValueLabel" : pointsValueLabel
         ]
 
-        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-100-[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
+        
+        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:[mainValueLabel]-[bonusValueLabel]-[timeValueLabel]-[pointsValueLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[mainTextLabel]-32-[mainValueLabel]", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: views)
 
 
         constraints += [
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: (view.frame.height * 0.6) ),
-
+            
+            mainTextLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+           
             pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
-            pageControl.heightAnchor.constraint(equalToConstant: 8 )
+            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: pageControl.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: pointsTextLabel.bottomAnchor, constant: 4),
+//            collectionView.heightAnchor.constraint(equalToConstant: (view.safeAreaLayoutGuide.layoutFrame.height * 0.5)),
+
         ]
 
         NSLayoutConstraint.activate(constraints)
