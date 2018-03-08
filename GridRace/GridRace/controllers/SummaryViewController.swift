@@ -108,14 +108,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         setUpLayout()
 
-        mainTextLabel.text = "Main Objectives: "
-        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives.objectives.count)"
-        bonusTextLabel.text = "Bonus Objectives: "
-        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.objectives.count)"
-        timeTextLabel.text = "Time: "
-        timeValueLabel.text = "\(AppResources.timeToDisplay)"
-        pointsTextLabel.text = "Points: "
-        pointsValueLabel.text = "\(userPoints)/\(totalPoints)"
+        updateLabels()
 
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -124,6 +117,18 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         pageControl.numberOfPages = objectCount
         pageControl.currentPage = 0
+    }
+
+    func updateLabels() {
+
+        mainTextLabel.text = "Main Objectives: "
+        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives.objectives.count)"
+        bonusTextLabel.text = "Bonus Objectives: "
+        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.objectives.count)"
+        timeTextLabel.text = "Time: "
+        timeValueLabel.text = "\(AppResources.timeToDisplay)"
+        pointsTextLabel.text = "Points: "
+        pointsValueLabel.text = "\(userPoints)/\(totalPoints)"
     }
 
     func setUpLayout() {
@@ -177,14 +182,22 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        let totalCount = placesObjectives.objectives.count + bonusObjectives.objectives.count
+        let totalCount = placesObjectives.objectives.count + bonusObjectives.objectives.count - 1
+        pageControl.numberOfPages = totalCount
         return totalCount
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // do someting
 
-        isCorrect = !isCorrect
+        if indexPath.row < (placesObjectives.objectives.count - 1) {
+
+            placesObjectives.data[indexPath.row].correct = !placesObjectives.data[indexPath.row].correct
+        } else {
+
+            bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct = !bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct
+        }
+        updateLabels()
         collectionView.reloadData()
 
     }
@@ -193,42 +206,47 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "objectiveCell", for: indexPath) as! ObjectiveCollectionViewCell
 
+        var objective = placesObjectives.objectives.last
+        var userData = placesObjectives.data.last
 
-        if indexPath.row <= (placesObjectives.objectives.count - 1) {
+        if indexPath.row < (placesObjectives.objectives.count - 1) {
 
-            let objective = placesObjectives.objectives[indexPath.row]
-            let userData = placesObjectives.data[indexPath.row]
+            objective = placesObjectives.objectives[indexPath.row]
+            userData = placesObjectives.data[indexPath.row]
+        } else {
 
-            cell.nameLabel.text = objective.name
-            cell.descLabel.text = objective.desc
-
-            if objective.objectiveType == .photo {
-
-                cell.responseImageView.isHidden = false
-                cell.responseTextView.isHidden = true
-
-                if let path =  userData.imageResponseURL?.path {
-
-                    cell.responseImageView.image = UIImage(contentsOfFile: path)?.resized(withBounds: CGSize(width: 200, height: 200))
-                } else {
-
-                    cell.responseImageView.image = #imageLiteral(resourceName: "nothing")
-                    cell.responseImageView.tintColor = AppColors.cellColor
-                }
-                cell.responseImageView.contentMode = .scaleAspectFit
-            }
-
-            if objective.objectiveType == .text {
-
-                cell.responseTextView.isHidden = false
-                cell.responseImageView.isHidden = true
-
-                cell.responseTextView.text = userData.textResponse != nil ? userData.textResponse : "No Response Given"
-
-            }
+            objective = bonusObjectives.objectives[(indexPath.row - placesObjectives.objectives.count + 1)]
+            userData = bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)]
         }
 
-        if isCorrect {
+        cell.nameLabel.text = objective!.name
+        cell.descLabel.text = objective!.desc
+
+        if objective!.objectiveType == .photo {
+
+            cell.responseImageView.isHidden = false
+            cell.responseTextView.isHidden = true
+
+            if let path =  userData!.imageResponseURL?.path {
+
+                cell.responseImageView.image = UIImage(contentsOfFile: path)?.resized(withBounds: CGSize(width: 200, height: 200))
+            } else {
+
+                cell.responseImageView.image = #imageLiteral(resourceName: "nothing")
+                cell.responseImageView.tintColor = AppColors.cellColor
+            }
+            cell.responseImageView.contentMode = .scaleAspectFit
+        }
+
+        if objective!.objectiveType == .text {
+
+            cell.responseTextView.isHidden = false
+            cell.responseImageView.isHidden = true
+
+            cell.responseTextView.text = userData!.textResponse != nil ? userData!.textResponse : "No Response Given"
+        }
+
+        if userData!.completed {
 
             cell.crossImageView.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
             cell.checkMarkImageView.tintColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
