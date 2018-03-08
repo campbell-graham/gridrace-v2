@@ -194,7 +194,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
             placesObjectives.data[indexPath.row].correct = !placesObjectives.data[indexPath.row].correct
         } else {
-
+            // plus 1 as we are excluding the password objective
             bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct = !bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct
         }
         updateLabels()
@@ -215,6 +215,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             userData = placesObjectives.data[indexPath.row]
         } else {
 
+            // plus 1 as we are excluding the password objective
             objective = bonusObjectives.objectives[(indexPath.row - placesObjectives.objectives.count + 1)]
             userData = bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)]
         }
