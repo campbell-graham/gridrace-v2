@@ -23,6 +23,9 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     let objectCount = 10
     var isCorrect = true
 
+    var placesObjectives = AppResources.ObjectiveData.sharedPlaces
+    var bonusObjectives = AppResources.ObjectiveData.sharedBonus
+
     lazy var collectionView: UICollectionView = {
 
         let screenWidth = view.frame.size.width
@@ -43,6 +46,61 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         return collectionView
     }()
 
+    var completedPlacesObjectives: Int {
+
+        var result = 0
+        for data in placesObjectives.data {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
+    var completedBonusObjectives: Int {
+
+        var result = 0
+        for data in bonusObjectives.data {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
+    var userPoints: Int {
+
+        var result = 0
+        for (objective) in placesObjectives.objectives {
+            let dataForObject = placesObjectives.data.first(where: {$0.objectiveID == objective.id})
+            if (dataForObject?.completed)! {
+                result += dataForObject?.adjustedPoints != nil ? (dataForObject?.adjustedPoints)! : objective.points
+            }
+        }
+
+        for (objective) in bonusObjectives.objectives {
+            let dataForObject = bonusObjectives.data.first(where: {$0.objectiveID == objective.id})
+            if (dataForObject?.completed)! {
+                result += dataForObject?.adjustedPoints != nil ? (dataForObject?.adjustedPoints)! : objective.points
+            }
+        }
+        return result
+    }
+
+    var totalPoints: Int {
+
+        var result = 0
+        for obj in placesObjectives.objectives {
+
+            result += obj.points
+        }
+        for obj in bonusObjectives.objectives {
+
+            result += obj.points
+        }
+        return result
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -51,13 +109,13 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         setUpLayout()
 
         mainTextLabel.text = "Main Objectives: "
-        mainValueLabel.text = "2/20"
+        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives.objectives.count)"
         bonusTextLabel.text = "Bonus Objectives: "
-        bonusValueLabel.text = "2/20"
+        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.objectives.count)"
         timeTextLabel.text = "Time: "
-        timeValueLabel.text = "1 hr 5 mins"
+        timeValueLabel.text = "\(AppResources.timeToDisplay)"
         pointsTextLabel.text = "Points: "
-        pointsValueLabel.text = "40/150"
+        pointsValueLabel.text = "\(userPoints)/\(totalPoints)"
 
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -118,14 +176,16 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     //MARK:- collectionView delegate methods
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return objectCount
+
+        let totalCount = placesObjectives.objectives.count + bonusObjectives.objectives.count
+        return totalCount
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // do someting
 
         isCorrect = !isCorrect
-        collectionView.reloadItems(at: [indexPath])
+        collectionView.reloadData()
 
     }
 
@@ -133,13 +193,40 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "objectiveCell", for: indexPath) as! ObjectiveCollectionViewCell
 
-        cell.nameLabel.text = "Objective Name"
 
-        var desc = "Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc "
-        desc += "Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc "
-        cell.descLabel.text = desc
+        if indexPath.row <= (placesObjectives.objectives.count - 1) {
 
-        cell.responseImageView.image = #imageLiteral(resourceName: "testImage").resized(withBounds:  CGSize(width: 200, height: 200))
+            let objective = placesObjectives.objectives[indexPath.row]
+            let userData = placesObjectives.data[indexPath.row]
+
+            cell.nameLabel.text = objective.name
+            cell.descLabel.text = objective.desc
+
+            if objective.objectiveType == .photo {
+
+                cell.responseImageView.isHidden = false
+                cell.responseTextView.isHidden = true
+
+                if let path =  userData.imageResponseURL?.path {
+
+                    cell.responseImageView.image = UIImage(contentsOfFile: path)?.resized(withBounds: CGSize(width: 200, height: 200))
+                } else {
+
+                    cell.responseImageView.image = #imageLiteral(resourceName: "nothing")
+                    cell.responseImageView.tintColor = AppColors.cellColor
+                }
+                cell.responseImageView.contentMode = .scaleAspectFit
+            }
+
+            if objective.objectiveType == .text {
+
+                cell.responseTextView.isHidden = false
+                cell.responseImageView.isHidden = true
+
+                cell.responseTextView.text = userData.textResponse != nil ? userData.textResponse : "No Response Given"
+
+            }
+        }
 
         if isCorrect {
 

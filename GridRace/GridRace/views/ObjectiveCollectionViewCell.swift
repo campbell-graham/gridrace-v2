@@ -34,6 +34,10 @@ class ObjectiveCollectionViewCell: UICollectionViewCell {
 
         responseImageView.contentMode = .scaleAspectFit
 
+        responseTextView.layer.cornerRadius = 15
+        responseTextView.layer.masksToBounds = true
+        responseTextView.isEditable = false
+
         checkMarkImageView.tintColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
         checkMarkImageView.image = #imageLiteral(resourceName: "checkMark2").withRenderingMode(.alwaysTemplate)
         checkMarkImageView.contentMode = .scaleAspectFit
@@ -63,10 +67,12 @@ class ObjectiveCollectionViewCell: UICollectionViewCell {
             responseImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             responseImageView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 16),
             responseImageView.widthAnchor.constraint(equalToConstant: (contentView.frame.width * 0.7) ),
+            responseImageView.heightAnchor.constraint(equalTo: responseImageView.widthAnchor, multiplier: 0.5 ),
 
             responseTextView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             responseTextView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 16),
             responseTextView.widthAnchor.constraint(equalToConstant: (contentView.frame.width * 0.7) ),
+            responseTextView.heightAnchor.constraint(equalTo: responseTextView.widthAnchor, multiplier: 0.5 ),
 
             crossImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: contentView.frame.width * 0.3),
             crossImageView.topAnchor.constraint(equalTo: responseImageView.bottomAnchor, constant: 8),
