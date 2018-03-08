@@ -32,11 +32,6 @@ struct AppResources {
     
     static var timeToDisplay: String = "00:00:00"
     
-    static var placesObjectives = [Objective]()
-    static var bonusObjectives = [Objective]()
-    static var placesUserData = [ObjectiveUserData]()
-    static var bonusUserData = [ObjectiveUserData]()
-    
     
     static func returnDownloadedObjectives(dataCategory: ObjectiveCategory, completion: @escaping (([Objective]) -> ())) {
         //download if doesn't exist already
@@ -61,6 +56,18 @@ struct AppResources {
         
        
     
+    }
+    
+    class ObjectiveData {
+        var objectives = [Objective]()
+        var data = [ObjectiveUserData]()
+        
+        private init() {
+            
+        }
+        
+       static let sharedPlaces = ObjectiveData()
+       static let sharedBonus = ObjectiveData()
     }
     
 }

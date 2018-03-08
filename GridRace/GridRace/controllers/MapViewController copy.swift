@@ -40,7 +40,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     init(objective: Objective, data: ObjectiveUserData) {
 
         self.objective = objective
-        self.objectives = AppResources.placesObjectives
+        self.objectives = AppResources.ObjectiveData.sharedPlaces.objectives
         self.detailViewController = DetailViewController(objective: objective, data: data )
         super.init(nibName: nil, bundle: nil)
 

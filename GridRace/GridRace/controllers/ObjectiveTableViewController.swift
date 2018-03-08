@@ -14,13 +14,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
-    var userData = [ObjectiveUserData]()
-    
-    var objectives = [Objective]() {
-        didSet {
-            sortObjectives()
-        }
-    }
+    var containedObjectiveData: AppResources.ObjectiveData
     
     var incompleteObjectives = [Objective]() {
         didSet {
@@ -34,9 +28,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     //will eventually take in data
-    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory, objectives: inout [Objective], data: inout [ObjectiveUserData]) {
-        self.objectives = objectives
-        self.userData = data
+    init(title: String, tabBarImage: UIImage, dataCategory: ObjectiveCategory, coreObjectData: AppResources.ObjectiveData) {
+        self.containedObjectiveData = coreObjectData
         self.dataCategory = dataCategory
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -51,8 +44,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     func sortObjectives() {
         completeObjectives.removeAll()
         incompleteObjectives.removeAll()
-        for (objective) in objectives {
-            if let x = userData.first(where: {$0.objectiveID == objective.id})  {
+        for (objective) in containedObjectiveData.objectives {
+            if let x = containedObjectiveData.data.first(where: {$0.objectiveID == objective.id})  {
                 if x.completed {
                     completeObjectives.append(objective)
                 } else {
@@ -80,8 +73,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         let encoder = PropertyListEncoder()
         do {
             //encode data
-            let objectivesDataToWrite = try encoder.encode(objectives)
-            let userDataToWrite = try encoder.encode(userData)
+            let objectivesDataToWrite = try encoder.encode(containedObjectiveData.objectives)
+            let userDataToWrite = try encoder.encode(containedObjectiveData.data)
             
             //write to files
             try objectivesDataToWrite.write(to: objectivesFilePath())
@@ -106,8 +99,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         if let objectivesDataToRead = try? Data(contentsOf: objectivesFilePath()), let userDataToRead = try? Data(contentsOf: userDataFilePath()) {
             let decoder = PropertyListDecoder()
             do {
-                objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
-                userData = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
+                containedObjectiveData.objectives = try decoder.decode([Objective].self, from: objectivesDataToRead)
+                containedObjectiveData.data = try decoder.decode([ObjectiveUserData].self, from: userDataToRead)
                 sortObjectives()
             } catch {
                 print("Error decoding the local array, will re-download")
@@ -132,10 +125,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             var dataReset = false
             
             //check that they are the same length and have the same data, reset if not
-            if tempObjectives.count == self.objectives.count {
+            if tempObjectives.count == self.containedObjectiveData.objectives.count {
                 for (index, objective) in tempObjectives.enumerated() {
-                    if !(objective == self.objectives[index]) {
-                        self.objectives = tempObjectives
+                    if !(objective == self.containedObjectiveData.objectives[index]) {
+                        self.containedObjectiveData.objectives = tempObjectives
                         self.resetLocalData()
                         dataReset = true
                         UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
@@ -144,10 +137,10 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 }
             } else {
                 //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
-                if self.objectives.count != 0 {
+                if self.containedObjectiveData.objectives.count != 0 {
                     dataReset = true
                 }
-                self.objectives = tempObjectives
+                self.containedObjectiveData.objectives = tempObjectives
                 self.resetLocalData()
             }
             
@@ -164,7 +157,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         do {
             try FileManager.default.removeItem(at: objectivesFilePath())
             try FileManager.default.removeItem(at: userDataFilePath())
-            for (data) in userData {
+            for (data) in containedObjectiveData.data {
                 if let imageURL = data.imageResponseURL {
                     try FileManager.default.removeItem(at: imageURL)
                 }
@@ -179,9 +172,9 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         deleteDocumentData()
         
         //re-populate user data
-        userData.removeAll()
-        for (objective) in objectives {
-            userData.append(ObjectiveUserData(id: objective.id))
+        containedObjectiveData.data.removeAll()
+        for (objective) in containedObjectiveData.objectives {
+            containedObjectiveData.data.append(ObjectiveUserData(id: objective.id))
         }
         
         
@@ -284,7 +277,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             return
         }
         
-        let data = userData.first(where: {$0.objectiveID == obj.id})
+        let data = containedObjectiveData.data.first(where: {$0.objectiveID == obj.id})
         let destination = MapViewController(objective: obj, data: data!)
         destination.delegate = self
         navigationController?.pushViewController(destination, animated: true)
@@ -296,7 +289,7 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         let objective = indexPath.section == 0 ? incompleteObjectives[indexPath.row] : completeObjectives[indexPath.row]
         
         cell.titleLabel.text = objective.name
-        if let points = userData.first(where: {$0.objectiveID == objective.id})?.adjustedPoints {
+        if let points = containedObjectiveData.data.first(where: {$0.objectiveID == objective.id})?.adjustedPoints {
             cell.pointsLabel.text = String(points)
         } else {
             cell.pointsLabel.text = String(objective.points)
