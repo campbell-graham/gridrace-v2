@@ -68,13 +68,13 @@ class ObjectiveCollectionViewCell: UICollectionViewCell {
             responseTextView.topAnchor.constraint(equalTo: descLabel.bottomAnchor, constant: 16),
             responseTextView.widthAnchor.constraint(equalToConstant: (contentView.frame.width * 0.7) ),
 
-            crossImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: contentView.frame.width * 0.3),
+            crossImageView.trailingAnchor.constraint(equalTo: contentView.centerXAnchor, constant: -8),
             crossImageView.topAnchor.constraint(equalTo: responseImageView.bottomAnchor, constant: 8),
             crossImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             crossImageView.widthAnchor.constraint(equalToConstant: (contentView.frame.width * 0.2) ),
             crossImageView.heightAnchor.constraint(equalTo: crossImageView.widthAnchor),
 
-            checkMarkImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: contentView.frame.width * 0.6),
+            checkMarkImageView.leadingAnchor.constraint(equalTo: contentView.centerXAnchor, constant: 8),
             checkMarkImageView.topAnchor.constraint(equalTo: crossImageView.topAnchor),
             checkMarkImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             checkMarkImageView.widthAnchor.constraint(equalToConstant: (contentView.frame.width * 0.2) ),

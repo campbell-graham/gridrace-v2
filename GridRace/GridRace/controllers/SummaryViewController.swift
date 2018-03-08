@@ -19,7 +19,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     let pointsTextLabel = UILabel()
     let pointsValueLabel = UILabel()
 
-    let pageControl = UIPageControl()
     let objectCount = 10
     var isCorrect = true
 
@@ -28,6 +27,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.isPagingEnabled = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.indicatorStyle = .white
 
         return collectionView
     }()
@@ -54,9 +54,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.dataSource = self
         collectionView.backgroundColor = AppColors.backgroundColor
         collectionView.register(ObjectiveCollectionViewCell.self, forCellWithReuseIdentifier: "objectiveCell")
-
-        pageControl.numberOfPages = objectCount
-        pageControl.currentPage = 0
     }
 
     func setUpLayout() {
@@ -71,9 +68,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
-
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pageControl)
 
         let views: [String: Any] = [
             "mainTextLabel" : mainTextLabel,
@@ -96,16 +90,10 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             
             mainTextLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
            
-            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
-            
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: pageControl.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             collectionView.topAnchor.constraint(equalTo: pointsTextLabel.bottomAnchor, constant: 4),
-//            collectionView.heightAnchor.constraint(equalToConstant: (view.safeAreaLayoutGuide.layoutFrame.height * 0.5)),
 
         ]
 
@@ -124,6 +112,12 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         layout.itemSize = CGSize(width: collectionViewWidth * 0.8, height: collectionView.frame.height * 0.9)
         
         collectionView.collectionViewLayout = layout
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        var _ = Timer.scheduledTimer(withTimeInterval: 3, repeats: false, block: {_ in
+            self.collectionView.flashScrollIndicators()
+       })
     }
 
     //MARK:- collectionView delegate methods
@@ -163,11 +157,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         }
 
         return cell
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-        pageControl.currentPage = Int(self.collectionView.contentOffset.x / self.collectionView.frame.size.width)
     }
 
 }
