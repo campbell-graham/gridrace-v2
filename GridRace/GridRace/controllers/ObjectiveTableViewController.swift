@@ -15,7 +15,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     var tableView = UITableView()
     var dataCategory: ObjectiveCategory
     var userData = [ObjectiveUserData]()
-    var hasFirebaseConnection = false
     
     var objectives = [Objective]() {
         didSet {
@@ -42,7 +41,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
-        loadLocalData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -64,60 +62,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
                 incompleteObjectives.append(objective)
             }
         }
-    }
-    
-    func downloadObjectives() {
-        
-        //download if doesn't exist already
-        
-        var tempObjectives = [Objective]()
-        
-        let ref = Database.database().reference()
-        
-        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-            do {
-                if let dict = snapshot.value as? [String: Any] {
-                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
-                    let jsonDecoder = JSONDecoder()
-                    
-                    tempObjectives = self.dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
-                    
-                    var dataReset = false
-                    
-                    //check that they are the same length and have the same data, reset if not
-                    if tempObjectives.count == self.objectives.count {
-                        for (index, objective) in tempObjectives.enumerated() {
-                            if !(objective == self.objectives[index]) {
-                                self.objectives = tempObjectives
-                                self.resetLocalData()
-                                dataReset = true
-                                UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
-                                break
-                            }
-                        }
-                    } else {
-                        //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
-                        if self.objectives.count != 0 {
-                            dataReset = true
-                        }
-                        self.objectives = tempObjectives
-                        self.resetLocalData()
-                    }
-                    
-                    //alert the user if their data has been reset
-                    if dataReset {
-                        let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                    self.tableView.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        })
-        
-        saveLocalData()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -175,8 +119,45 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             resetLocalData()
         }
         
-        //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid
-        downloadObjectives()
+        //a download is always called at the end so that comparisons can be made, and local data overwritten if it is no longer valid. Wait until download is complete and then run comparisons with local data
+        AppResources.returnDownloadedObjectives(dataCategory: self.dataCategory) {tempObjectives in
+            if tempObjectives.isEmpty {
+                let alert = UIAlertController(title: "Failed to download for \(self.dataCategory.rawValue.capitalized)!", message: "We were unable to download up to date data, so please note that the objectives in this app may not be accurate", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
+            
+            //bool to determine whether to show "data was reset" alert
+            var dataReset = false
+            
+            //check that they are the same length and have the same data, reset if not
+            if tempObjectives.count == self.objectives.count {
+                for (index, objective) in tempObjectives.enumerated() {
+                    if !(objective == self.objectives[index]) {
+                        self.objectives = tempObjectives
+                        self.resetLocalData()
+                        dataReset = true
+                        UserDefaults.standard.set(Date(), forKey: "FirstLaunchDate")
+                        break
+                    }
+                }
+            } else {
+                //we don't want to set dataReset to be true if objectives.count is 0, which means they're setting up the app for the first time
+                if self.objectives.count != 0 {
+                    dataReset = true
+                }
+                self.objectives = tempObjectives
+                self.resetLocalData()
+            }
+            
+            //alert the user if their data has been reset
+            if dataReset {
+                let alert = UIAlertController(title: "Data Reset!", message: "Application did not have up to date data for the section '\(self.dataCategory.rawValue)', and so it has been reset.", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
     
     func deleteDocumentData() {
@@ -212,16 +193,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //check connection and set variable as required
-        let connectedRef = Database.database().reference(withPath: ".info/connected")
-        connectedRef.observe(.value, with: { snapshot in
-            if let connected = snapshot.value as? Bool, connected {
-                self.hasFirebaseConnection = true
-            } else {
-                self.hasFirebaseConnection = false
-            }
-        })
-        
         //styling
         view.backgroundColor = AppColors.backgroundColor
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -250,13 +221,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             ])
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10000), execute: {
-            if !self.hasFirebaseConnection {
-                let alert = UIAlertController(title: "Failed to download for \(self.dataCategory.rawValue.capitalized)!", message: "We were unable to download up to date data, so please note that the objectives in this app may not be accurate", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-            }
-        })
+        //start a load of local data which will also make comparisons with the data that firebase has
+        loadLocalData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

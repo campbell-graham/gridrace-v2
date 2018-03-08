@@ -280,7 +280,6 @@ class DetailViewController: UIViewController {
             answerView.textLabel.text = answer
             playHudAnimation()
             data.textResponse = answer
-            data.completed = true
             delegate?.initiateSave()
         }
     }
@@ -364,7 +363,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         }
 
         playHudAnimation()
-        data.completed = true
         delegate?.initiateSave()
     }
 

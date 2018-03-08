@@ -12,9 +12,17 @@ class ObjectiveUserData: Codable {
     
     let objectiveID: String
     var adjustedPoints: Int?
-    var completed: Bool = false
+   
     var imageResponseURL: URL?
     var textResponse: String?
+    
+    var completed: Bool {
+        if imageResponseURL != nil || textResponse != nil {
+            return true
+        } else {
+            return false
+        }
+    }
     
     init(id: String) {
         objectiveID = id
