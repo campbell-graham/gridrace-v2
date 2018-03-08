@@ -23,9 +23,9 @@ class PasswordViewController: UIViewController {
             let button = UIButton()
 
             button.setTitle("\(index)", for: .normal)
-
             button.tag = index
             button.addTarget(self, action: #selector(buttonTouched), for: .touchUpInside)
+            button.showsTouchWhenHighlighted = true
             buttons.append(button)
 
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -109,7 +109,14 @@ class PasswordViewController: UIViewController {
             attempt = "\(sender.tag)"
         } else if attempt.count == 4 {
 
-            attempt = attempt == passcode ? "correct" : "wrong"
+            if attempt == passcode {
+
+                present(SummaryViewController(), animated: true, completion: nil)
+            } else {
+                
+                attempt = "wrong"
+            }
+
         } 
 
         if buttonCompletion != nil {
