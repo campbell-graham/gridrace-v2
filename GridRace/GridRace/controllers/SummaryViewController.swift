@@ -19,6 +19,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     let pointsTextLabel = UILabel()
     let pointsValueLabel = UILabel()
 
+    let pageControl = UIPageControl()
+    let objectCount = 10
     var isCorrect = true
 
     lazy var collectionView: UICollectionView = {
@@ -62,7 +64,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.backgroundColor = AppColors.backgroundColor
         collectionView.register(ObjectiveCollectionViewCell.self, forCellWithReuseIdentifier: "objectiveCell")
 
-
+        pageControl.numberOfPages = objectCount
+        pageControl.currentPage = 0
     }
 
     func setUpLayout() {
@@ -70,13 +73,16 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         for view in [mainTextLabel, mainValueLabel, bonusTextLabel, bonusValueLabel, timeTextLabel,
                      timeValueLabel, pointsTextLabel, pointsValueLabel] {
 
-        view.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(view)
-        view.textColor = AppColors.textPrimaryColor
+            view.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(view)
+            view.textColor = AppColors.textPrimaryColor
         }
 
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
+
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.addSubview(pageControl)
 
         let views: [String: Any] = [
             "mainTextLabel" : mainTextLabel,
@@ -98,7 +104,12 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: (view.frame.height * 0.6) )
+            collectionView.heightAnchor.constraint(equalToConstant: (view.frame.height * 0.6) ),
+
+            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
+            pageControl.heightAnchor.constraint(equalToConstant: 8 )
         ]
 
         NSLayoutConstraint.activate(constraints)
@@ -107,7 +118,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     //MARK:- collectionView delegate methods
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return objectCount
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -141,6 +152,11 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         }
 
         return cell
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+        pageControl.currentPage = Int(self.collectionView.contentOffset.x / self.collectionView.frame.size.width)
     }
 
 }
