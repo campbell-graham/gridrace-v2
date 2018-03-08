@@ -36,8 +36,8 @@ class CustomTabBarController: UITabBarController {
         })
         
         //create two main controllers for places and bonus
-        let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"), objectives: &AppResources.placesObjectives, data: &AppResources.placesUserData)
-        let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: .bonus, objectives: &AppResources.bonusObjectives, data: &AppResources.bonusUserData)
+        let placesViewController = ObjectiveTableViewController(title: "Places", tabBarImage: #imageLiteral(resourceName: "directional_arrow"), dataCategory: ObjectiveCategory(rawValue: "places"), coreObjectData: AppResources.ObjectiveData.sharedPlaces)
+        let bonusViewController = ObjectiveTableViewController(title: "Bonus", tabBarImage: #imageLiteral(resourceName: "clock_outline"), dataCategory: .bonus, coreObjectData: AppResources.ObjectiveData.sharedBonus)
         
         //add controllers to self
         viewControllers = [UINavigationController(rootViewController: placesViewController), UINavigationController(rootViewController: bonusViewController)]

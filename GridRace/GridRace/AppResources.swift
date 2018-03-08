@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 
 struct AppColors {
@@ -30,11 +32,44 @@ struct AppResources {
     
     static var timeToDisplay: String = "00:00:00"
     
-    static var placesObjectives = [Objective]()
-    static var bonusObjectives = [Objective]()
-    static var placesUserData = [ObjectiveUserData]()
-    static var bonusUserData = [ObjectiveUserData]()
-
+    
+    static func returnDownloadedObjectives(dataCategory: ObjectiveCategory, completion: @escaping (([Objective]) -> ())) {
+        //download if doesn't exist already
+        
+        var downloadedObjectives = [Objective]()
+        
+        
+        
+        let ref = Database.database().reference()
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            do {
+                if let dict = snapshot.value as? [String: Any] {
+                    let data = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions.prettyPrinted)
+                    let jsonDecoder = JSONDecoder()
+                    downloadedObjectives = dataCategory == .places ? try jsonDecoder.decode(ObjectList.self, from: data).places : try jsonDecoder.decode(ObjectList.self, from: data).bonus
+                    completion(downloadedObjectives)
+                }
+            } catch {
+                print(error)
+            }
+        })
+        
+       
+    
+    }
+    
+    class ObjectiveData {
+        var objectives = [Objective]()
+        var data = [ObjectiveUserData]()
+        
+        private init() {
+            
+        }
+        
+       static let sharedPlaces = ObjectiveData()
+       static let sharedBonus = ObjectiveData()
+    }
+    
 }
 
 
