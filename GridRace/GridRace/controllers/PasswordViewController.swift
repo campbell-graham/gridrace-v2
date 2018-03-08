@@ -111,7 +111,7 @@ class PasswordViewController: UIViewController {
 
             if attempt == passcode {
 
-                present(SummaryViewController(), animated: true, completion: nil)
+                present(UINavigationController(rootViewController: SummaryViewController()), animated: true, completion: nil)
             } else {
                 
                 attempt = "wrong"

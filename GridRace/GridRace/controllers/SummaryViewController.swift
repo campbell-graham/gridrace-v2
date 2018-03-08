@@ -24,19 +24,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     var isCorrect = true
 
     lazy var collectionView: UICollectionView = {
-
-        let screenWidth = view.frame.size.width
-        let screenHeight = view.frame.size.height
-        let cellSpacing = screenWidth * 0.3
-
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: (cellSpacing / 2), bottom: 10, right: (cellSpacing / 2))
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = cellSpacing;
-        layout.minimumLineSpacing = cellSpacing
-        layout.itemSize = CGSize(width: screenWidth * 0.7, height: screenHeight * 0.5)
-
-        let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
+        
+        let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.isPagingEnabled = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
@@ -45,6 +34,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = "Summary"
         
         view.backgroundColor = AppColors.backgroundColor
 
@@ -119,6 +110,20 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         ]
 
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        let collectionViewWidth = collectionView.frame.width
+        let cellSpacing = collectionViewWidth * 0.2
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: (cellSpacing / 2), bottom: 0, right: (cellSpacing / 2))
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = cellSpacing;
+        layout.minimumLineSpacing = cellSpacing
+        layout.itemSize = CGSize(width: collectionViewWidth * 0.8, height: collectionView.frame.height * 0.9)
+        
+        collectionView.collectionViewLayout = layout
     }
 
     //MARK:- collectionView delegate methods
