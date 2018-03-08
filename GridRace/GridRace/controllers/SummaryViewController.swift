@@ -190,9 +190,12 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // do someting
 
+        // if collectionView index less than places count then adjust placesObjective isCorrect
         if indexPath.row < (placesObjectives.objectives.count - 1) {
 
             placesObjectives.data[indexPath.row].correct = !placesObjectives.data[indexPath.row].correct
+
+        // else adjust bonus objectives isCorrect
         } else {
             // plus 1 as we are excluding the password objective
             bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct = !bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct
@@ -209,15 +212,18 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         var objective = placesObjectives.objectives.last
         var userData = placesObjectives.data.last
 
+        // if collectionView index less than places count retrive place objective
         if indexPath.row < (placesObjectives.objectives.count - 1) {
 
             objective = placesObjectives.objectives[indexPath.row]
-            userData = placesObjectives.data[indexPath.row]
+            userData = placesObjectives.data.first(where: {$0.objectiveID == objective!.id})
+
+        // else retrive bonus objective
         } else {
 
             // plus 1 as we are excluding the password objective
             objective = bonusObjectives.objectives[(indexPath.row - placesObjectives.objectives.count + 1)]
-            userData = bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)]
+            userData = bonusObjectives.data.first(where: {$0.objectiveID == objective!.id})
         }
 
         cell.nameLabel.text = objective!.name
