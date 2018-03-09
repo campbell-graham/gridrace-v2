@@ -19,30 +19,14 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     let pointsTextLabel = UILabel()
     let pointsValueLabel = UILabel()
 
-    let pageControl = UIPageControl()
     let objectCount = 10
     var isCorrect = true
 
     lazy var collectionView: UICollectionView = {
-
-        let screenWidth = view.frame.size.width
-        let screenHeight = view.frame.size.height
-        let cellSpacing = screenWidth * 0.1
-
-        //custom flow layout used to set custome pagination offset
-        let layout: UICollectionViewFlowLayout = customFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: (cellSpacing * 2), bottom: 10, right: (cellSpacing * 2) )
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = cellSpacing
-        layout.minimumLineSpacing = cellSpacing
-        layout.itemSize = CGSize(width: screenWidth * 0.6, height: screenHeight * 0.5)
-
-
-        let collectionView = UICollectionView(frame: CGRect(x: screenWidth * 0.2, y: screenWidth * 0.4, width: screenWidth * 0.6, height: screenWidth * 0.6),
-                                              collectionViewLayout: layout)
-        //        collectionView.isPagingEnabled = true
+        
+        let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.clipsToBounds = false
+        collectionView.showsHorizontalScrollIndicator = false
 
         return collectionView
     }()
@@ -123,6 +107,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Summary"
+        edgesForExtendedLayout = []
         view.backgroundColor = AppColors.backgroundColor
 
         setUpLayout()
@@ -133,9 +119,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.dataSource = self
         collectionView.backgroundColor = AppColors.backgroundColor
         collectionView.register(ObjectiveCollectionViewCell.self, forCellWithReuseIdentifier: "objectiveCell")
-
-        pageControl.numberOfPages = objectCount
-        pageControl.currentPage = 0
     }
 
     func updateLabels() {
@@ -163,9 +146,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
 
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.addSubview(pageControl)
-
         let views: [String: Any] = [
             "mainTextLabel" : mainTextLabel,
             "mainValueLabel" : mainValueLabel,
@@ -177,24 +157,34 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             "pointsValueLabel" : pointsValueLabel
         ]
 
-        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-100-[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
+        
+        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-32-[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:[mainValueLabel]-[bonusValueLabel]-[timeValueLabel]-[pointsValueLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[mainTextLabel]-32-[mainValueLabel]", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: views)
 
 
         constraints += [
+            
+            mainTextLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+           
+            collectionView.topAnchor.constraint(equalTo: pointsTextLabel.bottomAnchor, constant: 4),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: (view.frame.height * 0.6) ),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
 
-            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
-            pageControl.heightAnchor.constraint(equalToConstant: 8 )
         ]
 
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        collectionView.collectionViewLayout = customFlowLayout(collectionViewWidth: collectionView.frame.width, collectionViewHeigth: collectionView.frame.height)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        var _ = Timer.scheduledTimer(withTimeInterval: 3, repeats: false, block: {_ in
+            self.collectionView.flashScrollIndicators()
+       })
     }
 
     //MARK:- collectionView delegate methods
@@ -202,7 +192,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
         let totalCount = allObjectives.count
-        pageControl.numberOfPages = totalCount
         return totalCount
     }
 
@@ -262,31 +251,5 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         return cell
     }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-        //bryans attempt to make cells increase in size when they are in the middle of screen, didnt work
-
-//        collectionView.visibleCells.forEach { cell in
-//
-//            let attributes = collectionView.layoutAttributesForItem(at: collectionView.indexPath(for: cell)!)
-//            guard let center = attributes?.center.x else { return }
-//            let collectionViewCenter = collectionView.frame.size.width / 2
-//            let difference = abs(center - collectionViewCenter)
-//            let multiplierReduction = difference * 2 / 100.0
-//
-//            cell.layer.contentsScale = 1.2 - min(multiplierReduction, 2);
-//        }
-
-        pageControl.currentPage = Int(self.collectionView.contentOffset.x / self.collectionView.frame.size.width)
-    }
-
-
-    
-
-//    UIView.animate(withDuration: 0.2, animations: {
-//    self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x + self.collectionView.frame.width, y: 0), animated: true)
-//    self.view.layoutIfNeeded()
-//    })
 
 }

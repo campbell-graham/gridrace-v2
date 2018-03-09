@@ -34,6 +34,8 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
         super.init(nibName: nil, bundle: nil)
         self.title = title
         tabBarItem = UITabBarItem(title: self.title, image: tabBarImage, selectedImage: tabBarImage)
+        //start a load of local data which will also make comparisons with the data that firebase has
+        loadLocalData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -214,8 +216,6 @@ class ObjectiveTableViewController: UIViewController, UITableViewDelegate, UITab
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             ])
         
-        //start a load of local data which will also make comparisons with the data that firebase has
-        loadLocalData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
