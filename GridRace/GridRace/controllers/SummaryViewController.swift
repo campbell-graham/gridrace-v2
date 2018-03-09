@@ -25,9 +25,8 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     lazy var collectionView: UICollectionView = {
         
         let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.isPagingEnabled = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.indicatorStyle = .white
+        collectionView.showsHorizontalScrollIndicator = false
 
         return collectionView
     }()
@@ -109,7 +108,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         super.viewDidLoad()
         
         title = "Summary"
-        
+        edgesForExtendedLayout = []
         view.backgroundColor = AppColors.backgroundColor
 
         setUpLayout()
@@ -159,7 +158,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         ]
 
         
-        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
+        var constraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-32-[mainTextLabel]-[bonusTextLabel]-[timeTextLabel]-[pointsTextLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "V:[mainValueLabel]-[bonusValueLabel]-[timeValueLabel]-[pointsValueLabel]", options: [.alignAllLeading], metrics: nil, views: views)
         constraints += NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[mainTextLabel]-32-[mainValueLabel]", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: views)
 
@@ -168,10 +167,10 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             
             mainTextLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
            
+            collectionView.topAnchor.constraint(equalTo: pointsTextLabel.bottomAnchor, constant: 4),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            collectionView.topAnchor.constraint(equalTo: pointsTextLabel.bottomAnchor, constant: 4),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8)
 
         ]
 
@@ -179,17 +178,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     }
     
     override func viewDidLayoutSubviews() {
-        let collectionViewWidth = collectionView.frame.width
-        let cellSpacing = collectionViewWidth * 0.2
-        
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: (cellSpacing / 2), bottom: 0, right: (cellSpacing / 2))
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = cellSpacing;
-        layout.minimumLineSpacing = cellSpacing
-        layout.itemSize = CGSize(width: collectionViewWidth * 0.8, height: collectionView.frame.height * 0.9)
-        
-        collectionView.collectionViewLayout = layout
+        collectionView.collectionViewLayout = customFlowLayout(collectionViewWidth: collectionView.frame.width, collectionViewHeigth: collectionView.frame.height)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -203,7 +192,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
         let totalCount = allObjectives.count
-        pageControl.numberOfPages = totalCount
         return totalCount
     }
 
