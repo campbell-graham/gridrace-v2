@@ -12,7 +12,7 @@ class ObjectiveTableViewCell: UITableViewCell {
     
     let titleLabel = UILabel()
     let pointsLabel = UILabel()
-    let pointsStarImageView = UIImageView()
+    let circlePointsImageView = UIImageView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -24,23 +24,23 @@ class ObjectiveTableViewCell: UITableViewCell {
         selectedBackgroundView = bgView
         
         //image setup
-        pointsStarImageView.image = #imageLiteral(resourceName: "star").withRenderingMode(.alwaysTemplate)
-        pointsStarImageView.tintColor = AppColors.starPointsColor
+        circlePointsImageView.image = #imageLiteral(resourceName: "circle").withRenderingMode(.alwaysTemplate)
+        circlePointsImageView.tintColor = AppColors.greenHighlightColor
         
         //label styling
         titleLabel.textColor = AppColors.textPrimaryColor
-        pointsLabel.textColor = AppColors.textPrimaryColor
+        pointsLabel.textColor = AppColors.greenHighlightColor
         pointsLabel.textAlignment = .center
         
         //add items to cell
         addSubview(titleLabel)
         addSubview(pointsLabel)
-        addSubview(pointsStarImageView)
+        addSubview(circlePointsImageView)
         
         //layout constraints
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         pointsLabel.translatesAutoresizingMaskIntoConstraints = false
-        pointsStarImageView.translatesAutoresizingMaskIntoConstraints = false
+        circlePointsImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             //title label
@@ -48,17 +48,15 @@ class ObjectiveTableViewCell: UITableViewCell {
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             
-            //points label
-            pointsLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            pointsLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
-            pointsLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-            pointsLabel.widthAnchor.constraint(equalToConstant: 30),
-            
             //star image view
-            pointsStarImageView.trailingAnchor.constraint(equalTo: pointsLabel.leadingAnchor, constant: -8),
-            pointsStarImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            pointsStarImageView.widthAnchor.constraint(equalToConstant: 30),
-            pointsStarImageView.heightAnchor.constraint(equalToConstant: 30),
+            circlePointsImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            circlePointsImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            circlePointsImageView.widthAnchor.constraint(equalToConstant: 40),
+            circlePointsImageView.heightAnchor.constraint(equalToConstant: 40),
+            
+            //points label
+            pointsLabel.centerXAnchor.constraint(equalTo: circlePointsImageView.centerXAnchor),
+            pointsLabel.centerYAnchor.constraint(equalTo: circlePointsImageView.centerYAnchor)
         ])
     }
     
