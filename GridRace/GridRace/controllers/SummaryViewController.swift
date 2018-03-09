@@ -32,6 +32,79 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
         return collectionView
     }()
 
+    // all places and bonus objectives minus 'last'/ 'password' objective
+    var allObjectives: [Objective] {
+        var objs = AppResources.ObjectiveData.sharedPlaces.objectives + AppResources.ObjectiveData.sharedBonus.objectives
+        objs.remove(at: AppResources.ObjectiveData.sharedPlaces.objectives.count - 1)
+
+        return objs
+    }
+    var allData = AppResources.ObjectiveData.sharedPlaces.data + AppResources.ObjectiveData.sharedBonus.data
+
+    var placesObjectives: [Objective] {
+        return AppResources.ObjectiveData.sharedPlaces.objectives
+    }
+
+    var bonusObjectives: [Objective] {
+        return AppResources.ObjectiveData.sharedBonus.objectives
+    }
+
+    var completedObjectives: Int {
+
+        var result = 0
+        for data in allData {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
+    var completedPlacesObjectives: Int {
+
+        var result = 0
+        for data in AppResources.ObjectiveData.sharedPlaces.data {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
+    var completedBonusObjectives: Int {
+
+        var result = 0
+        for data in AppResources.ObjectiveData.sharedBonus.data {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
+    var userPoints: Int {
+
+        var result = 0
+        for objective in allObjectives {
+            let dataForObject = allData.first(where: {$0.objectiveID == objective.id})
+            if (dataForObject?.completed)! {
+                result += dataForObject?.adjustedPoints != nil ? (dataForObject?.adjustedPoints)! : objective.points
+            }
+        }
+
+        return result
+    }
+
+    var totalPoints: Int {
+
+        var result = 0
+        for obj in allObjectives{
+
+            result += obj.points
+        }
+        return result
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,19 +114,24 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         setUpLayout()
 
-        mainTextLabel.text = "Main Objectives: "
-        mainValueLabel.text = "2/20"
-        bonusTextLabel.text = "Bonus Objectives: "
-        bonusValueLabel.text = "2/20"
-        timeTextLabel.text = "Time: "
-        timeValueLabel.text = "1 hr 5 mins"
-        pointsTextLabel.text = "Points: "
-        pointsValueLabel.text = "40/150"
+        updateLabels()
 
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = AppColors.backgroundColor
         collectionView.register(ObjectiveCollectionViewCell.self, forCellWithReuseIdentifier: "objectiveCell")
+    }
+
+    func updateLabels() {
+
+        mainTextLabel.text = "Main Objectives: "
+        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives .count)"
+        bonusTextLabel.text = "Bonus Objectives: "
+        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.count)"
+        timeTextLabel.text = "Time: "
+        timeValueLabel.text = "\(AppResources.timeToDisplay)"
+        pointsTextLabel.text = "Points: "
+        pointsValueLabel.text = "\(userPoints)/\(totalPoints)"
     }
 
     func setUpLayout() {
@@ -123,14 +201,19 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     //MARK:- collectionView delegate methods
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return objectCount
+
+        let totalCount = allObjectives.count
+        pageControl.numberOfPages = totalCount
+        return totalCount
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // do someting
 
-        isCorrect = !isCorrect
-        collectionView.reloadItems(at: [indexPath])
+        let data = allData.first(where: {$0.objectiveID == allObjectives[indexPath.row].id})
+        data!.correct = !(data!.correct)
+
+        updateLabels()
+        collectionView.reloadData()
 
     }
 
@@ -138,15 +221,37 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "objectiveCell", for: indexPath) as! ObjectiveCollectionViewCell
 
-        cell.nameLabel.text = "Objective Name"
+        let objective = allObjectives[indexPath.row]
+        let userData = allData.first(where: {$0.objectiveID == objective.id})
 
-        var desc = "Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc "
-        desc += "Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc "
-        cell.descLabel.text = desc
+        cell.nameLabel.text = objective.name
+        cell.descLabel.text = objective.desc
 
-        cell.responseImageView.image = #imageLiteral(resourceName: "testImage").resized(withBounds:  CGSize(width: 200, height: 200))
+        if objective.objectiveType == .photo {
 
-        if isCorrect {
+            cell.responseImageView.isHidden = false
+            cell.responseTextView.isHidden = true
+
+            if let path =  userData?.imageResponseURL?.path {
+
+                cell.responseImageView.image = UIImage(contentsOfFile: path)?.resized(withBounds: CGSize(width: 200, height: 200))
+            } else {
+
+                cell.responseImageView.image = #imageLiteral(resourceName: "nothing")
+                cell.responseImageView.tintColor = AppColors.cellColor
+            }
+            cell.responseImageView.contentMode = .scaleAspectFit
+        }
+
+        if objective.objectiveType == .text {
+
+            cell.responseTextView.isHidden = false
+            cell.responseImageView.isHidden = true
+
+            cell.responseTextView.text = userData?.textResponse != nil ? userData?.textResponse : "No Response Given"
+        }
+
+        if userData!.completed {
 
             cell.crossImageView.tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
             cell.checkMarkImageView.tintColor = #colorLiteral(red: 0.2745098174, green: 0.4862745106, blue: 0.1411764771, alpha: 1)
