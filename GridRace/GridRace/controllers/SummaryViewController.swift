@@ -23,9 +23,6 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     let objectCount = 10
     var isCorrect = true
 
-    var placesObjectives = AppResources.ObjectiveData.sharedPlaces
-    var bonusObjectives = AppResources.ObjectiveData.sharedBonus
-
     lazy var collectionView: UICollectionView = {
 
         let screenWidth = view.frame.size.width
@@ -43,17 +40,45 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let collectionView = UICollectionView(frame: CGRect(x: screenWidth * 0.2, y: screenWidth * 0.4, width: screenWidth * 0.6, height: screenWidth * 0.6),
                                               collectionViewLayout: layout)
-//        collectionView.isPagingEnabled = true
+        //        collectionView.isPagingEnabled = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.clipsToBounds = false
 
         return collectionView
     }()
 
+    // all places and bonus objectives minus 'last'/ 'password' objective
+    var allObjectives: [Objective] {
+        var objs = AppResources.ObjectiveData.sharedPlaces.objectives + AppResources.ObjectiveData.sharedBonus.objectives
+        objs.remove(at: AppResources.ObjectiveData.sharedPlaces.objectives.count - 1)
+
+        return objs
+    }
+    var allData = AppResources.ObjectiveData.sharedPlaces.data + AppResources.ObjectiveData.sharedBonus.data
+
+    var placesObjectives: [Objective] {
+        return AppResources.ObjectiveData.sharedPlaces.objectives
+    }
+
+    var bonusObjectives: [Objective] {
+        return AppResources.ObjectiveData.sharedBonus.objectives
+    }
+
+    var completedObjectives: Int {
+
+        var result = 0
+        for data in allData {
+            if data.completed == true {
+                result += 1
+            }
+        }
+        return result
+    }
+
     var completedPlacesObjectives: Int {
 
         var result = 0
-        for data in placesObjectives.data {
+        for data in AppResources.ObjectiveData.sharedPlaces.data {
             if data.completed == true {
                 result += 1
             }
@@ -64,7 +89,7 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     var completedBonusObjectives: Int {
 
         var result = 0
-        for data in bonusObjectives.data {
+        for data in AppResources.ObjectiveData.sharedBonus.data {
             if data.completed == true {
                 result += 1
             }
@@ -75,30 +100,20 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     var userPoints: Int {
 
         var result = 0
-        for (objective) in placesObjectives.objectives {
-            let dataForObject = placesObjectives.data.first(where: {$0.objectiveID == objective.id})
+        for objective in allObjectives {
+            let dataForObject = allData.first(where: {$0.objectiveID == objective.id})
             if (dataForObject?.completed)! {
                 result += dataForObject?.adjustedPoints != nil ? (dataForObject?.adjustedPoints)! : objective.points
             }
         }
 
-        for (objective) in bonusObjectives.objectives {
-            let dataForObject = bonusObjectives.data.first(where: {$0.objectiveID == objective.id})
-            if (dataForObject?.completed)! {
-                result += dataForObject?.adjustedPoints != nil ? (dataForObject?.adjustedPoints)! : objective.points
-            }
-        }
         return result
     }
 
     var totalPoints: Int {
 
         var result = 0
-        for obj in placesObjectives.objectives {
-
-            result += obj.points
-        }
-        for obj in bonusObjectives.objectives {
+        for obj in allObjectives{
 
             result += obj.points
         }
@@ -126,9 +141,9 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
     func updateLabels() {
 
         mainTextLabel.text = "Main Objectives: "
-        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives.objectives.count)"
+        mainValueLabel.text = "\(completedPlacesObjectives)/\(placesObjectives .count)"
         bonusTextLabel.text = "Bonus Objectives: "
-        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.objectives.count)"
+        bonusValueLabel.text = "\(completedBonusObjectives)/\(bonusObjectives.count)"
         timeTextLabel.text = "Time: "
         timeValueLabel.text = "\(AppResources.timeToDisplay)"
         pointsTextLabel.text = "Points: "
@@ -186,24 +201,16 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        let totalCount = placesObjectives.objectives.count + bonusObjectives.objectives.count - 1
+        let totalCount = allObjectives.count
         pageControl.numberOfPages = totalCount
         return totalCount
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // do someting
 
-        // if collectionView index less than places count then adjust placesObjective isCorrect
-        if indexPath.row < (placesObjectives.objectives.count - 1) {
+        let data = allData.first(where: {$0.objectiveID == allObjectives[indexPath.row].id})
+        data!.correct = !(data!.correct)
 
-            placesObjectives.data[indexPath.row].correct = !placesObjectives.data[indexPath.row].correct
-
-        // else adjust bonus objectives isCorrect
-        } else {
-            // plus 1 as we are excluding the password objective
-            bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct = !bonusObjectives.data[(indexPath.row - placesObjectives.objectives.count + 1)].correct
-        }
         updateLabels()
         collectionView.reloadData()
 
@@ -213,32 +220,18 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "objectiveCell", for: indexPath) as! ObjectiveCollectionViewCell
 
-        var objective = placesObjectives.objectives.last
-        var userData = placesObjectives.data.last
+        let objective = allObjectives[indexPath.row]
+        let userData = allData.first(where: {$0.objectiveID == objective.id})
 
-        // if collectionView index less than places count retrive place objective
-        if indexPath.row < (placesObjectives.objectives.count - 1) {
+        cell.nameLabel.text = objective.name
+        cell.descLabel.text = objective.desc
 
-            objective = placesObjectives.objectives[indexPath.row]
-            userData = placesObjectives.data.first(where: {$0.objectiveID == objective!.id})
-
-        // else retrive bonus objective
-        } else {
-
-            // plus 1 as we are excluding the password objective
-            objective = bonusObjectives.objectives[(indexPath.row - placesObjectives.objectives.count + 1)]
-            userData = bonusObjectives.data.first(where: {$0.objectiveID == objective!.id})
-        }
-
-        cell.nameLabel.text = objective!.name
-        cell.descLabel.text = objective!.desc
-
-        if objective!.objectiveType == .photo {
+        if objective.objectiveType == .photo {
 
             cell.responseImageView.isHidden = false
             cell.responseTextView.isHidden = true
 
-            if let path =  userData!.imageResponseURL?.path {
+            if let path =  userData?.imageResponseURL?.path {
 
                 cell.responseImageView.image = UIImage(contentsOfFile: path)?.resized(withBounds: CGSize(width: 200, height: 200))
             } else {
@@ -249,12 +242,12 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
             cell.responseImageView.contentMode = .scaleAspectFit
         }
 
-        if objective!.objectiveType == .text {
+        if objective.objectiveType == .text {
 
             cell.responseTextView.isHidden = false
             cell.responseImageView.isHidden = true
 
-            cell.responseTextView.text = userData!.textResponse != nil ? userData!.textResponse : "No Response Given"
+            cell.responseTextView.text = userData?.textResponse != nil ? userData?.textResponse : "No Response Given"
         }
 
         if userData!.completed {
