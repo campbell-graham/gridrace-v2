@@ -30,18 +30,22 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
         let screenWidth = view.frame.size.width
         let screenHeight = view.frame.size.height
-        let cellSpacing = screenWidth * 0.3
+        let cellSpacing = screenWidth * 0.1
 
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: (cellSpacing / 2), bottom: 10, right: (cellSpacing / 2))
+        //custom flow layout used to set custome pagination offset
+        let layout: UICollectionViewFlowLayout = customFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 10, left: (cellSpacing * 2), bottom: 10, right: (cellSpacing * 2) )
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = cellSpacing;
+        layout.minimumInteritemSpacing = cellSpacing
         layout.minimumLineSpacing = cellSpacing
-        layout.itemSize = CGSize(width: screenWidth * 0.7, height: screenHeight * 0.5)
+        layout.itemSize = CGSize(width: screenWidth * 0.6, height: screenHeight * 0.5)
 
-        let collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
-        collectionView.isPagingEnabled = true
+
+        let collectionView = UICollectionView(frame: CGRect(x: screenWidth * 0.2, y: screenWidth * 0.4, width: screenWidth * 0.6, height: screenWidth * 0.6),
+                                              collectionViewLayout: layout)
+//        collectionView.isPagingEnabled = true
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.clipsToBounds = false
 
         return collectionView
     }()
@@ -268,7 +272,28 @@ class SummaryViewController: UIViewController, UICollectionViewDelegate, UIColle
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
+        //bryans attempt to make cells increase in size when they are in the middle of screen, didnt work
+
+//        collectionView.visibleCells.forEach { cell in
+//
+//            let attributes = collectionView.layoutAttributesForItem(at: collectionView.indexPath(for: cell)!)
+//            guard let center = attributes?.center.x else { return }
+//            let collectionViewCenter = collectionView.frame.size.width / 2
+//            let difference = abs(center - collectionViewCenter)
+//            let multiplierReduction = difference * 2 / 100.0
+//
+//            cell.layer.contentsScale = 1.2 - min(multiplierReduction, 2);
+//        }
+
         pageControl.currentPage = Int(self.collectionView.contentOffset.x / self.collectionView.frame.size.width)
     }
+
+
+    
+
+//    UIView.animate(withDuration: 0.2, animations: {
+//    self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x + self.collectionView.frame.width, y: 0), animated: true)
+//    self.view.layoutIfNeeded()
+//    })
 
 }
